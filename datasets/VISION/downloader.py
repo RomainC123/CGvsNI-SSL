@@ -6,15 +6,15 @@ from tqdm.auto import tqdm
 
 # ------------------------------------------------------------------------------
 
-data_type = 'TIFF'
-
-urls = pd.read_csv('RAISE_all.csv')[data_type]
+df_VISION_all = pd.read_csv('VISON_URL.txt', header=None)
+df_VISION_all.columns = ['Url']
+df_VISION = df_VISION_all.loc[df_VISION_all['Url'].apply(lambda x: x.split('/')[-1].split('.')[-1] == 'jpg')].reset_index(drop=True)
 
 # ------------------------------------------------------------------------------
 
 errors = []
 
-for url in tqdm(urls):
+for url in tqdm(df_VISION['Url']):
 
     output_path = 'data/' + url.split('/')[-1]
 

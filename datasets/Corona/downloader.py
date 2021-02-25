@@ -6,17 +6,20 @@ from tqdm.auto import tqdm
 
 # ------------------------------------------------------------------------------
 
-data_type = 'TIFF'
+df_Corona_full = pd.read_csv('Corona_URL.txt', header=None)
 
-urls = pd.read_csv('RAISE_all.csv')[data_type]
+df_Corona = df_Corona_full.iloc[1::2].reset_index(drop=True)
+df_Corona.columns = ['Name']
+df_Corona['Url'] = df_Corona_full.iloc[::2].reset_index(drop=True)
 
 # ------------------------------------------------------------------------------
 
 errors = []
 
-for url in tqdm(urls):
+for img_data in tqdm(df_Corona.values):
 
-    output_path = 'data/' + url.split('/')[-1]
+    output_path = 'data/' + img_data[0]
+    url = img_data[1]
 
     try:
         r = requests.get(url, stream=True)

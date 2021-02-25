@@ -6,17 +6,20 @@ from tqdm.auto import tqdm
 
 # ------------------------------------------------------------------------------
 
-data_type = 'TIFF'
+df_Artlantis_full = pd.read_csv('Artlantis_URL.txt', header=None)
 
-urls = pd.read_csv('RAISE_all.csv')[data_type]
+df_Artlantis = df_Artlantis_full.iloc[1::2].reset_index(drop=True)
+df_Artlantis.columns = ['Name']
+df_Artlantis['Url'] = df_Artlantis_full.iloc[::2].reset_index(drop=True)
 
 # ------------------------------------------------------------------------------
 
 errors = []
 
-for url in tqdm(urls):
+for img_data in tqdm(df_Artlantis.values):
 
-    output_path = 'data/' + url.split('/')[-1]
+    output_path = 'data/' + img_data[0]
+    url = img_data[1]
 
     try:
         r = requests.get(url, stream=True)
