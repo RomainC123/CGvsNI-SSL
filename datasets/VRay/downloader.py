@@ -23,15 +23,14 @@ for img_data in tqdm(df_VRay.values):
 
     try:
         r = requests.get(url, stream=True)
+
+        if r.status_code == 200:
+            r.raw.decode_content = True
+
+            with open(output_path,'wb') as f:
+                shutil.copyfileobj(r.raw, f)
+
     except:
-        errors.append(img_data)
-
-    if r.status_code == 200:
-        r.raw.decode_content = True
-
-        with open(output_path,'wb') as f:
-            shutil.copyfileobj(r.raw, f)
-    else:
         errors.append(img_data)
 
 with open('errors.txt', 'w') as f:

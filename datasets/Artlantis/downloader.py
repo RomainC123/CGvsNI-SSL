@@ -23,17 +23,17 @@ for img_data in tqdm(df_Artlantis.values):
 
     try:
         r = requests.get(url, stream=True)
+
+        if r.status_code == 200:
+            r.raw.decode_content = True
+
+            with open(output_path,'wb') as f:
+                shutil.copyfileobj(r.raw, f)
+
     except:
         errors.append(img_data)
 
-    if r.status_code == 200:
-        r.raw.decode_content = True
-
-        with open(output_path,'wb') as f:
-            shutil.copyfileobj(r.raw, f)
-    else:
-        errors.append(img_data)
-
+print(f'{len(errors)} errors')
 with open('errors.txt', 'w') as f:
     for error in errors:
         f.write(' '.join(error) + '\n')
