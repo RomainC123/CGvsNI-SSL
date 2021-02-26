@@ -130,6 +130,7 @@ dmypy.json
 
 # Data folders
 data/
+data_512crop/
 
 # Error logs
 errors.txt
