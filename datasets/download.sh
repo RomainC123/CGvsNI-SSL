@@ -8,11 +8,6 @@ cd Corona
 python downloader.py
 cd ..
 
-echo Downloading RAISE
-cd RAISE
-python downloader.py
-cd ..
-
 echo Downloading VISION
 cd VISION
 python downloader.py
