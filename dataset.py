@@ -84,7 +84,7 @@ def make_frame_set(set, img_type, data_type, nb_imgs, test_size, nb_labels):
     return df_imgs
 
 
-def make_dataset(CGI_sets, NI_sets, size=1200, balance=0.5, test_size=0.2, nb_labels=0.1, shuffle=True, data_type='data_512crop'):
+def make_dataset(CGI_sets, NI_sets, size=4000, balance=0.5, test_size=0.1, nb_labels=0.1, shuffle=True, data_type='data_512crop'):
     """
     Grabs images names and creates a list of training samples and testing
     samples, and saves it in a .csv file
@@ -140,6 +140,6 @@ def make_dataset(CGI_sets, NI_sets, size=1200, balance=0.5, test_size=0.2, nb_la
             f.write(df_imgs.to_csv(header=False))
 
 
-CGI_sets = ['Artlantis', 'Autodesk']
-NI_sets = []
+CGI_sets = ['Artlantis']
+NI_sets = ['Autodesk']
 make_dataset(CGI_sets, NI_sets)
