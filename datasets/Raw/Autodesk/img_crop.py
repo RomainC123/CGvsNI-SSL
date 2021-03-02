@@ -1,9 +1,11 @@
+import pathlib
 import math
 from PIL import Image
 import numbers
 import os
 
 from tqdm.auto import tqdm
+
 
 def resize(img, size, interpolation=Image.BILINEAR):
     r"""Resize the input PIL Image to the given size.
@@ -35,6 +37,8 @@ def resize(img, size, interpolation=Image.BILINEAR):
         return img.resize(size[::-1], interpolation)
 
 # ref: https://github.com/pytorch/vision/blob/master/torchvision/transforms/functional.py
+
+
 def crop(img, i, j, h, w):
     """Crop the given PIL Image.
     Args:
@@ -60,6 +64,7 @@ def center_crop(img, output_size):
     i = int(round((h - th) / 2.))
     j = int(round((w - tw) / 2.))
     return crop(img, i, j, th, tw)
+
 
 def five_crop(img, size):
     """Crop the given PIL Image into four corners and the central crop.
@@ -91,7 +96,8 @@ def five_crop(img, size):
     center = center_crop(img, (crop_h, crop_w))
     return (tl, tr, bl, br, center)
 
-kImageDirRoot = '/nethome/caplierr/code/gipsa/datasets/VRay'
+
+kImageDirRoot = pathlib.Path(__file__).parent.absolute()
 kSrcDir = os.path.join(kImageDirRoot, 'data')
 kDesDir = os.path.join(kImageDirRoot, 'data_512crop')
 
@@ -113,13 +119,13 @@ for image_name in tqdm(file_list):
         xmin = 0
         ymin = 0
         width = 512
-        height = int(img_r.height*0.9)
-        J = img_r.crop((xmin, ymin, xmin + width, ymin + height))  #  The crop rectangle, as a (left, upper, right, lower)-tuple.
+        height = int(img_r.height * 0.9)
+        J = img_r.crop((xmin, ymin, xmin + width, ymin + height))  # The crop rectangle, as a (left, upper, right, lower)-tuple.
     else:
         xmin = 0
         ymin = 0
         width = img_r.width
-        height = int(img_r.height*0.9)
+        height = int(img_r.height * 0.9)
         J = img_r.crop((xmin, ymin, xmin + width, ymin + height))
 
     J.save(os.path.join(kDesDir, name + '.png'))
