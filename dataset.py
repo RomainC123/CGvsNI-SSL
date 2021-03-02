@@ -71,15 +71,15 @@ def make_frame_set(set, img_type, data_type, nb_imgs, test_size, nb_labels):
     if not os.path.isdir(img_folder_path):
         raise ValueError(f'Unknown dataset name: {img_folder_path}')
     else:
-        list_imgs = multiply_list_elems(os.listdir(img_folder_path)[:int(nb_imgs)], multiple)  # No need to shuffle this list as os.listdir is already random
+        list_imgs = os.listdir(img_folder_path)[:int(nb_imgs)]  # No need to shuffle this list as os.listdir is already random
 
     train_imgs, test_imgs = train_test_split(list_imgs, test_size=test_size, shuffle=False)
 
     df_imgs = pd.DataFrame(columns=['Name', 'Label', 'Test'])
-    df_imgs['Name'] = train_imgs + test_imgs
-    df_imgs['Label'] = random.sample([label for x in range(int(len(train_imgs) * nb_labels))] +
-                                     [0 for x in range(int(len(train_imgs) * nb_labels), len(train_imgs))], len(train_imgs)) + ['Nan' for x in range(len(test_imgs))]
-    df_imgs['Test'] = [False for x in range(len(train_imgs))] + [True for x in range(len(test_imgs))]
+    df_imgs['Name'] = multiply_list_elems(train_imgs + test_imgs, multiple)
+    df_imgs['Label'] = multiply_list_elems(random.sample([label for x in range(int(len(train_imgs) * nb_labels))] +
+                                                         [0 for x in range(int(len(train_imgs) * nb_labels), len(train_imgs))], len(train_imgs)) + ['Nan' for x in range(len(test_imgs))], multiple)
+    df_imgs['Test'] = multiply_list_elems([False for x in range(len(train_imgs))] + [True for x in range(len(test_imgs))], multiple)
 
     return df_imgs
 

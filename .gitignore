@@ -134,3 +134,6 @@ data_512crop/
 
 # Error logs
 errors.txt
+
+# .csv files (containing datasets)
+*.csv
