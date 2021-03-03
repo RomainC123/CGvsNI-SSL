@@ -1,3 +1,9 @@
+import os
+import pathlib
+import pandas as pd
+
+
+INPUT_PATH = os.path.join(os.path.join(pathlib.Path(__file__).parent.absolute(), 'datasets'), 'clean')
 
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG', '.TIF',
@@ -12,9 +18,19 @@ ID_TO_CLASSES = {
 }
 
 
-def make_dataset(fpath, mode):
+def load_dataset(fpath, mode):
 
-    pass
+    df_imgs = pd.read_csv(fpath).iloc
+
+    if mode == 'train':
+        df_imgs = df_imgs.loc[~df_imgs['Test']]
+    if mode == 'test':
+        df_imgs = df_imgs.loc[df_imgs['Test']]
+
+    return df_imgs
+
+
+def get_info(df_imgs, idx):
 
 
 class ImageCGNIDataset(Dataset):
@@ -30,20 +46,16 @@ class ImageCGNIDataset(Dataset):
         -
     """
 
-    def __init__(self, fpath, mode, transform=None, target_transform=None, loader=default_loader):
+    def __init__(self, fname, mode, transform=None, target_transform=None, loader=default_loader):
 
-        classes, class_to_idx = find_classes()
-        imgs, num_in_class, images_txt = make_dataset(args.dataroot, class_to_idx)
+        fpath = os.path.join(INPUT_PATH, fname)
 
-        if len(imgs) == 0:
-            raise(RuntimeError("Found 0 images in subfolders of: " + fpath + "\n"
+        self.imgs = load_dataset(fpath, mode)  # pandas dataframe
+
+        if len(df_imgs) == 0:
+            raise(RuntimeError("Found 0 images in subfolders of: " + fname + "\n"
                                "Supported image extensions are: " + ",".join(IMG_EXTENSIONS)))
 
-        self.imgs = imgs
-        self.num_in_class = num_in_class
-        self.images_txt = images_txt
-        self.classes = classes
-        self.class_to_idx = class_to_idx
         self.transform = transform
         self.target_transform = target_transform
         self.loader = loader
@@ -57,7 +69,8 @@ class ImageCGNIDataset(Dataset):
             tuple: (image, target) where target is class_index of the target class.
         """
 
-        path, target = self.imgs[index]
+        path, target = get_info(self.imgs, idx)
+
         img = self.loader(path, self.mode)
         if self.transform is not None:
             img = self.transform(img)

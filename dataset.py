@@ -10,12 +10,12 @@ ROOT_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), 'datasets')
 DATA_PATH = os.path.join(ROOT_PATH, 'raw')
 OUTPUT_PATH = os.path.join(ROOT_PATH, 'clean')
 
-DATASET_DICT = {"Artlantis": 1,  # 1 => CGI dataset
-                "Autodesk": 1,
-                "Corona": 1,
-                "VRay": 1,
-                "RAISE": 2,  # 2 => NI dataset
-                "VISION": 2}
+DATASET_DICT = {"Artlantis": 0,  # 0 => CGI dataset
+                "Autodesk": 0,
+                "Corona": 0,
+                "VRay": 0,
+                "RAISE": 1,  # 1 => NI dataset
+                "VISION": 1}
 
 
 def get_nb_imgs_set(nb_cgi_sets, nb_ni_sets, size, balance):
@@ -58,10 +58,10 @@ def multiply_list_elems(list, nb_multiples):
 def make_frame_set(set, img_type, data_type, nb_imgs, nb_multiples, test_size, nb_labels, ):
 
     if img_type == 'CG':
-        label = 1
+        label = 0
         multiple = nb_multiples[0]
     elif img_type == 'N':
-        label = 2
+        label = 1
         multiple = nb_multiples[1]
     else:
         raise ValueError(f'Unknown img_type: {img_type}')
@@ -78,7 +78,7 @@ def make_frame_set(set, img_type, data_type, nb_imgs, nb_multiples, test_size, n
     df_imgs = pd.DataFrame(columns=['Name', 'Label', 'Test'])
     df_imgs['Name'] = multiply_list_elems(train_imgs + test_imgs, multiple)
     df_imgs['Label'] = multiply_list_elems(random.sample([label for x in range(int(len(train_imgs) * nb_labels))] +
-                                                         [0 for x in range(int(len(train_imgs) * nb_labels), len(train_imgs))], len(train_imgs)) + ['Nan' for x in range(len(test_imgs))], multiple)
+                                                         ['Nan' for x in range(int(len(train_imgs) * nb_labels), len(train_imgs))], len(train_imgs)) + ['Nan' for x in range(len(test_imgs))], multiple)
     df_imgs['Test'] = multiply_list_elems([False for x in range(len(train_imgs))] + [True for x in range(len(test_imgs))], multiple)
 
     return df_imgs
