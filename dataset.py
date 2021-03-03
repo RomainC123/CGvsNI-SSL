@@ -26,7 +26,7 @@ def get_nb_imgs_set(nb_cgi_sets, nb_ni_sets, size, balance):
         if nb_cgi_sets == 0:
             nb_imgs_CGI_set = 0.
         else:
-            nb_imgs_CGI_set = size * balance / (nb_cgi_sets * 4)
+            nb_imgs_CGI_set = size * balance / nb_cgi_sets
 
         if nb_ni_sets == 0:
             nb_imgs_NI_set = 0.
@@ -36,12 +36,16 @@ def get_nb_imgs_set(nb_cgi_sets, nb_ni_sets, size, balance):
     return nb_imgs_CGI_set, nb_imgs_NI_set
 
 
-def good_parameters(nb_imgs_CGI_set, nb_imgs_NI_set, test_size, nb_labels):
+def good_parameters(nb_imgs_CGI_set, nb_imgs_NI_set, test_size, nb_labels, nb_multiples):
 
-    return (nb_imgs_CGI_set.is_integer() and
+    return (nb_imgs_CGI_set.is_integer() and  # Number of CGI in total per set
             nb_imgs_NI_set.is_integer() and
-            (nb_imgs_CGI_set * (1 - test_size) * nb_labels).is_integer() and
-            (nb_imgs_NI_set * (1 - test_size) * nb_labels).is_integer())
+            (nb_imgs_CGI_set * test_size).is_integer() and  # Number of CGI test images per set
+            (nb_imgs_NI_set * test_size).is_integer() and
+            (nb_imgs_CGI_set * (1 + (nb_multiples[0] - 1) * test_size) / nb_multiples[0]).is_integer() and  # Number of uniques images to choose per set
+            (nb_imgs_NI_set * (1 + (nb_multiples[1] - 1) * test_size) / nb_multiples[1]).is_integer() and
+            (nb_imgs_CGI_set * ((1 - test_size) / nb_multiples[0]) * nb_labels).is_integer() and  # Number of labelized CGI images for training per set
+            (nb_imgs_NI_set * ((1 - test_size) / nb_multiples[1]) * nb_labels).is_integer())
 
 
 def multiply_list_elems(list, nb_multiples):
@@ -71,9 +75,9 @@ def make_frame_set(set, img_type, data_type, nb_imgs, nb_multiples, test_size, n
     if not os.path.isdir(img_folder_path):
         raise ValueError(f'Unknown dataset name: {img_folder_path}')
     else:
-        list_imgs = os.listdir(img_folder_path)[:int(nb_imgs)]  # No need to shuffle this list as os.listdir is already random
+        list_imgs = os.listdir(img_folder_path)[:int(nb_imgs * (1 + (multiple - 1) * test_size) / multiple)]  # No need to shuffle this list as os.listdir is already random
 
-    train_imgs, test_imgs = train_test_split(list_imgs, test_size=test_size, shuffle=False)
+    train_imgs, test_imgs = train_test_split(list_imgs, test_size=test_size * multiple / (1 + (multiple - 1) * test_size), shuffle=False)  # HALP
 
     df_imgs = pd.DataFrame(columns=['Name', 'Label', 'Test'])
     df_imgs['Name'] = multiply_list_elems(train_imgs, multiple) + test_imgs
@@ -98,12 +102,12 @@ def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5,
         for the dataset creation
         - NI_sets (list): list containing the list of name of the NIs to use for
         the dataset creation
-        - size (int, default 1000): final number of images for the dataset
+        - size (int, default 4000): number of images for the final dataset
         - nb_multiples (tuple, default (4, 1)): (nb of multiples of each CGIs,
         nb of multiples of each NI)
         - balance (float, default 0.5): percentage of CGIs in the final dataset
-        - test_size (float, default 0.1): share of each set to be used for
-        testing
+        - test_size (float, default 0.1): percent of the train size to be used
+        as test size
         - nb_labels (float, default 1.): share of the training samples to save
         with label (for semi-supervised learning), set to 1. for supervised
         training
@@ -117,7 +121,7 @@ def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5,
 
     nb_imgs_CGI_set, nb_imgs_NI_set = get_nb_imgs_set(nb_cgi_sets, nb_ni_sets, size, balance)
 
-    if not good_parameters(nb_imgs_CGI_set, nb_imgs_NI_set, test_size, nb_labels):
+    if not good_parameters(nb_imgs_CGI_set, nb_imgs_NI_set, test_size, nb_labels, nb_multiples):
         # Guarantees that all numbers end up as integers
         raise ValueError('Non-integer sizes found, please check your values or use default ones')
 
