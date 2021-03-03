@@ -75,7 +75,8 @@ def make_frame_set(set, img_type, data_type, nb_imgs, nb_multiples, test_size, n
     if not os.path.isdir(img_folder_path):
         raise ValueError(f'Unknown dataset name: {img_folder_path}')
     else:
-        list_imgs = os.listdir(img_folder_path)[:int(nb_imgs * (1 + (multiple - 1) * test_size) / multiple)]  # No need to shuffle this list as os.listdir is already random
+        list_imgs = [os.path.join(set, data_type, fname) for fname in os.listdir(img_folder_path)[:int(
+            nb_imgs * (1 + (multiple - 1) * test_size) / multiple)]]  # No need to shuffle this list as os.listdir is already random
 
     train_imgs, test_imgs = train_test_split(list_imgs, test_size=test_size * multiple / (1 + (multiple - 1) * test_size), shuffle=False)  # HALP
 
