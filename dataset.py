@@ -76,10 +76,10 @@ def make_frame_set(set, img_type, data_type, nb_imgs, nb_multiples, test_size, n
     train_imgs, test_imgs = train_test_split(list_imgs, test_size=test_size, shuffle=False)
 
     df_imgs = pd.DataFrame(columns=['Name', 'Label', 'Test'])
-    df_imgs['Name'] = multiply_list_elems(train_imgs + test_imgs, multiple)
+    df_imgs['Name'] = multiply_list_elems(train_imgs, multiple) + test_imgs
     df_imgs['Label'] = multiply_list_elems(random.sample([label for x in range(int(len(train_imgs) * nb_labels))] +
-                                                         ['Nan' for x in range(int(len(train_imgs) * nb_labels), len(train_imgs))], len(train_imgs)) + ['Nan' for x in range(len(test_imgs))], multiple)
-    df_imgs['Test'] = multiply_list_elems([False for x in range(len(train_imgs))] + [True for x in range(len(test_imgs))], multiple)
+                                                         ['Nan' for x in range(int(len(train_imgs) * nb_labels), len(train_imgs))], len(train_imgs)), multiple) + ['Nan' for x in range(len(test_imgs))]
+    df_imgs['Test'] = multiply_list_elems([False for x in range(len(train_imgs))], multiple) + [True for x in range(len(test_imgs))]
 
     return df_imgs
 
