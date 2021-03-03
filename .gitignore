@@ -137,3 +137,6 @@ errors.txt
 
 # .csv files (containing datasets)
 *.csv
+
+# Notebooks (only used for testing purposes)
+*.ipynb

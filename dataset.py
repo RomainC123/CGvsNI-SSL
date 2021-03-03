@@ -84,7 +84,7 @@ def make_frame_set(set, img_type, data_type, nb_imgs, nb_multiples, test_size, n
     return df_imgs
 
 
-def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5, test_size=0.1, nb_labels=0.1, shuffle=True, data_type='data_512crop'):
+def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5, test_size=0.2, nb_labels=0.1, data_type='data_512crop', name=None):
     """
     Grabs images names and creates a list of training samples and testing
     samples, and saves it in a .csv file
@@ -107,10 +107,9 @@ def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5,
         - nb_labels (float, default 1.): share of the training samples to save
         with label (for semi-supervised learning), set to 1. for supervised
         training
-        - shuffle (bool, default True): whether or not to shuffle the images
-        before making the split
         - data_type (str, default 'data_512crop'): target folder for each
         dataset
+        - name (str, default None): name override for the final file
     """
 
     nb_cgi_sets = len(CGI_sets)
@@ -122,8 +121,11 @@ def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5,
         # Guarantees that all numbers end up as integers
         raise ValueError('Non-integer sizes found, please check your values or use default ones')
 
-    dataset_name = f"{'_'.join(CGI_sets + NI_sets)}_{str(size)}_{str(balance)}_{str(test_size)}_{str(nb_labels)}_{data_type}.csv"
-    dataset_path = os.path.join(OUTPUT_PATH, dataset_name)
+    if name == None:
+        dataset_name = f"{'_'.join(CGI_sets + NI_sets)}_{str(size)}_{str(balance)}_{str(test_size)}_{str(nb_labels)}_{data_type}.csv"  # default naming convention
+        dataset_path = os.path.join(OUTPUT_PATH, dataset_name)
+    else:
+        dataset_path = os.path.join(OUTPUT_PATH, name)
 
     if os.path.exists(dataset_path):
         raise NameError('Dataset already exists')
@@ -142,6 +144,6 @@ def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5,
             f.write(df_imgs.to_csv(header=False))
 
 
-CGI_sets = ['Artlantis']
-NI_sets = ['Autodesk']
+CGI_sets = ['Artlantis', 'Autodesk']
+NI_sets = []
 make_dataset(CGI_sets, NI_sets)
