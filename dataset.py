@@ -7,8 +7,8 @@ from sklearn.model_selection import train_test_split
 
 
 ROOT_PATH = os.path.join(pathlib.Path(__file__).parent.absolute(), 'datasets')
-DATA_PATH = os.path.join(ROOT_PATH, 'Raw')
-OUTPUT_PATH = os.path.join(ROOT_PATH, 'Clean')
+DATA_PATH = os.path.join(ROOT_PATH, 'raw')
+OUTPUT_PATH = os.path.join(ROOT_PATH, 'clean')
 
 DATASET_DICT = {"Artlantis": 1,  # 1 => CGI dataset
                 "Autodesk": 1,
@@ -55,14 +55,14 @@ def multiply_list_elems(list, nb_multiples):
     return multiple_list
 
 
-def make_frame_set(set, img_type, data_type, nb_imgs, test_size, nb_labels):
+def make_frame_set(set, img_type, data_type, nb_imgs, nb_multiples, test_size, nb_labels, ):
 
     if img_type == 'CG':
         label = 1
-        multiple = 4
+        multiple = nb_multiples[0]
     elif img_type == 'N':
         label = 2
-        multiple = 1
+        multiple = nb_multiples[1]
     else:
         raise ValueError(f'Unknown img_type: {img_type}')
 
@@ -84,7 +84,7 @@ def make_frame_set(set, img_type, data_type, nb_imgs, test_size, nb_labels):
     return df_imgs
 
 
-def make_dataset(CGI_sets, NI_sets, size=4000, balance=0.5, test_size=0.1, nb_labels=0.1, shuffle=True, data_type='data_512crop'):
+def make_dataset(CGI_sets, NI_sets, size=4000, nb_multiples=(4, 1), balance=0.5, test_size=0.1, nb_labels=0.1, shuffle=True, data_type='data_512crop'):
     """
     Grabs images names and creates a list of training samples and testing
     samples, and saves it in a .csv file
@@ -99,6 +99,8 @@ def make_dataset(CGI_sets, NI_sets, size=4000, balance=0.5, test_size=0.1, nb_la
         - NI_sets (list): list containing the list of name of the NIs to use for
         the dataset creation
         - size (int, default 1000): final number of images for the dataset
+        - nb_multiples (tuple, default (4, 1)): (nb of multiples of each CGIs,
+        nb of multiples of each NI)
         - balance (float, default 0.5): percentage of CGIs in the final dataset
         - test_size (float, default 0.1): share of each set to be used for
         testing
@@ -130,12 +132,12 @@ def make_dataset(CGI_sets, NI_sets, size=4000, balance=0.5, test_size=0.1, nb_la
             f.write('Name,Label,Test\n')
 
     for cgi_set in CGI_sets:
-        df_imgs = make_frame_set(cgi_set, 'CG', data_type, nb_imgs_CGI_set, test_size, nb_labels)
+        df_imgs = make_frame_set(cgi_set, 'CG', data_type, nb_imgs_CGI_set, nb_multiples, test_size, nb_labels)
         with open(dataset_path, 'a') as f:
             f.write(df_imgs.to_csv(header=False))
 
     for ni_set in NI_sets:
-        df_imgs = make_frame_set(ni_set, 'N', data_type, nb_imgs_NI_set, test_size, nb_labels)
+        df_imgs = make_frame_set(ni_set, 'N', data_type, nb_imgs_NI_set, nb_multiples, test_size, nb_labels)
         with open(dataset_path, 'a') as f:
             f.write(df_imgs.to_csv(header=False))
 
