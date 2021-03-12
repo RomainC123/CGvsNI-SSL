@@ -128,15 +128,14 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Data folders
-data/
-data_512crop/
-
-# Error logs
-errors.txt
-
-# .csv files (containing datasets)
-*.csv
-
-# Notebooks (only used for testing purposes)
+# Test notebooks
 *.ipynb
+
+# datasets
+*.csv
+*.jpeg
+*.pkl
+*.pth
+
+# cifar inital folder
+cifar-10-batches-py/
