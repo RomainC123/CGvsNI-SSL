@@ -131,11 +131,14 @@ dmypy.json
 # Test notebooks
 *.ipynb
 
-# datasets
+# datasets and checkpoints
 *.csv
-*.jpeg
 *.pkl
 *.pth
 
-# cifar inital folder
-cifar-10-batches-py/
+# images
+*.jpeg
+*.jpg
+*.JPG
+*.png
+*.tif

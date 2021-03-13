@@ -2,9 +2,6 @@
 #   Libraries                                                                  #
 ################################################################################
 
-import sys
-sys.path.append('../')
-
 import os
 import pathlib
 import argparse
@@ -12,7 +9,7 @@ import pickle
 import numpy as np
 
 import criterions
-from utils import networks
+import networks
 
 import torch
 

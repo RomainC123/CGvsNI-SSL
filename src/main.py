@@ -2,9 +2,6 @@
 #   Libraries                                                                  #
 ################################################################################
 
-import sys
-sys.path.append('../')
-
 import os
 import pathlib
 import argparse
@@ -13,7 +10,7 @@ import training
 import testing
 import models
 import datasets
-from utils import display
+import display
 
 import torch
 import torch.backends.cudnn as cudnn
