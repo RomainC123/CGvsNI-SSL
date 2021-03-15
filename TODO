@@ -1,0 +1,6 @@
+Next week:
+- Understand the loss (supervised vs unsupervised, weights and all)
+- Check impact of nb_labels on training efficiency
+- Make it work on CIFAR10
+- Test runs on CGvsNI
+- Redo the downloader for CG images

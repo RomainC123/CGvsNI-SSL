@@ -106,6 +106,7 @@ def make_dataset(dataset_size, test_size, nb_labels, name=None):
     with open(dataset_path, 'a') as f:
         f.write(df_data.to_csv(header=False))
 
+    print('Dataset created: ', dataset_name)
     print('Done!')
 
 

@@ -23,7 +23,7 @@ print('Creating images...')
 for i in tqdm(range(len(X))):
     im = Image.fromarray(X.iloc[i].values.reshape(28, 28))
     im = im.convert("L")
-    im.save(os.path.join(SAVE_PATH, f'mnist_784_{i}.jpeg'))
+    im.save(os.path.join(RAW_PATH, f'mnist_784_{i}.jpeg'))
     list_names.append(f"mnist_784_{i}.jpeg")
 
 y.insert(0, "Name", list_names, True)
