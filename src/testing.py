@@ -1,3 +1,7 @@
+################################################################################
+#   Libraries                                                                  #
+################################################################################
+
 import os
 import pathlib
 import argparse
@@ -12,8 +16,9 @@ from display import testing_display
 
 from tqdm import tqdm
 
-
-ROOT_PATH = pathlib.Path(__file__).resolve().parents[1].absolute()
+################################################################################
+#   Testing                                                                    #
+################################################################################
 
 
 def testing_metrics(test_dataloader, model, args):

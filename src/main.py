@@ -63,9 +63,9 @@ parser.add_argument('--epochs', type=int, default=50, help='number of epochs to 
 
 # Method hyperparameters
 parser.add_argument('--alpha', type=float, default=0.6, help='variable for the moving average part (default: 0.6)')
-parser.add_argument('--ramp_epochs', type=int, default=10, help='number of epochs before unsupervised weight reaches its maximum (default: 50)')
-parser.add_argument('--ramp_mult', type=int, default=2, help='multiplier to be used in the exponential for the calculation of the weight of the unsupervised part of the loss (default: 4)')
-parser.add_argument('--max_weight', type=float, default=3., help='maximum weight for the unsupervised loss (default: 30.)')
+parser.add_argument('--ramp_epochs', type=int, default=80, help='number of epochs before unsupervised weight reaches its maximum (default: 50)')
+parser.add_argument('--ramp_mult', type=int, default=5, help='multiplier to be used in the exponential for the calculation of the weight of the unsupervised part of the loss (default: 4)')
+parser.add_argument('--max_weight', type=float, default=30., help='maximum weight for the unsupervised loss (default: 30.)')
 
 # Whether or not to train, show graphs and/or test
 parser.add_argument('--train', dest='train', action='store_true')
@@ -109,7 +109,7 @@ else:
     kwargs = {'batch_size': args.batch_size, 'shuffle': args.shuffle}
 
 ################################################################################
-#   Training                                                                   #
+#   Main                                                                       #
 ################################################################################
 
 
@@ -117,7 +117,7 @@ def main():
 
     if args.train:
 
-        print('\n\nStarting training...\n')
+        print('Starting training...')
 
         # Dataset object based on which data is used
         if args.data == 'MNIST':
@@ -150,11 +150,10 @@ def main():
         args.percent_labeled = train_dataset.percent_labeled
 
         print('Number of train data: {}'.format(len(train_dataloader.dataset)))
-        print('\n')
 
         # Optimizer
         if args.optimizer == 'Adam':
-            optimizer = Adam(model.parameters(), lr=0.002, betas=(0.9, 0.99))
+            optimizer = Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999))
         if args.optimizer == 'SGD':
             optimizer = None  # TODO!
 
@@ -212,6 +211,10 @@ def main():
         testing.testing_display(test_dataloader, model, args)
 
         print('Tests done!')
+
+################################################################################
+#   Misc functions                                                             #
+################################################################################
 
 
 def get_latest_log(logs_path):
