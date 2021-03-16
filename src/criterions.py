@@ -26,7 +26,7 @@ class TemporalLoss(object):
         if nb_labels > 0:
             masked_outputs = torch.index_select(out, 0, non_zero.view(nb_labels))
             masked_labels = labels[true_labels]
-            sup_loss = F.cross_entropy(masked_outputs, masked_labels)
+            sup_loss = F.cross_entropy(masked_outputs, masked_labels) / nb_labels
         else:
             if self.cuda:
                 sup_loss = Variable(torch.FloatTensor([0.]).cuda(), requires_grad=False)
