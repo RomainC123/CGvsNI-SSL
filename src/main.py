@@ -24,8 +24,7 @@ from torch.utils.data import DataLoader
 #   Paths and variables                                                        #
 ################################################################################
 
-TRAIN_STEP = 10
-RAMP_MULT = 4
+TRAIN_STEP = 10  # To be set manually
 
 ROOT_PATH = pathlib.Path(__file__).resolve().parents[1].absolute()
 
@@ -47,34 +46,46 @@ if not os.path.exists(LOGS_PATH):
 
 parser = argparse.ArgumentParser(description='Semi-supervised MNIST training')
 
+# Data to use
 parser.add_argument('--data', type=str, help='data to use')
 parser.add_argument('--dataset_name', type=str, help='name of the saved dataset to use')
 parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
 
-parser.add_argument('--method', type=str, default='TemporalEnsembling', help='training method')
+# Training method and optimizer
+parser.add_argument('--method', type=str, help='training method')
 parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
 
+# Training parameters
 parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training (default: 100)')
 parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
 parser.add_argument('--shuffle', type=bool, default=True, help='shuffle bool for train dataset (default: True)')
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train (default: 300)')
-parser.add_argument('--ramp_epochs', type=int, default=10, help='number of epochs before unsupervised weight reaches its maximum (default: 50)')
-parser.add_argument('--max_weight', type=float, default=50., help='maximum weight for the unsupervised loss (default: 30.)')
-parser.add_argument('--alpha', type=float, default=0.6, help='variable for the moving average part (default: 0.7)')
 
+# Method hyperparameters
+parser.add_argument('--alpha', type=float, default=0.6, help='variable for the moving average part (default: 0.6)')
+parser.add_argument('--ramp_epochs', type=int, default=10, help='number of epochs before unsupervised weight reaches its maximum (default: 50)')
+parser.add_argument('--ramp_mult', type=int, default=2, help='multiplier to be used in the exponential for the calculation of the weight of the unsupervised part of the loss (default: 4)')
+parser.add_argument('--max_weight', type=float, default=3., help='maximum weight for the unsupervised loss (default: 30.)')
+
+# Whether or not to train, show graphs and/or test
 parser.add_argument('--train', dest='train', action='store_true')
 parser.add_argument('--no-train', dest='train', action='store_false')
 parser.set_defaults(train=True)
+parser.add_argument('--graph', dest='graph', action='store_true')
+parser.add_argument('--no-graph', dest='graph', action='store_false')
+parser.set_defaults(graph=True)
 parser.add_argument('--test', dest='test', action='store_true')
 parser.add_argument('--no-test', dest='test', action='store_false')
 parser.set_defaults(test=True)
+
+# Hardware parameter
 parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
 parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
 
 args = parser.parse_args()
 
+# New args
 args.TRAIN_STEP = TRAIN_STEP
-args.RAMP_MULT = RAMP_MULT
 
 args.graphs_path = os.path.join(GRAPHS_PATH, args.data, args.dataset_name)
 if not os.path.exists(args.graphs_path):
@@ -153,9 +164,8 @@ def main():
 
         print('Training done!')
 
+    if args.graph:
         display.show_loss(args)
-
-        print('\n')
 
     if args.test:
         if not os.path.exists(args.logs_path):
@@ -178,7 +188,7 @@ def main():
 
         if args.data == 'CIFAR10':
             test_dataset_transforms = transforms.Compose([transforms.ToTensor(),
-                                                           transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+                                                          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
             test_dataset = datasets.DatasetCIFAR10(args,
                                                    True,
                                                    transform=test_dataset_transforms)

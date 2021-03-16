@@ -4,9 +4,10 @@ from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
 import torch.nn.functional as F
-###############################################################################
-# Functions
-###############################################################################
+
+################################################################################
+#   Functions                                                                  #
+################################################################################
 
 
 def weights_init_normal(m):
@@ -47,7 +48,7 @@ def weights_init_kaiming(m):
 
 def weights_init_orthogonal(m):
     classname = m.__class__.__name__
-    print(classname)
+    # print(classname)
     if classname.find('Conv') != -1:
         init.orthogonal_(m.weight.data, gain=1)
     elif classname.find('Linear') != -1:

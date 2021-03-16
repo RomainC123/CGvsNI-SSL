@@ -38,7 +38,7 @@ def temporal_ensembling_training(train_dataloader, model, optimizer, args):
         elif epoch >= ramp_epochs:
             return max_weight_corr
         else:
-            return max_weight_corr * np.exp(-args.RAMP_MULT * (1 - epoch / ramp_epochs) ** 2)
+            return max_weight_corr * np.exp(-args.ramp_mult * (1 - epoch / ramp_epochs) ** 2)
 
     def update_moving_average(output, y_ema, epoch, alpha, cuda):
 
@@ -92,8 +92,8 @@ def temporal_ensembling_training(train_dataloader, model, optimizer, args):
             optimizer.step()
 
             loss_epoch += loss.detach()
-            sup_loss_epoch += sup_loss
-            unsup_loss_epoch += unsup_loss
+            sup_loss_epoch += sup_loss.detach()
+            unsup_loss_epoch += unsup_loss.detach()
 
             if batch_idx % args.log_interval == 0:
                 pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch,
