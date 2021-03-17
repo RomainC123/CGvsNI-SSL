@@ -114,7 +114,7 @@ def temporal_ensembling_training(train_dataloader, model, optimizer, args):
         if epoch % args.TRAIN_STEP == 0:
             torch.save({'epoch': epoch,
                         'state_dict': model.state_dict()},
-                       os.path.join(args.logs_path, f'checkpoint_{epoch}.pth'))
+                       os.path.join(args.logs_path_full, f'checkpoint_{epoch}.pth'))
 
         return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
@@ -132,7 +132,7 @@ def temporal_ensembling_training(train_dataloader, model, optimizer, args):
     # First model checkpoint
     torch.save({'epoch': 0,
                 'state_dict': model.state_dict()},
-               os.path.join(args.logs_path, 'checkpoint_0.pth'))
+               os.path.join(args.logs_path_full, f'checkpoint_0.pth'))
 
     # Criterion for calculating the loss of our model
     criterion = criterions.TemporalLoss(args.cuda)

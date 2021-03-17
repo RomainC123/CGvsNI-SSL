@@ -59,4 +59,18 @@ def testing_metrics(test_dataloader, model, args):
                                                                                   args.nb_img_test,
                                                                                   100.))
 
-    print(metrics.classification_report(oriImageLabel, oriTestLabel, digits=3))
+    with open(os.path.join(args.results_path, 'classification_report.txt'), 'w+') as f:
+        f.write(f'Dataset name: {args.dataset_name}\n')
+        f.write(f'Data type:  {args.data}\n')
+        f.write('\n')
+        f.write(f'Training method: {args.method}\n')
+        f.write(f'Training id: {args.train_id}\n')
+        f.write(f'Train size: {args.nb_train}\n')
+        f.write('Percent labeled: {:.1f}%\n'.format(args.percent_labeled * 100))
+        f.write('\n')
+        f.write('Method hyperparameters: \n')
+        f.write('')
+        f.write(f'Test size: {args.nb_test}\n')
+        f.write('\n')
+        f.write(metrics.classification_report(oriImageLabel, oriTestLabel, digits=3))
+        f.write('\n-----------------------------------------------------------------------------\n')

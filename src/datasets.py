@@ -33,12 +33,14 @@ class DatasetCIFAR10(data.Dataset):
 
         df_imgs = pd.read_csv(fpath)
 
-        if not test:
-            df_imgs = df_imgs.loc[~df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
+        if test == None:
+            return df_imgs
         else:
-            df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
-
-        return df_imgs
+            if not test:
+                df_imgs = df_imgs.loc[~df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
+            else:
+                df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
+            return df_imgs
 
     def get_info(self, df_imgs, idx):
         # Grabs the name and label of the given idx
@@ -125,12 +127,14 @@ class DatasetMNIST(data.Dataset):
 
         df_imgs = pd.read_csv(fpath)
 
-        if not test:
-            df_imgs = df_imgs.loc[~df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
+        if test == None:
+            return df_imgs
         else:
-            df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
-
-        return df_imgs
+            if not test:
+                df_imgs = df_imgs.loc[~df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
+            else:
+                df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Label']].reset_index(drop=True)
+            return df_imgs
 
     def get_info(self, df_imgs, idx):
         # Grabs the name and label of the given idx
