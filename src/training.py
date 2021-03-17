@@ -5,157 +5,150 @@
 import os
 import pathlib
 import argparse
-import pickle
-import numpy as np
 
-import criterions
-import networks
+import temporal_ensembling
+import datasets
+import models
+import utils
+from vars import *
 
 import torch
+import torch.backends.cudnn as cudnn
+from torch.utils.data import DataLoader
+from torch.optim import Adam
 
-from torch.autograd import Variable
 
-from tqdm import tqdm
+################################################################################
+#   Argparse                                                                   #
+################################################################################
 
+parser = argparse.ArgumentParser(description='Semi-supervised MNIST training')
+
+# Data to use
+parser.add_argument('--data', type=str, help='data to use')
+parser.add_argument('--dataset_name', type=str, help='name of the saved dataset to use')
+parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
+
+# Training method and optimizer
+parser.add_argument('--method', type=str, help='training method')
+parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
+
+# Training parameters
+parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training (default: 100)')
+parser.add_argument('--shuffle', type=bool, default=True, help='shuffle bool for train dataset (default: True)')
+parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train (default: 300)')
+
+# Whether or not to train, show graphs and/or test
+parser.add_argument('--graph', dest='graph', action='store_true')
+parser.add_argument('--no-graph', dest='graph', action='store_false')
+parser.set_defaults(graph=False)
+
+# Hardware parameter
+parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
+parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
+
+args = parser.parse_args()
+
+args.TRAIN_STEP = TRAIN_STEP
+
+args.logs_path = os.path.join(LOGS_PATH, args.data, args.dataset_name)
+if not os.path.exists(args.logs_path):
+    os.makedirs(args.logs_path)
+
+################################################################################
+#   Cuda                                                                       #
+################################################################################
+
+args.cuda = not args.no_cuda and torch.cuda.is_available()
+if args.cuda:
+    cudnn.benchmark = True
+
+if args.cuda:
+    kwargs = {'batch_size': args.batch_size, 'shuffle': args.shuffle, 'num_workers': 8, 'pin_memory': True}
+else:
+    kwargs = {'batch_size': args.batch_size, 'shuffle': args.shuffle}
 
 ################################################################################
 #   Training                                                                   #
 ################################################################################
 
 
-def temporal_ensembling_training(train_dataloader, model, optimizer, args):
+def main():
 
-    def get_weight(epoch, args):  # TODO
+    def get_train_id(args):
+        """
+        Grabs the lowest availiable training id
+        """
 
-        ramp_epochs = args.ramp_epochs
-        max_weight = args.max_weight
-        percent_labeled = args.percent_labeled
+        list_train = [fname.split('_') for fname in os.listdir(args.logs_path)]
+        list_idx_taken = []
+        for method, idx in list_train:
+            if method == args.method:
+                list_idx_taken.append(int(idx))
 
-        max_weight_corr = max_weight * percent_labeled
+        idx = 1
+        while idx in list_idx_taken:
+            idx += 1
+        return idx
 
-        if epoch == 1:
-            return 0
-        elif epoch >= ramp_epochs:
-            return max_weight_corr
-        else:
-            return max_weight_corr * np.exp(-args.ramp_mult * (1 - epoch / ramp_epochs) ** 2)
+    print('Starting training...')
 
-    def update_moving_average(output, y_ema, epoch, alpha, cuda):
+    # Getting training id, to create paths
+    args.train_id = get_train_id(args)
 
-        new_y_ema = torch.zeros(y_ema.shape).float()
+    # Creating all relevant paths
+    args.logs_path_full = os.path.join(args.logs_path, args.method + '_' + str(args.train_id))
+    if not os.path.exists(args.logs_path_full):
+        os.makedirs(args.logs_path_full)
 
-        if cuda:
-            new_y_ema = new_y_ema.cuda()
+    args.graphs_path_full = os.path.join(GRAPHS_PATH, args.data, args.dataset_name, args.method + '_' + str(args.train_id))
+    if not os.path.exists(args.graphs_path_full):
+        os.makedirs(args.graphs_path_full)
 
-        for idx in range(len(y_ema)):
-            new_y_ema[idx] = (alpha * y_ema[idx] + (1 - alpha) * output[idx]) / (1 - alpha ** epoch)
+    # Creating Dataset object
+    if args.data in DATASETS_IMPLEMENTED.keys():
+        train_dataset_transforms = TRANSFORMS_TRAIN[args.data]
+        train_dataset = DATASETS_IMPLEMENTED[args.data](args,
+                                                        False,
+                                                        transform=train_dataset_transforms)
+        model = MODELS[args.data]
+    else:
+        raise RuntimeError('Data type not implemented')
 
-        return new_y_ema
+    print('Image mode: ', args.img_mode)
 
-    def train(train_dataloader, model, y_ema, optimizer, criterion, weight_unsupervised_loss, epoch, cuda):
+    # DataLoader object
+    train_dataloader = DataLoader(train_dataset, **kwargs)
 
-        model.train()
+    # Useful variables
+    args.nb_img_train = len(train_dataset)
+    args.nb_batches = len(train_dataloader)
+    args.nb_classes = train_dataset.nb_classes
+    args.percent_labeled = train_dataset.percent_labeled
 
-        loss_epoch = torch.tensor([0.], requires_grad=False)
-        sup_loss_epoch = torch.tensor([0.], requires_grad=False)
-        unsup_loss_epoch = torch.tensor([0.], requires_grad=False)
+    print('Number of train data: {}'.format(len(train_dataloader.dataset)))
 
-        if args.cuda:
-            loss_epoch = loss_epoch.cuda()
-            sup_loss_epoch = sup_loss_epoch.cuda()
-            unsup_loss_epoch = unsup_loss_epoch.cuda()
+    # Optimizer
+    if args.optimizer == 'Adam':
+        optimizer = Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999))
+    if args.optimizer == 'SGD':
+        optimizer = None  # TODO!
 
-        outputs = torch.zeros(args.nb_img_train, args.nb_classes).float()
-        w = torch.autograd.Variable(torch.FloatTensor([weight_unsupervised_loss]), requires_grad=False)
+    # Choosing training method
+    if args.method == 'TemporalEnsembling':
+        # Adding all hyperparameters to args
+        args.alpha = HYPERPARAMETERS[args.method]['alpha']
+        args.ramp_epochs = HYPERPARAMETERS[args.method]['ramp_epochs']
+        args.ramp_mult = HYPERPARAMETERS[args.method]['ramp_mult']
+        args.max_weight = HYPERPARAMETERS[args.method]['max_weight']
+        temporal_ensembling.training(train_dataloader, model, optimizer, args)
 
-        if cuda:
-            outputs = outputs.cuda()
-            w = w.cuda()
+    print('Training done!')
 
-        pbar = tqdm(enumerate(train_dataloader))
+    # Displaying the training report
+    if args.graph:
+        utils.training_report(args)
 
-        for batch_idx, (data, target) in pbar:
 
-            if cuda:
-                data, target = data.cuda(), target.cuda()
-
-            optimizer.zero_grad()
-
-            prediction = model.forward(data)
-            y_ema_batch = Variable(y_ema[batch_idx * args.batch_size: (batch_idx + 1) * args.batch_size], requires_grad=False)
-            loss, sup_loss, unsup_loss = criterion(prediction, y_ema_batch, target, w)
-
-            outputs[batch_idx * args.batch_size: (batch_idx + 1) * args.batch_size] = prediction.data.clone()
-
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            loss_epoch += loss.detach()
-            sup_loss_epoch += sup_loss.detach()
-            unsup_loss_epoch += unsup_loss.detach()
-
-            if batch_idx % args.log_interval == 0:
-                pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch,
-                                                                                                args.epochs,
-                                                                                                batch_idx * len(data),
-                                                                                                args.nb_img_train,
-                                                                                                100. * batch_idx / args.nb_batches,
-                                                                                                (loss_epoch / (batch_idx + 1)).item()))
-
-            if batch_idx + 1 >= args.nb_batches:
-                pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch,
-                                                                                                 args.epochs,
-                                                                                                 args.nb_img_train,
-                                                                                                 args.nb_img_train,
-                                                                                                 100.,
-                                                                                                 (loss_epoch / args.nb_batches).item()))
-
-        if epoch % args.TRAIN_STEP == 0:
-            torch.save({'epoch': epoch,
-                        'state_dict': model.state_dict()},
-                       os.path.join(args.logs_path_full, f'checkpoint_{epoch}.pth'))
-
-        return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
-
-    # Initialize the model weights and print its layout
-    networks.init_weights(model, init_type='normal')
-    networks.print_network(model)
-
-    # Initialize the temporal moving average for each target
-    y_ema = torch.zeros(args.nb_img_train, args.nb_classes).float()
-
-    if args.cuda:
-        model.cuda()
-        y_ema = y_ema.cuda()
-
-    # First model checkpoint
-    torch.save({'epoch': 0,
-                'state_dict': model.state_dict()},
-               os.path.join(args.logs_path_full, f'checkpoint_0.pth'))
-
-    # Criterion for calculating the loss of our model
-    criterion = criterions.TemporalLoss(args.cuda)
-
-    # Keeping track of each epoch losses
-    losses = []
-    sup_losses = []
-    unsup_losses = []
-
-    for epoch in range(1, args.epochs + 1):
-
-        weight_unsupervised_loss = get_weight(epoch, args)
-        output, loss, sup_loss, unsup_loss = train(train_dataloader, model, y_ema, optimizer, criterion, weight_unsupervised_loss, epoch, args.cuda)
-
-        losses.append(loss / int(args.nb_img_train / args.batch_size))
-        sup_losses.append(sup_loss / int(args.nb_img_train / args.batch_size))
-        unsup_losses.append(unsup_loss / int(args.nb_img_train / args.batch_size))
-
-        y_ema = update_moving_average(output, y_ema, epoch, args.alpha, args.cuda)
-
-    with open(os.path.join(args.graphs_path, 'loss.pkl'), 'wb') as f:
-        pickle.dump(losses, f)
-    with open(os.path.join(args.graphs_path, 'sup_loss.pkl'), 'wb') as f:
-        pickle.dump(sup_losses, f)
-    with open(os.path.join(args.graphs_path, 'unsup_loss.pkl'), 'wb') as f:
-        pickle.dump(unsup_losses, f)
+if __name__ == '__main__':
+    main()
