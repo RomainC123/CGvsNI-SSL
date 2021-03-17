@@ -4,3 +4,4 @@ Next week:
 - Make it work on CIFAR10
 - Test runs on CGvsNI
 - Redo the downloader for CG images
+- Add training id generator

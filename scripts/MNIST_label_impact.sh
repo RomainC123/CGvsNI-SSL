@@ -1,3 +1,5 @@
+cd ..
+
 cd utils
 cd MNIST
 python make_dataset.py --dataset_name MNIST_10 --nb_labels 0.1
