@@ -17,6 +17,7 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
+from tqdm import tqdm
 
 ################################################################################
 #   Argparse                                                                   #
@@ -38,10 +39,10 @@ parser.add_argument('--batch_size', type=int, default=100, help='input batch siz
 parser.add_argument('--shuffle', type=bool, default=True, help='shuffle bool for train dataset (default: True)')
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train (default: 300)')
 
-# Whether or not to train, show graphs and/or test
-parser.add_argument('--graph', dest='graph', action='store_true')
-parser.add_argument('--no-graph', dest='graph', action='store_false')
-parser.set_defaults(graph=False)
+# Hyperparamters optimization
+parser.add_argument('--param-search', dest='param_search', action='store_true')
+parser.add_argument('--no-param-search', dest='param_search', action='store_false')
+parser.set_defaults(param_search=False)
 
 # Hardware parameter
 parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
@@ -138,21 +139,35 @@ def main():
         optimizer = None  # TODO!
 
     # Choosing training method
-    if args.method == 'TemporalEnsembling':
-        # Adding all hyperparameters to args
-        args.alpha = HYPERPARAMETERS[args.method]['alpha']
-        args.ramp_epochs = HYPERPARAMETERS[args.method]['ramp_epochs']
-        args.ramp_mult = HYPERPARAMETERS[args.method]['ramp_mult']
-        args.max_weight = HYPERPARAMETERS[args.method]['max_weight']
-        temporal_ensembling.training(train_dataloader, model, optimizer, args)
+    if args.method in METHODS_IMPLEMENTED:
+        if args.param_search:
+            list_hyperparameters = get_hyperparameters_combinations(args.method)
+            param_id = 1
+
+            print(f'Testing {len(list_hyperparameters)} combinations')
+
+            for param_set in tqdm(list_hyperparameters):
+                args.hyperparameters = param_set
+
+                args.logs_path_temp = os.path.join(args.logs_path_full, str(param_id))
+                if not os.path.exists(args.logs_path_temp):
+                    os.makedirs(args.logs_path_temp)
+
+                args.graphs_path_temp = os.path.join(args.graphs_path_full, str(param_id))
+                if not os.path.exists(args.graphs_path_temp):
+                    os.makedirs(args.graphs_path_temp)
+
+                temporal_ensembling.training(train_dataloader, model, optimizer, False, args)
+                param_id += 1
+        else:
+            args.logs_path_temp = args.logs_path_full
+            args.graphs_path_temp = args.graphs_path_full
+            args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
+            METHODS_IMPLEMENTED[args.method]['training'](train_dataloader, model, optimizer, True, args)
     else:
         raise RuntimeError(f'{args.method}: Method not implemented')
 
     print('Training done!')
-
-    # Displaying the training report
-    if args.graph:
-        utils.training_report(args)
 
 
 if __name__ == '__main__':

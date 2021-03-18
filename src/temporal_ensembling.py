@@ -23,7 +23,7 @@ from tqdm import tqdm
 ################################################################################
 
 
-def training(train_dataloader, model, optimizer, args):
+def training(train_dataloader, model, optimizer, verbose, args):
     """
     Training function for temporal ensembling
     Takes in a dataloader, a model to train and an optimizer
@@ -33,28 +33,26 @@ def training(train_dataloader, model, optimizer, args):
 
     def get_weight(epoch, args):  # TODO
 
-        ramp_epochs = args.ramp_epochs
-        max_weight = args.max_weight
         percent_labeled = args.percent_labeled
 
-        max_weight_corr = max_weight * percent_labeled
+        max_weight_corr = args.hyperparameters['max_weight'] * percent_labeled
 
         if epoch == 1:
             return 0
-        elif epoch >= ramp_epochs:
+        elif epoch >= args.hyperparameters['ramp_epochs']:
             return max_weight_corr
         else:
-            return max_weight_corr * np.exp(-args.ramp_mult * (1 - epoch / ramp_epochs) ** 2)
+            return max_weight_corr * np.exp(-args.hyperparameters['ramp_mult'] * (1 - epoch / args.hyperparameters['ramp_epochs']) ** 2)
 
-    def update_moving_average(output, y_ema, epoch, alpha, cuda):
+    def update_moving_average(output, y_ema, epoch, args):
 
         new_y_ema = torch.zeros(y_ema.shape).float()
 
-        if cuda:
+        if args.cuda:
             new_y_ema = new_y_ema.cuda()
 
         for idx in range(len(y_ema)):
-            new_y_ema[idx] = (alpha * y_ema[idx] + (1 - alpha) * output[idx]) / (1 - alpha ** epoch)
+            new_y_ema[idx] = (args.hyperparameters['alpha'] * y_ema[idx] + (1 - args.hyperparameters['alpha']) * output[idx]) / (1 - args.hyperparameters['alpha'] ** epoch)
 
         return new_y_ema
 
@@ -78,7 +76,10 @@ def training(train_dataloader, model, optimizer, args):
             outputs = outputs.cuda()
             w = w.cuda()
 
-        pbar = tqdm(enumerate(train_dataloader))
+        if verbose:
+            pbar = tqdm(enumerate(train_dataloader))
+        else:
+            pbar = enumerate(train_dataloader)
 
         for batch_idx, (data, target) in pbar:
 
@@ -101,7 +102,7 @@ def training(train_dataloader, model, optimizer, args):
             sup_loss_epoch += sup_loss.detach()
             unsup_loss_epoch += unsup_loss.detach()
 
-            if batch_idx % args.log_interval == 0:
+            if batch_idx % args.log_interval == 0 and verbose:
                 pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch,
                                                                                                  args.epochs,
                                                                                                  batch_idx * len(data),
@@ -109,7 +110,7 @@ def training(train_dataloader, model, optimizer, args):
                                                                                                  100. * batch_idx / args.nb_batches,
                                                                                                  (loss_epoch / (batch_idx + 1)).item()))
 
-            if batch_idx + 1 >= args.nb_batches:
+            if batch_idx + 1 >= args.nb_batches and verbose:
                 pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch,
                                                                                                  args.epochs,
                                                                                                  args.nb_img_train,
@@ -120,13 +121,14 @@ def training(train_dataloader, model, optimizer, args):
         if epoch % args.TRAIN_STEP == 0:
             torch.save({'epoch': epoch,
                         'state_dict': model.state_dict()},
-                       os.path.join(args.logs_path_full, f'checkpoint_{epoch}.pth'))
+                       os.path.join(args.logs_path_temp, f'checkpoint_{epoch}.pth'))
 
         return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
     # Initialize the model weights and print its layout
-    networks.init_weights(model, init_type='normal')
-    networks.print_network(model)
+    networks.init_weights(model, verbose, init_type='normal')
+    if verbose:
+        networks.print_network(model)
 
     # Initialize the temporal moving average for each target
     y_ema = torch.zeros(args.nb_img_train, args.nb_classes).float()
@@ -138,7 +140,7 @@ def training(train_dataloader, model, optimizer, args):
     # First model checkpoint
     torch.save({'epoch': 0,
                 'state_dict': model.state_dict()},
-               os.path.join(args.logs_path_full, f'checkpoint_0.pth'))
+               os.path.join(args.logs_path_temp, 'checkpoint_0.pth'))
 
     # Criterion for calculating the loss of our model
     criterion = criterions.TemporalLoss(args.cuda)
@@ -157,13 +159,13 @@ def training(train_dataloader, model, optimizer, args):
         sup_losses.append(sup_loss / int(args.nb_img_train / args.batch_size))
         unsup_losses.append(unsup_loss / int(args.nb_img_train / args.batch_size))
 
-        y_ema = update_moving_average(output, y_ema, epoch, args.alpha, args.cuda)
+        y_ema = update_moving_average(output, y_ema, epoch, args)
 
-    with open(os.path.join(args.graphs_path_full, 'loss.pkl'), 'wb') as f:
+    with open(os.path.join(args.graphs_path_temp, 'loss.pkl'), 'wb') as f:
         pickle.dump(losses, f)
-    with open(os.path.join(args.graphs_path_full, 'sup_loss.pkl'), 'wb') as f:
+    with open(os.path.join(args.graphs_path_temp, 'sup_loss.pkl'), 'wb') as f:
         pickle.dump(sup_losses, f)
-    with open(os.path.join(args.graphs_path_full, 'unsup_loss.pkl'), 'wb') as f:
+    with open(os.path.join(args.graphs_path_temp, 'unsup_loss.pkl'), 'wb') as f:
         pickle.dump(unsup_losses, f)
 
 ################################################################################
@@ -171,7 +173,7 @@ def training(train_dataloader, model, optimizer, args):
 ################################################################################
 
 
-def testing(test_dataloader, model, args):
+def testing(test_dataloader, model, verbose, args):
     """
     Takes in a dataloader, a trained model
     Returns the prediction over the test set and the target labels over that same set

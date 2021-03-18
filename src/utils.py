@@ -66,12 +66,13 @@ def avg_classifications_reports(list_classification_reports):
     return pd.DataFrame(avg_report).transpose().to_string()
 
 
-def save_results(args):
+def save_results(param_id, args):
 
-    def save_hyperparams(args):
+    def save_hyperparams(param_id, args):
 
         params_str = ''
-        params = HYPERPARAMETERS[args.method]
+        params_combi = get_hyperparameters_combinations(args.method)
+        params = params_combi[int(param_id) - 1]
         for param in params.keys():
             params_str += param + ': ' + str(params[param]) + '\n'
 
@@ -92,7 +93,7 @@ def save_results(args):
         f.write(f'Training method: {args.method}\n')
         f.write(f'Training id: {args.train_id}\n')
         f.write('Method hyperparameters: \n')
-        f.write(save_hyperparams(args))
+        f.write(save_hyperparams(param_id, args))
         f.write('\n')
 
         f.write(args.full_classification_report)

@@ -1,8 +1,12 @@
 Next week:
 - Rework dataset class to implement overloading of a main class
+- Add hyperparam optimization routine
 - Test runs on CGvsNI
 - Make it work on CIFAR10
 - Understand the loss (supervised vs unsupervised, weights and all)
 - Check impact of nb_labels on training efficiency
 
 - Redo the downloader for CG images
+
+
+CLEAN UP THIS MESS
