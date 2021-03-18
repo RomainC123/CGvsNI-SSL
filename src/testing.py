@@ -18,6 +18,7 @@ from vars import *
 import torch
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
+from sklearn.metrics import classification_report
 
 from tqdm import tqdm
 
@@ -35,6 +36,7 @@ parser.add_argument('--method', type=str, help='type of training used')
 parser.add_argument('--train_id', type=int, help='index of the trained model to load for tests. In case of training, gets overwritten')
 
 # Testing paramaters
+parser.add_argument('--test_runs', type=int, default=2, help='number of test runs used to compute avg')
 parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
 
 # Whether or not to show examples of images with true labels and prediction
@@ -47,6 +49,9 @@ parser.add_argument('--log_interval', type=int, default=10, help='how many batch
 parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
 
 args = parser.parse_args()
+
+if args.img_mode == None:
+    raise RuntimeError('Please specify img_mode param')
 
 ################################################################################
 #   Cuda                                                                       #
@@ -117,8 +122,11 @@ def main():
     print('Number of test data: {}'.format(len(test_dataloader.dataset)))
 
     # Testing
-    args.pred_labels, args.real_labels = temporal_ensembling.testing(test_dataloader, model, args)
-
+    list_classification_reports = []
+    for i in range(args.test_runs):
+        pred_labels, real_labels = temporal_ensembling.testing(test_dataloader, model, args)
+        list_classification_reports.append(classification_report(real_labels, pred_labels, digits=3, output_dict=True))
+    args.full_classification_report = utils.avg_classifications_reports(list_classification_reports)
     # Saving all results in a .txt file in test_results/
     utils.save_results(args)
 

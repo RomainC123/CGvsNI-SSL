@@ -55,6 +55,9 @@ args.logs_path = os.path.join(LOGS_PATH, args.data, args.dataset_name)
 if not os.path.exists(args.logs_path):
     os.makedirs(args.logs_path)
 
+if args.img_mode == None:
+    raise RuntimeError('Please specify img_mode param')
+
 ################################################################################
 #   Cuda                                                                       #
 ################################################################################
@@ -96,6 +99,8 @@ def main():
     # Getting training id, to create paths
     args.train_id = get_train_id(args)
 
+    print('Train id: ', args.train_id)
+
     # Creating all relevant paths
     args.logs_path_full = os.path.join(args.logs_path, args.method + '_' + str(args.train_id))
     if not os.path.exists(args.logs_path_full):
@@ -114,8 +119,6 @@ def main():
         model = MODELS[args.data]
     else:
         raise RuntimeError('Data type not implemented')
-
-    print('Image mode: ', args.img_mode)
 
     # DataLoader object
     train_dataloader = DataLoader(train_dataset, **kwargs)
@@ -142,6 +145,8 @@ def main():
         args.ramp_mult = HYPERPARAMETERS[args.method]['ramp_mult']
         args.max_weight = HYPERPARAMETERS[args.method]['max_weight']
         temporal_ensembling.training(train_dataloader, model, optimizer, args)
+    else:
+        raise RuntimeError(f'{args.method}: Method not implemented')
 
     print('Training done!')
 

@@ -41,6 +41,9 @@ parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
 
 args = parser.parse_args()
 
+if args.img_mode == None:
+    raise RuntimeError('Please specify img_mode param')
+
 ################################################################################
 #   Cuda                                                                       #
 ################################################################################
