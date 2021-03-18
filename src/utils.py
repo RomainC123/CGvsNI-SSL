@@ -3,6 +3,7 @@
 ################################################################################
 
 import os
+import pandas as pd
 
 from vars import *
 
@@ -29,6 +30,40 @@ def get_latest_log(logs_path):
             latest_log_id = i
 
     return latest_log
+
+
+def avg_classifications_reports(list_classification_reports):
+
+    avg_report = {}
+    nb_reports = len(list_classification_reports)
+
+    for report in list_classification_reports:
+        for key in report.keys():
+            if isinstance(report[key], dict):
+                if key not in avg_report.keys():
+                    avg_report[key] = {}
+                for sub_key in report[key].keys():
+                    if sub_key == 'support' and sub_key not in avg_report[key].keys():
+                        avg_report[key][sub_key] = report[key][sub_key]
+                    else:
+                        if sub_key not in avg_report[key].keys():
+                            avg_report[key][sub_key] = report[key][sub_key]
+                        else:
+                            avg_report[key][sub_key] += report[key][sub_key]
+            else:
+                if key not in avg_report.keys():
+                    avg_report[key] = 0
+                avg_report[key] += report[key]
+
+    for key in avg_report.keys():
+        if isinstance(avg_report[key], dict):
+            for sub_key in avg_report[key]:
+                if sub_key != 'support':
+                    avg_report[key][sub_key] /= nb_reports
+        else:
+            avg_report[key] /= nb_reports
+
+    return pd.DataFrame(avg_report).transpose().to_string()
 
 
 def save_results(args):
@@ -60,5 +95,5 @@ def save_results(args):
         f.write(save_hyperparams(args))
         f.write('\n')
 
-        f.write(classification_report(args.real_labels, args.pred_labels, digits=3))
+        f.write(args.full_classification_report)
         f.write('\n-----------------------------------------------------------------------------')
