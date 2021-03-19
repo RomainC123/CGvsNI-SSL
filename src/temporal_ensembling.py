@@ -94,7 +94,6 @@ def training(train_dataloader, model, optimizer, verbose, args):
 
             outputs[batch_idx * args.batch_size: (batch_idx + 1) * args.batch_size] = prediction.data.clone()
 
-            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 

@@ -14,6 +14,61 @@ from sklearn.metrics import classification_report
 ################################################################################
 
 
+def get_train_id():
+    """
+    Grabs a training id
+    """
+    list_full_names = [folder_name.split('_') for folder_name in os.listdir(TRAINED_MODELS_PATH)]
+    list_idx_taken = []
+    for splitted_name in list_full_names:
+        list_idx_taken.append(int(splitted_name[-1]))
+
+    idx = 1
+    while idx in list_idx_taken:
+        idx += 1
+    return str(idx)
+
+
+def get_trained_model_from_id(train_id):
+
+    folder_list = os.listdir(TRAINED_MODELS_PATH)
+    list_ids = [folder_name.split('_')[-1] for folder_name in folder_list]
+    for i in range(len(folder_list)):
+        if int(list_ids[i]) == train_id:
+            return folder_list[i]
+    raise RuntimeError(f'Train id not found: {train_id}')
+
+
+def get_train_info(nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer):
+
+    def get_optimizer_info(optimizer):
+        params_dict = optimizer.state_dict()['param_groups'][0]
+        str_optim = f'Optimizer: {type(optimizer).__name__}\n'
+        str_optim += f"Learning rate: {params_dict['lr']}\n"
+        str_optim += f"Betas: {params_dict['betas']}\n"
+        return str_optim
+
+    info_string = f'Train_id: {train_id}\n'
+    info_string += f'Number of training images: {nb_img_train}\n'
+    info_string += f'Number of classes: {nb_classes}\n'
+    info_string += 'Percent of labeled samples: {:.1f}\n'.format(percent_labeled * 100)
+    info_string += f'Epochs: {epochs}\n'
+    info_string += f'Batch size: {batch_size}\n'
+    info_string += f'Number of batches: {nb_batches}\n'
+    info_string += f'Shuffle train set: {shuffle}\n'
+    info_string += method.get_info()
+    info_string += get_optimizer_info(optimizer)
+
+    return info_string
+
+
+def get_nb_parameters(model):
+    num_params = 0
+    for param in model.parameters():
+        num_params += param.numel()
+    return f'Trainable paramaters: {num_params}\n'
+
+
 def get_latest_log(logs_path):
 
     list_logs = os.listdir(logs_path)

@@ -2,7 +2,6 @@ import os
 import pathlib
 import itertools
 
-import temporal_ensembling
 import datasets
 import models
 
@@ -14,19 +13,11 @@ ROOT_PATH = pathlib.Path(__file__).resolve().parents[1].absolute()
 
 DATASETS_PATH = os.path.join(ROOT_PATH, 'datasets')  # dataset.csv files path
 if not os.path.exists(DATASETS_PATH):
-    os.makedirs(DATASETS_PATH)
+    raise RuntimeError('No dataset folder found, please create it')
 
-GRAPHS_PATH = os.path.join(ROOT_PATH, 'graphs')  # Graphs path
-if not os.path.exists(GRAPHS_PATH):
-    os.makedirs(GRAPHS_PATH)
-
-LOGS_PATH = os.path.join(ROOT_PATH, 'logs')  # Logs path
-if not os.path.exists(LOGS_PATH):
-    os.makedirs(LOGS_PATH)
-
-TEST_RESULTS_PATH = os.path.join(ROOT_PATH, 'test_results')
-if not os.path.exists(TEST_RESULTS_PATH):
-    os.makedirs(TEST_RESULTS_PATH)
+TRAINED_MODELS_PATH = os.path.join(ROOT_PATH, 'trained_models')  # Graphs path
+if not os.path.exists(TRAINED_MODELS_PATH):
+    os.makedirs(TRAINED_MODELS_PATH)
 
 DATASETS_IMPLEMENTED = {
     'MNIST': datasets.DatasetMNIST,
@@ -34,7 +25,7 @@ DATASETS_IMPLEMENTED = {
     'CGvsNI': None
 }
 
-TRANSFORMS_TRAIN = {
+TRAIN_TRANSFORMS = {
     'MNIST': transforms.Compose([transforms.ToTensor(),
                                  transforms.Normalize((0.5), (0.5))]),
     'CIFAR10': transforms.Compose([transforms.ToTensor(),
@@ -42,7 +33,7 @@ TRANSFORMS_TRAIN = {
     'CGvsNI': None
 }
 
-TRANSFORMS_TEST = {
+TEST_TRANSFORMS = {
     'MNIST': transforms.Compose([transforms.ToTensor(),
                                  transforms.Normalize((0.5), (0.5))]),
     'CIFAR10': transforms.Compose([transforms.ToTensor(),
@@ -54,13 +45,6 @@ MODELS = {
     'MNIST': models.MNISTModel(),
     'CIFAR10': models.CIFAR10Model(),
     'CGvsNI': None
-}
-
-METHODS_IMPLEMENTED = {
-    'TemporalEnsembling': {
-        'training': temporal_ensembling.training,
-        'testing': temporal_ensembling.testing
-    }
 }
 
 HYPERPARAMETERS_DEFAULT = {
@@ -80,6 +64,7 @@ HYPERPARAMETERS_SEARCH = {
         'ramp_mult': [2, 5]
     }
 }
+
 
 def get_hyperparameters_combinations(method):
 

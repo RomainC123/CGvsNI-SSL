@@ -67,8 +67,6 @@ def weights_init_bn(m):
 
 
 def init_weights(net, verbose, init_type='normal'):
-    if verbose:
-        print('initialization method [%s]' % init_type)
     if init_type == 'normal':
         net.apply(weights_init_normal)
     elif init_type == 'xavier':
@@ -80,7 +78,8 @@ def init_weights(net, verbose, init_type='normal'):
     elif init_type == 'bn':
         net.apply(weights_init_bn)
     else:
-        raise NotImplementedError('initialization method [%s] is not implemented' % init_type)
+        raise NotImplementedError('Initialization method [%s] is not implemented' % init_type)
+    return init_type.capitalize()
 
 
 def get_norm_layer(norm_type='instance'):
@@ -91,7 +90,7 @@ def get_norm_layer(norm_type='instance'):
     elif norm_type == 'none':
         norm_layer = None
     else:
-        raise NotImplementedError('normalization layer [%s] is not found' % norm_type)
+        raise NotImplementedError('Normalization layer [%s] is not found' % norm_type)
     return norm_layer
 
 
@@ -100,4 +99,4 @@ def print_network(net):
     for param in net.parameters():
         num_params += param.numel()
     print(net)
-    print('Total number of parameters: %d' % num_params)
+    print(f'Total number of parameters: {num_params}')
