@@ -32,8 +32,8 @@ parser.add_argument('--train', dest='train', action='store_true')
 parser.set_defaults(train=False)
 parser.add_argument('--test', dest='test', action='store_true')
 parser.set_defaults(test=False)
-parser.add_argument('--end-to-end', dest='end_to_end', action='store_true')
-parser.set_defaults(end_to_end=False)
+parser.add_argument('--params-optim', dest='params_optim', action='store_true')
+parser.set_defaults(params_optim=False)
 
 # Data to use
 parser.add_argument('--data', type=str, help='data to use')
@@ -49,7 +49,7 @@ parser.add_argument('--batch_size', type=int, default=100, help='input batch siz
 parser.add_argument('--shuffle', type=bool, default=True, help='shuffle bool for train dataset (default: True)')
 
 # Testing paramaters
-parser.add_argument('--test_runs', type=int, default=2, help='number of test runs used to compute avg')
+parser.add_argument('--test_runs', type=int, default=3, help='number of test runs used to compute avg')
 parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
 
 # Hardware parameter
@@ -58,6 +58,8 @@ parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
 
 parser.add_argument('--no-verbose', dest='verbose', action='store_false')
 parser.set_defaults(verbose=True)
+parser.add_argument('--no-cuda', dest='no_cuda', action='store_true')
+parser.set_defaults(no_cuda=False)
 
 args = parser.parse_args()
 
@@ -86,6 +88,17 @@ else:
 def main():
 
     def train(args):
+        """
+        Trains one model
+        --------------------------------------
+        Inputs:
+        - data type and dataset_name
+        - method and hyperparamters
+        - optimizer
+        Outputs:
+        - saved model logs in logs/
+        - loss graphs in graphs/
+        """
 
         # Creating Dataloader
         if args.data in DATASETS_IMPLEMENTED.keys():
@@ -141,6 +154,15 @@ def main():
                      args.trained_model_path, args.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
 
     def test(args):
+        """
+        Runs a set number of tests on a given trained model
+        --------------------------------------
+        Inputs:
+        - data type and dataset_name
+        - train id
+        Outputs:
+        - classification report and metrics in results.txt
+        """
 
         # Creating Dataloader
         if args.data in DATASETS_IMPLEMENTED.keys():
@@ -168,8 +190,10 @@ def main():
         test_method = methods.TestingClass(args.verbose, args.cuda)
 
         report = test_method.test(test_dataloader, model, args.test_runs)
+        report = f'Number of test runs: {args.test_runs}\n' + report
 
-        print(report)
+        with open(os.path.join(args.trained_model_path, 'results.txt'), 'w+') as f:
+            f.write(report)
 
 # ------------------------------------------------------------------------------
 
@@ -185,24 +209,29 @@ def main():
 
     args.trained_model_path = os.path.join(TRAINED_MODELS_PATH, args.full_name)
 
-    header = f'Data: {args.data}\n'
-    header += f'Dataset name: {args.dataset_name}\n'
-    header += f'Image mode: {args.img_mode}'
+    if args.train or args.test or args.params_optim:
 
-    print('')
-    print(header)
-    print('Cuda: ', args.cuda)
-    print('-----------------------------------------------')
+        header = f'Data: {args.data}\n'
+        header += f'Dataset name: {args.dataset_name}\n'
+        header += f'Image mode: {args.img_mode}'
 
-    header += '\n-----------------------------------------------\n'
+        print('')
+        print(header)
+        print('Cuda: ', args.cuda)
+        print('-----------------------------------------------')
 
-    if not os.path.exists(args.trained_model_path):
-        os.makedirs(args.trained_model_path)
+        header += '\n-----------------------------------------------\n'
 
-    with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
-        f.write(header)
+        if not os.path.exists(args.trained_model_path):
+            os.makedirs(args.trained_model_path)
 
-    if args.train:
+        with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
+            f.write(header)
+
+    else:
+        print('Please specify the task you want to run')
+
+    if args.train:  # Trains one model
 
         print('Starting training...')
 
@@ -211,13 +240,21 @@ def main():
 
         print('Training done!')
 
-    if args.test:
+    if args.test:  # Tests one trained model
 
         print('Running tests...')
 
         test(args)
 
         print('Tests done!')
+
+    if args.params_optim:  # From a number of hyperparamters, returns the set that goves the best performance
+
+        print('Hyperparamters optimization...')
+
+        # Sombre invocation
+
+        print('Search done!')
 
 
 if __name__ == '__main__':

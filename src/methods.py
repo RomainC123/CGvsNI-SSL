@@ -5,7 +5,7 @@
 import os
 import pickle
 import numpy as np
-from vars import TRAIN_STEP
+from vars import *
 from tqdm import tqdm
 
 import torch
@@ -149,6 +149,11 @@ class SSLMethodClass:
                 torch.save({'epoch': epoch_id,
                             'state_dict': model.state_dict()},
                            os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
+
+        if epoch_id % TRAIN_STEP != 0:
+            torch.save({'epoch': epoch_id,
+                        'state_dict': model.state_dict()},
+                       os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
 
         graphs_path = os.path.join(trained_model_path, 'graphs')
         if not os.path.exists(graphs_path):

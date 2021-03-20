@@ -89,6 +89,7 @@ def get_latest_log(logs_path):
 
 def avg_classifications_reports(list_classification_reports):
 
+    accuracy = 0
     avg_report = {}
     nb_reports = len(list_classification_reports)
 
@@ -105,51 +106,19 @@ def avg_classifications_reports(list_classification_reports):
                             avg_report[key][sub_key] = report[key][sub_key]
                         else:
                             avg_report[key][sub_key] += report[key][sub_key]
-            else:
-                if key not in avg_report.keys():
-                    avg_report[key] = 0
-                avg_report[key] += report[key]
+            if key == 'accuracy':
+                accuracy += report[key]
 
     for key in avg_report.keys():
         if isinstance(avg_report[key], dict):
             for sub_key in avg_report[key]:
-                if sub_key != 'support':
-                    avg_report[key][sub_key] /= nb_reports
-        else:
-            avg_report[key] /= nb_reports
+                avg_report[key][sub_key] /= nb_reports
 
-    return pd.DataFrame(avg_report).transpose().to_string()
+    df_report = pd.DataFrame(avg_report).transpose()
+    df_report['precision'] = df_report['precision'].apply(lambda x: round(x, 3))
+    df_report['recall'] = df_report['recall'].apply(lambda x: round(x, 3))
+    df_report['f1-score'] = df_report['f1-score'].apply(lambda x: round(x, 3))
+    df_report['support'] = df_report['support'].astype(int)
+    report_str = df_report.to_string() + '\naccuracy          {:.3f}'.format(accuracy / nb_reports)
 
-
-def save_results(param_id, args):
-
-    def save_hyperparams(param_id, args):
-
-        params_str = ''
-        params_combi = get_hyperparameters_combinations(args.method)
-        params = params_combi[int(param_id) - 1]
-        for param in params.keys():
-            params_str += param + ': ' + str(params[param]) + '\n'
-
-        return params_str
-
-    spath = os.path.join(args.results_path, 'classification_report.txt')
-    if not os.path.exists(spath):
-        with open(spath, 'w+') as f:
-            f.write(f'Data type:  {args.data}\n')
-            f.write(f'Dataset name: {args.dataset_name}\n')
-            f.write(f'Train size: {args.nb_train}\n')
-            f.write('Percent labeled: {:.1f}%\n'.format(args.percent_labeled * 100))
-            f.write(f'Test size: {args.nb_test}\n')
-            f.write('\n-----------------------------------------------------------------------------')
-
-    with open(spath, 'a') as f:
-        f.write('\n')
-        f.write(f'Training method: {args.method}\n')
-        f.write(f'Training id: {args.train_id}\n')
-        f.write('Method hyperparameters: \n')
-        f.write(save_hyperparams(param_id, args))
-        f.write('\n')
-
-        f.write(args.full_classification_report)
-        f.write('\n-----------------------------------------------------------------------------')
+    return report_str
