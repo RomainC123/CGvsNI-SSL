@@ -260,8 +260,11 @@ class TestingClass:
     def test(self, test_dataloader, model, nb_runs):
 
         list_classification_reports = []
+
         for i in tqdm(range(nb_runs)):
             pred_labels, real_labels = self.test_run(test_dataloader, model)
             list_classification_reports.append(classification_report(real_labels, pred_labels, digits=3, output_dict=True))
+            
         full_classification_report = utils.avg_classifications_reports(list_classification_reports)
+
         return full_classification_report

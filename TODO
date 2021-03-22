@@ -9,4 +9,10 @@ Next week:
 - Redo the downloader for CG images
 
 
-CLEAN UP THIS MESS
+
+FONCTIONALITÉ :
+  Test sur only les samples supervisées puis ensuite tout le dataset (voir l'amélioration (ou non) causée par l'ajout des samples non labelisées)
+  Performances sur le train ?
+  Wesh je peux pas évaluer ça
+  Dataset : Name, True label, Masked or not label, Test
+Normaliser le display (pas la loss calculée)
