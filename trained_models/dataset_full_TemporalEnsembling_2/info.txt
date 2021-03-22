@@ -1,0 +1,4 @@
+Data: MNIST
+Dataset name: dataset_full
+Image mode: L
+-----------------------------------------------

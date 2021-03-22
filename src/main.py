@@ -34,6 +34,8 @@ parser.add_argument('--test', dest='test', action='store_true')
 parser.set_defaults(test=False)
 parser.add_argument('--params-optim', dest='params_optim', action='store_true')
 parser.set_defaults(params_optim=False)
+parser.add_argument('--supervised-vs-full', dest='supervised_vs_full', action='store_true')
+parser.set_defaults(supervised_vs_full=False)
 
 # Data to use
 parser.add_argument('--data', type=str, help='data to use')
@@ -256,6 +258,8 @@ def main():
 
         print('Search done!')
 
+    if args.supervised_vs_full:
+        pass
 
 if __name__ == '__main__':
     main()
