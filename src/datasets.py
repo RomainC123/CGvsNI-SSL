@@ -37,15 +37,13 @@ class DatasetSSL(data.Dataset):
         if not test:
             df_imgs = df_imgs.loc[~df_imgs['Test']]
             if mode == 'only_supervised':
-                df_imgs = df_imgs.loc[df_imgs['masked_label'] != -1][['Name', 'masked_label']]
+                df_imgs = df_imgs.loc[df_imgs['Train label'] != -1][['Name', 'Train label']]
             else:
-                df_imgs = df_imgs[['Name', 'masked_label']]
+                df_imgs = df_imgs[['Name', 'Train label']]
         else:
-            df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'real_label']]
+            df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Real label']]
 
-        df_imgs.rename({df_imgs.columns[0]: 'Name', df_imgs.columns[1]: 'Label'}, inplace=True)
-        print(df_imgs)
-        print(bleh)
+        df_imgs.rename(columns = {df_imgs.columns[0]: 'Name', df_imgs.columns[1]: 'Label'}, inplace=True)
         return df_imgs.reset_index(drop=True)
 
     def get_info(self, df_imgs, idx):

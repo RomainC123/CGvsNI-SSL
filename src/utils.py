@@ -14,14 +14,14 @@ from sklearn.metrics import classification_report
 ################################################################################
 
 
-def get_train_id():
+def get_train_id(fpath):
     """
     Grabs a training id
     """
-    list_full_names = [folder_name.split('_') for folder_name in os.listdir(TRAINED_MODELS_PATH)]
+    list_full_names = [folder_name.split('_') for folder_name in os.listdir(fpath)]
     list_idx_taken = []
     for splitted_name in list_full_names:
-        list_idx_taken.append(int(splitted_name[-1]))
+        list_idx_taken.append(int(splitted_name[0]))
 
     idx = 1
     while idx in list_idx_taken:
@@ -32,7 +32,7 @@ def get_train_id():
 def get_trained_model_from_id(train_id):
 
     folder_list = os.listdir(TRAINED_MODELS_PATH)
-    list_ids = [folder_name.split('_')[-1] for folder_name in folder_list]
+    list_ids = [folder_name.split('_')[0] for folder_name in folder_list]
     for i in range(len(folder_list)):
         if int(list_ids[i]) == train_id:
             return folder_list[i]
@@ -122,3 +122,13 @@ def avg_classifications_reports(list_classification_reports):
     report_str = df_report.to_string() + '\naccuracy          {:.3f}'.format(accuracy / nb_reports)
 
     return report_str
+
+
+def get_hyperparameters_combinations(method):
+
+    hyperparameters = HYPERPARAMETERS_SEARCH[method]
+
+    keys, values = zip(*hyperparameters.items())
+    permutations_dicts = [dict(zip(keys, v)) for v in itertools.product(*values)]
+
+    return permutations_dicts

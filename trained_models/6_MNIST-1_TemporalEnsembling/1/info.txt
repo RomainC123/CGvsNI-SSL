@@ -1,20 +1,20 @@
 Data: MNIST
-Dataset name: dataset_full
+Dataset name: MNIST-1
 Image mode: L
 -----------------------------------------------
-Train_id: 2
+Train_id: 1
 Number of training images: 56000
 Number of classes: 10
-Percent of labeled samples: 10.0
+Percent of labeled samples: 1.0
 Epochs: 10
 Batch size: 100
 Number of batches: 560
 Shuffle train set: True
 Method: Temporal Ensembling
 Alpha: 0.6
-Max weight (corrected with percent labels): 3.0
-Ramp epochs: 10
-Ramp mult: 5
+Max weight (corrected with percent labels): 0.2
+Ramp epochs: 5
+Ramp mult: 2
 Optimizer: Adam
 Learning rate: 0.001
 Betas: (0.9, 0.999)

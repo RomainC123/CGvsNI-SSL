@@ -4,10 +4,13 @@
 
 import os
 import argparse
+from distutils.dir_util import copy_tree
 from tqdm import tqdm
 from vars import *
 
 import methods
+import datasets
+import models
 import utils
 import networks
 
@@ -16,9 +19,25 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
+################################################################################
+#   Functionalities                                                            #
+################################################################################
+
 METHODS_IMPLEMENTED = {
     'TemporalEnsembling': methods.TemporalEnsemblingClass,
     'Yolo': None
+}
+
+DATASETS_IMPLEMENTED = {
+    'MNIST': datasets.DatasetMNIST,
+    'CIFAR10': datasets.DatasetCIFAR10,
+    'CGvsNI': None
+}
+
+MODELS = {
+    'MNIST': models.MNISTModel(),
+    'CIFAR10': models.CIFAR10Model(),
+    'CGvsNI': None
 }
 
 ################################################################################
@@ -53,6 +72,7 @@ parser.add_argument('--shuffle', type=bool, default=True, help='shuffle bool for
 # Testing paramaters
 parser.add_argument('--test_runs', type=int, default=3, help='number of test runs used to compute avg')
 parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
+parser.add_argument('--decisive_metric', type=str, default='accuracy', help='deciding metric to use in order to choose optimal model')
 
 # Hardware parameter
 parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
@@ -102,10 +122,25 @@ def main():
         - loss graphs in graphs/
         """
 
+        header = f'Data: {args.data}\n'
+        header += f'Dataset name: {args.dataset_name}\n'
+        header += f'Image mode: {args.img_mode}'
+
+        print('')
+        print(header)
+        print('Cuda: ', args.cuda)
+        print('-----------------------------------------------')
+
+        header += '\n-----------------------------------------------\n'
+
+        with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
+            f.write(header)
+
         # Creating Dataloader
         if args.data in DATASETS_IMPLEMENTED.keys():
             train_dataset_transforms = TRAIN_TRANSFORMS[args.data]
-            train_dataset = DATASETS_IMPLEMENTED[args.data](args,  # Change this
+            train_dataset = DATASETS_IMPLEMENTED[args.data](args,
+                                                            'default',
                                                             False,
                                                             transform=train_dataset_transforms)
             train_dataloader = DataLoader(train_dataset, **kwargs_train)
@@ -149,7 +184,7 @@ def main():
             print(f'Initialisation mode: {init_mode}')
             print(utils.get_nb_parameters(model))
 
-        with open(os.path.join(args.trained_model_path, 'info.txt'), 'a+') as f:
+        with open(os.path.join(args.trained_model_path, 'info.txt'), 'a') as f:
             f.write(train_info)
 
         method.train(train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, args.batch_size, args.epochs,
@@ -169,7 +204,8 @@ def main():
         # Creating Dataloader
         if args.data in DATASETS_IMPLEMENTED.keys():
             test_dataset_transforms = TEST_TRANSFORMS[args.data]
-            test_dataset = DATASETS_IMPLEMENTED[args.data](args,  # Change this
+            test_dataset = DATASETS_IMPLEMENTED[args.data](args,
+                                                           'default',
                                                            True,
                                                            transform=test_dataset_transforms)
             test_dataloader = DataLoader(test_dataset, **kwargs_test)
@@ -190,18 +226,20 @@ def main():
 
         # Creating testing class
         test_method = methods.TestingClass(args.verbose, args.cuda)
+        report, metrics = test_method.test(test_dataloader, model, args.test_runs)
 
-        report = test_method.test(test_dataloader, model, args.test_runs)
         report = f'Number of test runs: {args.test_runs}\n' + report
 
         with open(os.path.join(args.trained_model_path, 'results.txt'), 'w+') as f:
             f.write(report)
 
+        return metrics
+
 # ------------------------------------------------------------------------------
 
     if not args.test:
-        args.train_id = utils.get_train_id()
-        args.full_name = args.dataset_name + '_' + args.method + '_' + args.train_id
+        args.train_id = utils.get_train_id(TRAINED_MODELS_PATH)
+        args.full_name = args.train_id + '_' + args.dataset_name + '_' + args.method
 
     else:
         if args.train_id != None:
@@ -210,28 +248,8 @@ def main():
             raise RuntimeError('Please provide a train_id in order to run tests')
 
     args.trained_model_path = os.path.join(TRAINED_MODELS_PATH, args.full_name)
-
-    if args.train or args.test or args.params_optim:
-
-        header = f'Data: {args.data}\n'
-        header += f'Dataset name: {args.dataset_name}\n'
-        header += f'Image mode: {args.img_mode}'
-
-        print('')
-        print(header)
-        print('Cuda: ', args.cuda)
-        print('-----------------------------------------------')
-
-        header += '\n-----------------------------------------------\n'
-
-        if not os.path.exists(args.trained_model_path):
-            os.makedirs(args.trained_model_path)
-
-        with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
-            f.write(header)
-
-    else:
-        print('Please specify the task you want to run')
+    if not os.path.exists(args.trained_model_path):
+        os.makedirs(args.trained_model_path)
 
     if args.train:  # Trains one model
 
@@ -246,7 +264,7 @@ def main():
 
         print('Running tests...')
 
-        test(args)
+        test(args)  # Here, the function returns something, but it's not usefull
 
         print('Tests done!')
 
@@ -254,12 +272,45 @@ def main():
 
         print('Hyperparamters optimization...')
 
-        # Sombre invocation
+        list_hyperparameters = utils.get_hyperparameters_combinations(args.method)
 
+        main_train_id = args.train_id
+        main_full_name = args.full_name
+        main_trained_model_path = args.trained_model_path
+
+        best_model_id = 0
+        best_model_metrics = {}
+        for metric_funct in METRICS.keys():
+            best_model_metrics[metric_funct] = 0.
+
+        for params in list_hyperparameters:
+            args.train_id = utils.get_train_id(main_trained_model_path)
+            args.full_name = args.train_id
+            args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
+            if not os.path.exists(args.trained_model_path):
+                os.makedirs(args.trained_model_path)
+
+            args.hyperparameters = params
+
+            train(args)
+            model_metrics = test(args)
+
+            if model_metrics[args.decisive_metric] > best_model_metrics[args.decisive_metric]:
+                best_model_id = args.train_id
+                best_model_metrics = model_metrics
+
+        args.train_id = main_train_id
+        args.full_name = main_full_name
+        args.trained_model_path = main_trained_model_path
+
+        copy_tree(os.path.join(args.trained_model_path, best_model_id), os.path.join(args.trained_model_path, 'best-model'))
+
+        print(f'Best model id: {best_model_id}')
         print('Search done!')
 
     if args.supervised_vs_full:
         pass
+
 
 if __name__ == '__main__':
     main()
