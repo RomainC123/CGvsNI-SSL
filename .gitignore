@@ -131,11 +131,6 @@ dmypy.json
 # Test notebooks
 *.ipynb
 
-# datasets and checkpoints
-*.csv
-*.pkl
-*.pth
-
 # images
 *.jpeg
 *.jpg
