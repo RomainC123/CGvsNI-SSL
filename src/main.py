@@ -19,6 +19,9 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
+import warnings
+warnings.filterwarnings('ignore')
+
 ################################################################################
 #   Functionalities                                                            #
 ################################################################################
@@ -51,6 +54,8 @@ parser.add_argument('--train', dest='train', action='store_true')
 parser.set_defaults(train=False)
 parser.add_argument('--test', dest='test', action='store_true')
 parser.set_defaults(test=False)
+parser.add_argument('--train-test', dest='train_test', action='store_true')
+parser.set_defaults(train_test=False)
 parser.add_argument('--params-optim', dest='params_optim', action='store_true')
 parser.set_defaults(params_optim=False)
 parser.add_argument('--supervised-vs-full', dest='supervised_vs_full', action='store_true')
@@ -238,7 +243,8 @@ def main():
 # ------------------------------------------------------------------------------
 
     if not args.test:
-        args.train_id = utils.get_train_id(TRAINED_MODELS_PATH)
+        if args.train_id == None:
+            args.train_id = utils.get_train_id(TRAINED_MODELS_PATH)
         args.full_name = args.train_id + '_' + args.dataset_name + '_' + args.method
 
     else:
@@ -268,11 +274,34 @@ def main():
 
         print('Tests done!')
 
+    if args.train_test:  # Tests one trained model
+
+        print('Starting training...')
+
+        args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
+        train(args)
+
+        print('Running tests...')
+
+        test(args)
+
+        print('Tests done!')
+
     if args.params_optim:  # From a number of hyperparamters, returns the set that goves the best performance
 
         print('Hyperparamters optimization...')
 
         list_hyperparameters = utils.get_hyperparameters_combinations(args.method)
+        print(f'Testing {len(list_hyperparameters)} combinations')
+
+        header = f'Data: {args.data}\n'
+        header += f'Dataset name: {args.dataset_name}\n'
+        header += f'Image mode: {args.img_mode}'
+
+        print('')
+        print(header)
+        print('Cuda: ', args.cuda)
+        print('-----------------------------------------------')
 
         main_train_id = args.train_id
         main_full_name = args.full_name

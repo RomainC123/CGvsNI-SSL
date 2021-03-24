@@ -111,7 +111,16 @@ class DatasetSSL(data.Dataset):
 
 
 class DatasetCIFAR10(DatasetSSL):
-    pass
+    
+    def img_loader(self, path, mode):
+        # Loads the image from its path to a PIL object
+
+        with open(path, 'rb') as f:
+            img = Image.open(f)
+            if mode == 'L':
+                return img.convert('L')  # convert image to grey
+            elif mode == 'RGB':
+                return img.convert('RGB')  # convert image to rgb image
 
 
 class DatasetMNIST(DatasetSSL):
