@@ -18,7 +18,13 @@ if not os.path.exists(RAW_PATH):
     os.makedirs(RAW_PATH)
 
 print('Downloading CIFAR...')
-(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
+try:
+    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+except:
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context
+    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
 print(X_train[0].shape)
 

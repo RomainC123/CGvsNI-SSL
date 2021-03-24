@@ -13,12 +13,14 @@ if not os.path.exists(RAW_PATH):
     os.makedirs(RAW_PATH)
 
 print('Downloading MNIST...')
+
 try:
     mnist = fetch_openml('mnist_784', as_frame=True)
 except:
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
     mnist = fetch_openml('mnist_784', as_frame=True)
+    
 X, y = mnist["data"], mnist["target"]
 y = pd.DataFrame(y)
 
