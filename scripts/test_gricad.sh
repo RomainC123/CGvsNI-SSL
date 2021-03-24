@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #OAR -n Test_Gricad
 #OAR -t gpu
 #OAR -l /nodes=1/gpudevice=1,walltime=0:01:00
