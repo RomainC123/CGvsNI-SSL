@@ -13,7 +13,12 @@ if not os.path.exists(RAW_PATH):
     os.makedirs(RAW_PATH)
 
 print('Downloading MNIST...')
-mnist = fetch_openml('mnist_784', as_frame=True)
+try:
+    mnist = fetch_openml('mnist_784', as_frame=True)
+except:
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context
+    mnist = fetch_openml('mnist_784', as_frame=True)
 X, y = mnist["data"], mnist["target"]
 y = pd.DataFrame(y)
 
@@ -23,7 +28,7 @@ print('Creating images...')
 for i in tqdm(range(len(X))):
     im = Image.fromarray(X.iloc[i].values.reshape(28, 28))
     im = im.convert("L")
-    im.save(os.path.join(RAW_PATH, f'mnist_784_{i}.jpeg'))
+    im.save(os.path.join(RAW_PATH, f"mnist_784_{i}.jpeg"))
     list_names.append(f"mnist_784_{i}.jpeg")
 
 y.insert(0, "Name", list_names, True)
