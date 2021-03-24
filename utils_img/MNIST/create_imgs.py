@@ -27,6 +27,7 @@ for i in tqdm(range(len(X))):
     list_names.append(f"mnist_784_{i}.jpeg")
 
 y.insert(0, "Name", list_names, True)
+y.rename({'class': 'Label'})
 
 with open(os.path.join(RAW_PATH, 'name_labels.csv'), 'w+') as f:
     f.write(y.to_csv(index=None))

@@ -1,6 +1,5 @@
 Next week:
 - Rework dataset class to implement overloading of a main class
-- Add hyperparam optimization routine
 - Test runs on CGvsNI
 - Make it work on CIFAR10
 - Understand the loss (supervised vs unsupervised, weights and all)
@@ -14,5 +13,9 @@ FONCTIONALITÉ :
   Test sur only les samples supervisées puis ensuite tout le dataset (voir l'amélioration (ou non) causée par l'ajout des samples non labelisées)
   Performances sur le train ?
   Wesh je peux pas évaluer ça
-  Dataset : Name, True label, Masked or not label, Test
 Normaliser le display (pas la loss calculée)
+
+
+CGvsNI setup:
+  clean folder: dataset files
+  raw folder: name_labels at the root of the folder, and then all images in their own folder by dataset
