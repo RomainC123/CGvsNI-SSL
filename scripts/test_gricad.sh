@@ -1,5 +1,6 @@
 #OAR -n Test_Gricad
-#OAR -t gpu -l /nodes=1/gpudevice=1,walltime=00:01:00
+#OAR -t gpu 
+#OAR -l /nodes=1/gpudevice=1,walltime=0:01:00
 #OAR --stdout test_gricad.out
 #OAR --stderr test_gricad.err
 #OAR --project cg4n6
