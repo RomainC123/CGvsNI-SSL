@@ -138,17 +138,16 @@ class DatasetMaker:
         self.test_imgs.reset_index(drop=True, inplace=True)
 
         # Column containing unmasked labels for all data
-        print(self.train_imgs)
-        self.train_imgs['real_label'] = self.train_imgs['class']
-        self.test_imgs['real_label'] = self.test_imgs['class']
+        self.train_imgs['real_label'] = self.train_imgs['Label']
+        self.test_imgs['real_label'] = self.test_imgs['Label']
 
         # Column containing masked data for the train set, and unmasked data for the tests set, as this column isn't used for the testing set
-        self.train_imgs['train_label'] = self.mask_labels(self.train_imgs['class'], self.nb_labels)
-        self.test_imgs['train_label'] = self.test_imgs['class']
+        self.train_imgs['train_label'] = self.mask_labels(self.train_imgs['Label'], self.nb_labels)
+        self.test_imgs['train_label'] = self.test_imgs['Label']
 
         self.df_data = pd.concat([self.train_imgs, self.test_imgs]).reset_index(drop=True)
-        self.df_data.drop('class', axis=1, inplace=True)
-        self.df_data.insert(3, "Test", [False for x in range(len(train_imgs))] + [True for x in range(len(test_imgs))])
+        self.df_data.drop('Label', axis=1, inplace=True)
+        self.df_data.insert(3, "Test", [False for x in range(len(self.train_imgs))] + [True for x in range(len(self.test_imgs))])
 
         if os.path.exists(self.dataset_path):
             raise NameError('Dataset already exists')
