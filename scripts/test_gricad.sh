@@ -7,7 +7,7 @@
 #OAR --stderr test_gricad.err
 #OAR --project cg4n6
 
-source applis/environements/conda.sh
+source /applis/environements/conda.sh
 conda activate CGDetection
 
 cd ~/code/CGvsNI-SSL/src

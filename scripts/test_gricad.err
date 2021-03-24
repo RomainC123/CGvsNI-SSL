@@ -1,2 +1,9 @@
 ./test_gricad.sh: line 6: cd: code/CGvsNI/src: No such file or directory
 python: can't open file 'main.py': [Errno 2] No such file or directory
+/bin/bash: ./test_gricad.sh: Permission denied
+./test_gricad.sh: line 10: applis/environements/conda.sh: No such file or directory
+./test_gricad.sh: line 11: conda: command not found
+  File "main.py", line 130
+    header = f'Data: {args.data}\n'
+                                  ^
+SyntaxError: invalid syntax
