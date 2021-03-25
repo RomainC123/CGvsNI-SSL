@@ -155,7 +155,13 @@ def main():
         # Creating model
         if args.data in MODELS.keys():
             model = MODELS[args.data]
-            init_mode = networks.init_weights(model, args.verbose, init_type='normal')
+            if args.pretrained:
+                logs_path = os.path.join(args.trained_model_path, 'logs')
+                latest_log = utils.get_latest_log(logs_path)
+                checkpoint = torch.load(os.path.join(logs_path, latest_log))
+                init_mode = 'pretrained'
+            else:
+                init_mode = networks.init_weights(model, args.verbose, init_type='normal')
             if args.cuda:
                 model = model.cuda()
         else:
@@ -244,7 +250,10 @@ def main():
 
     if not args.test:
         if args.train_id == None:
+            args.pretrained = False
             args.train_id = utils.get_train_id(TRAINED_MODELS_PATH)
+        else:
+            args.pretrained = True
         args.full_name = args.train_id + '_' + args.dataset_name + '_' + args.method
 
     else:
@@ -291,6 +300,7 @@ def main():
 
         print('Hyperparamters optimization...')
 
+        args.pretrained = False
         list_hyperparameters = utils.get_hyperparameters_combinations(args.method)
         print(f'Testing {len(list_hyperparameters)} combinations')
 
