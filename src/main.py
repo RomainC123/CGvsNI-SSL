@@ -47,9 +47,9 @@ MODELS = {
 #   Argparse                                                                   #
 ################################################################################
 
-parser = argparse.ArgumentParser(description='Semi-supervised MNIST training')
+parser = argparse.ArgumentParser(description='Semi-supervised MNIST training and testing')
 
-# Usage
+# Functionalities
 parser.add_argument('--train', dest='train', action='store_true')
 parser.set_defaults(train=False)
 parser.add_argument('--test', dest='test', action='store_true')
@@ -81,7 +81,7 @@ parser.add_argument('--decisive_metric', type=str, default='accuracy', help='dec
 
 # Hardware parameter
 parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
-parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
+parser.add_argument('--no_cuda', default=False, help='disables CUDA')
 
 parser.add_argument('--no-verbose', dest='verbose', action='store_false')
 parser.set_defaults(verbose=True)
@@ -89,6 +89,9 @@ parser.add_argument('--no-cuda', dest='no_cuda', action='store_true')
 parser.set_defaults(no_cuda=False)
 
 args = parser.parse_args()
+
+if args.img_mode == None:
+    raise RuntimeError('Please specify img_mode param')
 
 args.TRAIN_STEP = TRAIN_STEP
 
@@ -228,7 +231,7 @@ def main():
         if args.data in MODELS.keys():
             model = MODELS[args.data]
             logs_path = os.path.join(args.trained_model_path, 'logs')
-            latest_log = utils.get_latest_log(logs_path)
+            latest_log, epoch = utils.get_latest_log(logs_path)
             checkpoint = torch.load(os.path.join(logs_path, latest_log))
             model.load_state_dict(checkpoint['state_dict'])
             if args.cuda:
@@ -258,13 +261,14 @@ def main():
         args.full_name = str(args.train_id) + '_' + args.dataset_name + '_' + args.method
 
     else:
+        args.pretrained = True
         if args.train_id != None:
             args.full_name = utils.get_trained_model_from_id(args.train_id)
         else:
             raise RuntimeError('Please provide a train_id in order to run tests')
 
     args.trained_model_path = os.path.join(TRAINED_MODELS_PATH, args.full_name)
-    if not os.path.exists(args.trained_model_path):
+    if not os.path.exists(args.trained_model_path) and not args.pretrained:
         os.makedirs(args.trained_model_path)
 
     if args.train:  # Trains one model
