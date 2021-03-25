@@ -124,19 +124,30 @@ class SSLMethodClass:
 
     def train(self, train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, batch_size, epochs, trained_model_path, start_epoch_id, verbose):
 
-        # Creating first model checkpoint
         logs_path = os.path.join(trained_model_path, 'logs')
         if not os.path.exists(logs_path):
             os.makedirs(logs_path)
+
+        graphs_path = os.path.join(trained_model_path, 'graphs')
+        if not os.path.exists(graphs_path):
+            os.makedirs(graphs_path)
 
         if start_epoch_id == 0:
             torch.save({'epoch': 0,
                         'state_dict': model.state_dict()},
                        os.path.join(logs_path, f'checkpoint_0.pth'))
+            losses = []
+            sup_losses = []
+            unsup_losses = []
+            utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
+        else:
+            with open(os.path.join(graphs_path, 'loss.pkl'), 'rb') as f:
+                losses = pickle.load(f)
+            with open(os.path.join(graphs_path, 'sup_loss.pkl'), 'rb') as f:
+                sup_losses = pickle.load(f)
+            with open(os.path.join(graphs_path, 'unsup_loss.pkl'), 'rb') as f:
+                unsup_losses = pickle.load(f)
 
-        losses = []
-        sup_losses = []
-        unsup_losses = []
 
         for epoch_id in range(1 + start_epoch_id, epochs + 1 + start_epoch_id):
             self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs, start_epoch_id)
@@ -150,22 +161,14 @@ class SSLMethodClass:
                 torch.save({'epoch': epoch_id,
                             'state_dict': model.state_dict()},
                            os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
+                utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
 
         if epoch_id % TRAIN_STEP != 0:
             torch.save({'epoch': epoch_id,
                         'state_dict': model.state_dict()},
                        os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
 
-        graphs_path = os.path.join(trained_model_path, 'graphs')
-        if not os.path.exists(graphs_path):
-            os.makedirs(graphs_path)
-
-        with open(os.path.join(graphs_path, 'loss.pkl'), 'wb') as f:
-            pickle.dump(losses, f)
-        with open(os.path.join(graphs_path, 'sup_loss.pkl'), 'wb') as f:
-            pickle.dump(sup_losses, f)
-        with open(os.path.join(graphs_path, 'unsup_loss.pkl'), 'wb') as f:
-            pickle.dump(unsup_losses, f)
+        utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
 
 ################################################################################
 #   Children train classes                                                     #

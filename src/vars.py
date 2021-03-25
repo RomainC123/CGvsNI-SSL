@@ -42,7 +42,7 @@ TEST_TRANSFORMS = {
 HYPERPARAMETERS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
-        'ramp_epochs': 10,
+        'ramp_epochs': 80,
         'ramp_mult': 5,
         'max_weight': 30.
     }

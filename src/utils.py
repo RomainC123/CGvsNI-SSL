@@ -3,6 +3,7 @@
 ################################################################################
 
 import os
+import pickle
 import pandas as pd
 
 from vars import *
@@ -86,6 +87,16 @@ def get_latest_log(logs_path):
             latest_log_id = i
 
     return latest_log, latest_log_epoch
+
+
+def save_graphs(graphs_path, losses, sup_losses, unsup_losses):
+
+    with open(os.path.join(graphs_path, 'loss.pkl'), 'wb') as f:
+        pickle.dump(losses, f)
+    with open(os.path.join(graphs_path, 'sup_loss.pkl'), 'wb') as f:
+        pickle.dump(sup_losses, f)
+    with open(os.path.join(graphs_path, 'unsup_loss.pkl'), 'wb') as f:
+        pickle.dump(unsup_losses, f)
 
 
 def avg_classifications_reports(list_classification_reports):

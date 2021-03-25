@@ -184,7 +184,7 @@ def main():
 
         # Creating optimizer
         if args.optimizer == 'Adam':
-            optimizer = Adam(model.parameters(), lr=0.001, betas=(0.9, 0.999))
+            optimizer = Adam(model.parameters(), lr=0.003, betas=(0.9, 0.999))
         elif args.optimizer == 'SGD':
             optimizer = None  # TODO!
         else:
