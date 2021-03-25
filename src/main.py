@@ -81,8 +81,6 @@ parser.add_argument('--decisive_metric', type=str, default='accuracy', help='dec
 
 # Hardware parameter
 parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
-parser.add_argument('--no_cuda', default=False, help='disables CUDA')
-
 parser.add_argument('--no-verbose', dest='verbose', action='store_false')
 parser.set_defaults(verbose=True)
 parser.add_argument('--no-cuda', dest='no_cuda', action='store_true')
