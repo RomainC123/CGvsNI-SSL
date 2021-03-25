@@ -134,12 +134,10 @@ def main():
         print('')
         print(header)
         print('Cuda: ', args.cuda)
-        print('-----------------------------------------------')
 
-        header += '\n-----------------------------------------------\n'
-
-        with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
-            f.write(header)
+        if not args.pretrained:
+            with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
+                f.write(header)
 
         # Creating Dataloader
         if args.data in DATASETS_IMPLEMENTED.keys():
@@ -157,10 +155,12 @@ def main():
             model = MODELS[args.data]
             if args.pretrained:
                 logs_path = os.path.join(args.trained_model_path, 'logs')
-                latest_log = utils.get_latest_log(logs_path)
+                latest_log, start_epoch_id = utils.get_latest_log(logs_path)
                 checkpoint = torch.load(os.path.join(logs_path, latest_log))
-                init_mode = 'pretrained'
+                model.load_state_dict(checkpoint['state_dict'])
+                init_mode = 'Pretrained'
             else:
+                start_epoch_id = 0
                 init_mode = networks.init_weights(model, args.verbose, init_type='normal')
             if args.cuda:
                 model = model.cuda()
@@ -187,7 +187,8 @@ def main():
         else:
             raise RuntimeError(f'Optimizer not implemented: {args.optimizer}')
 
-        train_info = utils.get_train_info(nb_img_train, nb_classes, percent_labeled, args.epochs, args.batch_size, nb_batches, args.shuffle, method, args.train_id, optimizer)
+        train_info = '-----------------------------------------------\n'
+        train_info += utils.get_train_info(nb_img_train, nb_classes, percent_labeled, args.epochs, args.batch_size, nb_batches, args.shuffle, method, args.train_id, optimizer, init_mode)
 
         if args.verbose:
             print(train_info)
@@ -199,7 +200,7 @@ def main():
             f.write(train_info)
 
         method.train(train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, args.batch_size, args.epochs,
-                     args.trained_model_path, args.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
+                     args.trained_model_path, start_epoch_id, args.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
 
     def test(args):
         """
@@ -254,7 +255,7 @@ def main():
             args.train_id = utils.get_train_id(TRAINED_MODELS_PATH)
         else:
             args.pretrained = True
-        args.full_name = args.train_id + '_' + args.dataset_name + '_' + args.method
+        args.full_name = str(args.train_id) + '_' + args.dataset_name + '_' + args.method
 
     else:
         if args.train_id != None:

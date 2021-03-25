@@ -39,7 +39,7 @@ def get_trained_model_from_id(train_id):
     raise RuntimeError(f'Train id not found: {train_id}')
 
 
-def get_train_info(nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer):
+def get_train_info(nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer, init_mode):
 
     def get_optimizer_info(optimizer):
         params_dict = optimizer.state_dict()['param_groups'][0]
@@ -58,6 +58,7 @@ def get_train_info(nb_img_train, nb_classes, percent_labeled, epochs, batch_size
     info_string += f'Shuffle train set: {shuffle}\n'
     info_string += method.get_info()
     info_string += get_optimizer_info(optimizer)
+    info_string += f'Init mode: {init_mode}\n'
 
     return info_string
 
@@ -84,7 +85,7 @@ def get_latest_log(logs_path):
             latest_log_epoch = int(log_epoch)
             latest_log_id = i
 
-    return latest_log
+    return latest_log, latest_log_epoch
 
 
 def avg_classifications_reports(list_classification_reports):

@@ -67,7 +67,7 @@ class SSLMethodClass:
         if self.cuda_var:
             self.cuda()
 
-    def epoch(self, train_dataloader, model, optimizer, epoch_id, epochs):
+    def epoch(self, train_dataloader, model, optimizer, epoch_id, epochs, start_epoch_id):
 
         model.train()
 
@@ -107,7 +107,7 @@ class SSLMethodClass:
 
             if batch_idx % self.log_interval == 0 and self.verbose:
                 pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch_id,
-                                                                                                 epochs,
+                                                                                                 epochs + start_epoch_id,
                                                                                                  batch_idx * len(data),
                                                                                                  self.nb_img_train,
                                                                                                  100. * batch_idx / self.nb_batches,
@@ -115,30 +115,31 @@ class SSLMethodClass:
 
             if batch_idx + 1 >= self.nb_batches and self.verbose:
                 pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch_id,
-                                                                                                 epochs,
+                                                                                                 epochs + start_epoch_id,
                                                                                                  self.nb_img_train,
                                                                                                  self.nb_img_train,
                                                                                                  100.,
                                                                                                  (loss_epoch / self.nb_batches).item()))
         return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
-    def train(self, train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, batch_size, epochs, trained_model_path, verbose):
+    def train(self, train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, batch_size, epochs, trained_model_path, start_epoch_id, verbose):
 
         # Creating first model checkpoint
         logs_path = os.path.join(trained_model_path, 'logs')
         if not os.path.exists(logs_path):
             os.makedirs(logs_path)
 
-        torch.save({'epoch': 0,
-                    'state_dict': model.state_dict()},
-                   os.path.join(logs_path, 'checkpoint_0.pth'))
+        if start_epoch_id == 0:
+            torch.save({'epoch': 0,
+                        'state_dict': model.state_dict()},
+                       os.path.join(logs_path, f'checkpoint_0.pth'))
 
         losses = []
         sup_losses = []
         unsup_losses = []
 
-        for epoch_id in range(1, epochs + 1):
-            self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs)
+        for epoch_id in range(1 + start_epoch_id, epochs + 1 + start_epoch_id):
+            self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs, start_epoch_id)
             self.update_vars(epoch_id)
 
             losses.append(loss / int(nb_img_train / batch_size))
@@ -165,9 +166,6 @@ class SSLMethodClass:
             pickle.dump(sup_losses, f)
         with open(os.path.join(graphs_path, 'unsup_loss.pkl'), 'wb') as f:
             pickle.dump(unsup_losses, f)
-
-    def test(self):
-        pass
 
 ################################################################################
 #   Children train classes                                                     #
