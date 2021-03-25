@@ -1,0 +1,5 @@
+5th model:
+  73.7% => 76.1%
+  Small upgrade
+  Model is mostly learning from the supervised part, unsupervised loss not doing enough
+Same remark for 7th model
