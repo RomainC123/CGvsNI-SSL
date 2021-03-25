@@ -39,7 +39,7 @@ DATASETS_IMPLEMENTED = {
 
 MODELS = {
     'MNIST': models.MNISTModel(),
-    'CIFAR10': models.CIFAR10Model(),
+    'CIFAR10': models.VGG('VGG11'),
     'CGvsNI': None
 }
 
