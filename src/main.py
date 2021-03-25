@@ -115,7 +115,7 @@ else:
 
 def main():
 
-    def train(args):
+    def train(args, mode='default'):
         """
         Trains one model
         --------------------------------------
@@ -144,7 +144,7 @@ def main():
         if args.data in DATASETS_IMPLEMENTED.keys():
             train_dataset_transforms = TRAIN_TRANSFORMS[args.data]
             train_dataset = DATASETS_IMPLEMENTED[args.data](args,
-                                                            'default',
+                                                            mode,
                                                             False,
                                                             transform=train_dataset_transforms)
             train_dataloader = DataLoader(train_dataset, **kwargs_train)
@@ -188,7 +188,7 @@ def main():
         else:
             raise RuntimeError(f'Optimizer not implemented: {args.optimizer}')
 
-        train_info = '-----------------------------------------------\n'
+        train_info = '\n-----------------------------------------------\n'
         train_info += utils.get_train_info(nb_img_train, nb_classes, percent_labeled, args.epochs, args.batch_size, nb_batches, args.shuffle, method, args.train_id, optimizer, init_mode)
 
         if args.verbose:
@@ -266,7 +266,7 @@ def main():
             raise RuntimeError('Please provide a train_id in order to run tests')
 
     args.trained_model_path = os.path.join(TRAINED_MODELS_PATH, args.full_name)
-    if not os.path.exists(args.trained_model_path) and not args.pretrained:
+    if not os.path.exists(args.trained_model_path):
         os.makedirs(args.trained_model_path)
 
     if args.train:  # Trains one model
@@ -307,15 +307,6 @@ def main():
         list_hyperparameters = utils.get_hyperparameters_combinations(args.method)
         print(f'Testing {len(list_hyperparameters)} combinations')
 
-        header = f'Data: {args.data}\n'
-        header += f'Dataset name: {args.dataset_name}\n'
-        header += f'Image mode: {args.img_mode}'
-
-        print('')
-        print(header)
-        print('Cuda: ', args.cuda)
-        print('-----------------------------------------------')
-
         main_train_id = args.train_id
         main_full_name = args.full_name
         main_trained_model_path = args.trained_model_path
@@ -351,7 +342,31 @@ def main():
         print('Search done!')
 
     if args.supervised_vs_full:
-        pass
+
+        args.pretrained = False
+        args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
+
+        main_train_id = args.train_id
+        main_full_name = args.full_name
+        main_trained_model_path = args.trained_model_path
+
+        print('Training only on the supervised part of the dataset...')
+
+        args.full_name = 'only_supervised'
+        args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
+        if not os.path.exists(args.trained_model_path):
+            os.makedirs(args.trained_model_path)
+        train(args, 'only_supervised')
+        test(args)
+
+        print('Training on all of the dataset')
+
+        args.full_name = 'full_dataset'
+        args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
+        if not os.path.exists(args.trained_model_path):
+            os.makedirs(args.trained_model_path)
+        train(args, 'default')
+        test(args)
 
 
 if __name__ == '__main__':

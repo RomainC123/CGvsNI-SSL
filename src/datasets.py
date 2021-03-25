@@ -37,13 +37,13 @@ class DatasetSSL(data.Dataset):
         if not test:
             df_imgs = df_imgs.loc[~df_imgs['Test']]
             if mode == 'only_supervised':
-                df_imgs = df_imgs.loc[df_imgs['Train label'] != -1][['Name', 'Train label']]
+                df_imgs = df_imgs[(df_imgs['Train label'] != -1) & (df_imgs['Train label'] != '-1')][['Name', 'Train label']]
             else:
                 df_imgs = df_imgs[['Name', 'Train label']]
         else:
             df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Real label']]
 
-        df_imgs.rename(columns = {df_imgs.columns[0]: 'Name', df_imgs.columns[1]: 'Label'}, inplace=True)
+        df_imgs.rename(columns={df_imgs.columns[0]: 'Name', df_imgs.columns[1]: 'Label'}, inplace=True)
         return df_imgs.reset_index(drop=True)
 
     def get_info(self, df_imgs, idx):
@@ -51,7 +51,7 @@ class DatasetSSL(data.Dataset):
 
         return os.path.join(self.raw_path, df_imgs.iloc[idx]['Name']), int(df_imgs.iloc[idx]['Label'])
 
-    def img_loader(self, path, mode):
+    def img_loader(self, path, img_mode):
         # To overload
         pass
 
@@ -111,7 +111,7 @@ class DatasetSSL(data.Dataset):
 
 
 class DatasetCIFAR10(DatasetSSL):
-    
+
     def img_loader(self, path, mode):
         # Loads the image from its path to a PIL object
 
@@ -137,12 +137,12 @@ class DatasetMNIST(DatasetSSL):
         len and getitem
     """
 
-    def img_loader(self, path, mode):
+    def img_loader(self, path, img_mode):
         # Loads the image from its path to a PIL object
 
         with open(path, 'rb') as f:
             img = Image.open(f)
-            if mode == 'L':
+            if img_mode == 'L':
                 return img.convert('L')  # convert image to grey
-            elif mode == 'RGB':
+            elif img_mode == 'RGB':
                 return img.convert('RGB')  # convert image to rgb image
