@@ -12,3 +12,9 @@ Testing:
   Overfitting the supervised data ?
 
   Case where max weight = 0 vs normal train
+
+20 epochs each
+Maybe need to average the only supervised runs on a bunch of runs to reduce variance
+Only supervised: 68.4%
+Only supervised no unsup loss: 69.1%
+Full dataset: 79.6%

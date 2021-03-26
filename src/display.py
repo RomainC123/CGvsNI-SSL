@@ -59,14 +59,12 @@ parser.add_argument('--data', type=str, help='data to use')
 parser.add_argument('--dataset_name', type=str, help='name of the saved dataset to use')
 parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
 parser.add_argument('--train_id', type=int, help='index of the trained model to load for tests. In case of training, gets overwritten')
+parser.add_argument('--subfolder', type=str, help='Subfolder to use, default to None')
 
 # Hardware parameter
 parser.add_argument('--no_cuda', default=False, help='disables CUDA')
 
 args = parser.parse_args()
-
-if args.img_mode == None:
-    raise RuntimeError('Please specify img_mode param')
 
 ################################################################################
 #   Cuda                                                                       #
@@ -169,6 +167,9 @@ def main():
 # ------------------------------------------------------------------------------
 
     args.full_name = utils.get_trained_model_from_id(args.train_id)
+
+    if args.subfolder != None:
+        args.full_name = os.path.join(args.full_name, args.subfolder)
 
     args.trained_model_path = os.path.join(TRAINED_MODELS_PATH, args.full_name)
     if not os.path.exists(args.trained_model_path):
