@@ -8,6 +8,7 @@ import pandas as pd
 
 from vars import *
 
+import torch
 from sklearn.metrics import classification_report
 
 ################################################################################
@@ -88,6 +89,14 @@ def get_latest_log(logs_path):
 
     return latest_log, latest_log_epoch
 
+
+def update_checkpoint(model, epoch_id, logs_path):
+
+    latest_log, latest_log_epoch_id = get_latest_log(logs_path)
+    torch.save({'epoch': epoch_id,
+                'state_dict': model.state_dict()},
+                os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
+    os.remove(os.path.join(logs_path, latest_log))
 
 def save_graphs(graphs_path, losses, sup_losses, unsup_losses):
 

@@ -148,7 +148,6 @@ class SSLMethodClass:
             with open(os.path.join(graphs_path, 'unsup_loss.pkl'), 'rb') as f:
                 unsup_losses = pickle.load(f)
 
-
         for epoch_id in range(1 + start_epoch_id, epochs + 1 + start_epoch_id):
             self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs, start_epoch_id)
             self.update_vars(epoch_id)
@@ -158,17 +157,15 @@ class SSLMethodClass:
             unsup_losses.append(unsup_loss / int(nb_img_train / batch_size))
 
             if epoch_id % TRAIN_STEP == 0:
-                torch.save({'epoch': epoch_id,
-                            'state_dict': model.state_dict()},
-                           os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
+                utils.update_checkpoint(model, epoch_id, logs_path)
                 utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
 
         if epoch_id % TRAIN_STEP != 0:
+            utils.update_checkpoint(model, epoch_id, logs_path)
             torch.save({'epoch': epoch_id,
                         'state_dict': model.state_dict()},
                        os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
-
-        utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
+            utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
 
 ################################################################################
 #   Children train classes                                                     #
