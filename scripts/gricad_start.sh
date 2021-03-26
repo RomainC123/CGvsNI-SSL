@@ -1,2 +1,2 @@
-source /applis/environements/conda.sh
+source /applis/environments/conda.sh
 conda activate CGDetection
