@@ -44,15 +44,15 @@ HYPERPARAMETERS_DEFAULT = {
         'alpha': 0.6,
         'ramp_epochs': 80,
         'ramp_mult': 5,
-        'max_weight': 30.
+        'unsup_loss_max_weight': 30.
     }
 }
 
 HYPERPARAMETERS_SEARCH = {
     'TemporalEnsembling': {
         'alpha': [0.6],
-        'max_weight': [20.],
         'ramp_epochs': [5],
-        'ramp_mult': [2, 5]
+        'ramp_mult': [2, 5],
+        'unsup_loss_max_weight': [20.]
     }
 }

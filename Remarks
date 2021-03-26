@@ -1,5 +1,14 @@
 5th model:
+  Running vanilla supervised vs unsupervised (so max weight still at 30, during only supervised training the unsupervised loss term still exists)
   73.7% => 76.1%
   Small upgrade
   Model is mostly learning from the supervised part, unsupervised loss not doing enough
 Same remark for 7th model
+
+
+Testing:
+  Training on a few epochs only with supervised loss and only on supervised part of the dataset (basicaly model init)
+  Then normal training based of of this log
+  Overfitting the supervised data ?
+
+  Case where max weight = 0 vs normal train

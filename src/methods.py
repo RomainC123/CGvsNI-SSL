@@ -176,9 +176,9 @@ class TemporalEnsemblingClass(SSLMethodClass):
 
     def set_hyperparameters(self, hyperparameters):
         self.alpha = hyperparameters['alpha']
-        self.max_weight = hyperparameters['max_weight'] * self.percent_labeled
         self.ramp_epochs = hyperparameters['ramp_epochs']
         self.ramp_mult = hyperparameters['ramp_mult']
+        self.unsup_loss_max_weight = hyperparameters['unsup_loss_max_weight'] * self.percent_labeled
 
     def init_vars(self):
         self.y_ema = torch.zeros(self.nb_img_train, self.nb_classes).float()
@@ -190,9 +190,9 @@ class TemporalEnsemblingClass(SSLMethodClass):
             self.y_ema[idx] = (self.alpha * self.y_ema[idx] + (1 - self.alpha) * self.epoch_output[idx]) / (1 - self.alpha ** epoch_id)
         # Updating unsup weight
         if epoch_id >= self.ramp_epochs:
-            self.unsup_weight = self.max_weight
+            self.unsup_weight = self.unsup_loss_max_weight
         else:
-            self.unsup_weight = self.max_weight * np.exp(-self.ramp_mult * (1 - epoch_id / self.ramp_epochs) ** 2)
+            self.unsup_weight = self.unsup_loss_max_weight * np.exp(-self.ramp_mult * (1 - epoch_id / self.ramp_epochs) ** 2)
 
     def set_criterion(self):
         self.criterion = criterions.TemporalLoss(self.cuda)
@@ -208,7 +208,7 @@ class TemporalEnsemblingClass(SSLMethodClass):
     def get_info(self):
         info_string = 'Method: Temporal Ensembling\n'
         info_string += f'Alpha: {self.alpha}\n'
-        info_string += 'Max weight (corrected with percent labels): {:.1f}\n'.format(self.max_weight)
+        info_string += 'Unsupervised loss max weight (corrected with percent labels): {:.1f}\n'.format(self.unsup_loss_max_weight)
         info_string += f'Ramp epochs: {self.ramp_epochs}\n'
         info_string += f'Ramp mult: {self.ramp_mult}\n'
         return info_string

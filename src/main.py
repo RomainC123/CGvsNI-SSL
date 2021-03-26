@@ -359,6 +359,20 @@ def main():
         train(args, 'only_supervised')
         test(args)
 
+        print('Training only on the supervised part of the dataset, without the unsupervised loss...')
+
+        main_unsup_loss_max_weight = args.hyperparameters['unsup_loss_max_weight']
+        args.hyperparameters['unsup_loss_max_weight'] = 0.
+
+        args.full_name = 'only_supervised_no_unsup_loss'
+        args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
+        if not os.path.exists(args.trained_model_path):
+            os.makedirs(args.trained_model_path)
+        train(args, 'only_supervised')
+        test(args)
+
+        args.hyperparameters['unsup_loss_max_weight'] = main_unsup_loss_max_weight
+
         print('Training on all of the dataset')
 
         args.full_name = 'full_dataset'
