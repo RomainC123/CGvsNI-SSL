@@ -1,15 +1,8 @@
-Next week:
-- Test runs on CGvsNI
-- Understand the loss (supervised vs unsupervised, weights and all)
+Add accuracy averaging on only supervised runs
+Implement CGvsNI dataset structure (image folder complete)
+Normalize display (saved graphs) for the losses
 
-- Redo the downloader for CG images
-
-
-
-FONCTIONALITÉ :
-  Performances sur le train ?
-  Wesh je peux pas évaluer ça
-Normaliser le display (pas la loss calculée)
+Redo the downloader and img_crop for CG images
 
 
 CGvsNI setup:

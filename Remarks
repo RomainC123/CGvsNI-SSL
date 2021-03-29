@@ -18,3 +18,12 @@ Maybe need to average the only supervised runs on a bunch of runs to reduce vari
 Only supervised: 68.4%
 Only supervised no unsup loss: 69.1%
 Full dataset: 79.6%
+
+Balanced sampler ?
+
+RGB et pas l'autre ?
+Type d'images (0 - 255) ou autre)
+Voir le problème
+Test sur te train test
+
+Lancer en L pour CIFAR10

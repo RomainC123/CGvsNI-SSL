@@ -54,7 +54,7 @@ def get_train_info(model, nb_img_train, nb_classes, percent_labeled, epochs, bat
     info_string += f'Model: {type(model).__name__}\n'
     info_string += f'Number of training images: {nb_img_train}\n'
     info_string += f'Number of classes: {nb_classes}\n'
-    info_string += 'Percent of labeled samples: {:.1f}\n'.format(percent_labeled * 100)
+    info_string += 'Percent of labeled samples: {:.2f}\n'.format(percent_labeled * 100)
     info_string += f'Epochs: {epochs}\n'
     info_string += f'Batch size: {batch_size}\n'
     info_string += f'Number of batches: {nb_batches}\n'

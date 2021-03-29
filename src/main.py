@@ -163,6 +163,7 @@ def main():
             else:
                 start_epoch_id = 0
                 init_mode = networks.init_weights(model, args.verbose, init_type='normal')
+                # init_mode = 'Normal'
             if args.cuda:
                 model = model.cuda()
         else:
