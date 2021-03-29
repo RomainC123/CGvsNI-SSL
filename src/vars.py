@@ -24,17 +24,17 @@ METRICS = {
 }
 
 TRAIN_TRANSFORMS = {
-    'MNIST': transforms.Compose([transforms.ToTensor(),
-                                 transforms.Normalize((0.5), (0.5))]),
-    'CIFAR10': transforms.Compose([transforms.ToTensor(),
-                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]),
+    'L': transforms.Compose([transforms.ToTensor(),
+                             transforms.Normalize((0.5), (0.5))]),
+    'RGB': transforms.Compose([transforms.ToTensor(),
+                               transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]),
     'CGvsNI': None
 }
 
 TEST_TRANSFORMS = {
-    'MNIST': transforms.Compose([transforms.ToTensor(),
+    'L': transforms.Compose([transforms.ToTensor(),
                                  transforms.Normalize((0.5), (0.5))]),
-    'CIFAR10': transforms.Compose([transforms.ToTensor(),
+    'RGB': transforms.Compose([transforms.ToTensor(),
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]),
     'CGvsNI': None
 }

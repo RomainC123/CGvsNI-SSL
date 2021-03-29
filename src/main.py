@@ -142,7 +142,7 @@ def main():
 
         # Creating Dataloader
         if args.data in DATASETS_IMPLEMENTED.keys():
-            train_dataset_transforms = TRAIN_TRANSFORMS[args.data]
+            train_dataset_transforms = TRAIN_TRANSFORMS[args.img_mode]
             train_dataset = DATASETS_IMPLEMENTED[args.data](args,
                                                             mode,
                                                             False,
@@ -217,7 +217,7 @@ def main():
 
         # Creating Dataloader
         if args.data in DATASETS_IMPLEMENTED.keys():
-            test_dataset_transforms = TEST_TRANSFORMS[args.data]
+            test_dataset_transforms = TEST_TRANSFORMS[args.img_mode]
             test_dataset = DATASETS_IMPLEMENTED[args.data](args,
                                                            'default',
                                                            True,
