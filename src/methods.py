@@ -152,9 +152,9 @@ class SSLMethodClass:
             self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs, start_epoch_id)
             self.update_vars(epoch_id)
 
-            losses.append(loss / int(nb_img_train / batch_size))
-            sup_losses.append(sup_loss / int(nb_img_train / batch_size))
-            unsup_losses.append(unsup_loss / int(nb_img_train / batch_size))
+            losses.append(loss / (nb_img_train / batch_size))
+            sup_losses.append(sup_loss / (nb_img_train / batch_size))
+            unsup_losses.append(unsup_loss / (nb_img_train / batch_size))
 
             if epoch_id % TRAIN_STEP == 0:
                 utils.update_checkpoint(model, epoch_id, logs_path)
@@ -162,9 +162,6 @@ class SSLMethodClass:
 
         if epoch_id % TRAIN_STEP != 0:
             utils.update_checkpoint(model, epoch_id, logs_path)
-            torch.save({'epoch': epoch_id,
-                        'state_dict': model.state_dict()},
-                       os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
             utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
 
 ################################################################################

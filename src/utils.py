@@ -41,7 +41,7 @@ def get_trained_model_from_id(train_id):
     raise RuntimeError(f'Train id not found: {train_id}')
 
 
-def get_train_info(nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer, init_mode):
+def get_train_info(model, nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer, init_mode):
 
     def get_optimizer_info(optimizer):
         params_dict = optimizer.state_dict()['param_groups'][0]
@@ -51,6 +51,7 @@ def get_train_info(nb_img_train, nb_classes, percent_labeled, epochs, batch_size
         return str_optim
 
     info_string = f'Train_id: {train_id}\n'
+    info_string += f'Model: {type(model).__name__}\n'
     info_string += f'Number of training images: {nb_img_train}\n'
     info_string += f'Number of classes: {nb_classes}\n'
     info_string += 'Percent of labeled samples: {:.1f}\n'.format(percent_labeled * 100)

@@ -6,9 +6,10 @@ import os
 import pathlib
 import pandas as pd
 import numpy as np
-import torch.utils.data as data
+import matplotlib.pyplot as plt
 from vars import *
 
+import torch.utils.data as data
 from PIL import Image
 
 ################################################################################
@@ -122,6 +123,11 @@ class DatasetCIFAR10(DatasetSSL):
             elif mode == 'RGB':
                 return img.convert('RGB')  # convert image to rgb image
 
+    def img_show(self, idx):
+
+        plt.imshow((self[idx][0].permute(1, 2, 0) + 1) / 2)
+        plt.show()
+
 
 class DatasetMNIST(DatasetSSL):
 
@@ -146,3 +152,8 @@ class DatasetMNIST(DatasetSSL):
                 return img.convert('L')  # convert image to grey
             elif img_mode == 'RGB':
                 return img.convert('RGB')  # convert image to rgb image
+
+    def img_show(self, idx):
+
+        plt.imshow((self[idx][0].permute(1, 2, 0) + 1) / 2, cmap='gray_r')
+        plt.show()

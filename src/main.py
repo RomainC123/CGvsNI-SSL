@@ -189,7 +189,7 @@ def main():
             raise RuntimeError(f'Optimizer not implemented: {args.optimizer}')
 
         train_info = '\n-----------------------------------------------\n'
-        train_info += utils.get_train_info(nb_img_train, nb_classes, percent_labeled, args.epochs, args.batch_size, nb_batches, args.shuffle, method, args.train_id, optimizer, init_mode)
+        train_info += utils.get_train_info(model, nb_img_train, nb_classes, percent_labeled, args.epochs, args.batch_size, nb_batches, args.shuffle, method, args.train_id, optimizer, init_mode)
 
         if args.verbose:
             print(train_info)
@@ -359,7 +359,7 @@ def main():
         train(args, 'only_supervised')
         test(args)
 
-        print('Training only on the supervised part of the dataset, without the unsupervised loss...')
+        print('\nTraining only on the supervised part of the dataset, without the unsupervised loss...')
 
         main_unsup_loss_max_weight = args.hyperparameters['unsup_loss_max_weight']
         args.hyperparameters['unsup_loss_max_weight'] = 0.
@@ -373,7 +373,7 @@ def main():
 
         args.hyperparameters['unsup_loss_max_weight'] = main_unsup_loss_max_weight
 
-        print('Training on all of the dataset')
+        print('\nTraining on all of the dataset')
 
         args.full_name = 'full_dataset'
         args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
