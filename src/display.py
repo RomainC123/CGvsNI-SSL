@@ -83,6 +83,9 @@ def main():
 
         graphs_path = os.path.join(args.trained_model_path, 'graphs')
 
+        with open(os.path.join(graphs_path, 'accuracy.pkl'), 'rb') as f:
+            accuracy = pickle.load(f)
+
         with open(os.path.join(graphs_path, 'loss.pkl'), 'rb') as f:
             losses = pickle.load(f)
 
@@ -96,18 +99,18 @@ def main():
 
         fig = plt.figure(figsize=(12, 24))
 
-        ax1 = fig.add_subplot(311)
-        ax1.set_title('Loss')
-        ax1.plot(range(epochs), losses)
+        ax1 = fig.add_subplot(211)
+        ax1.set_title('Metrics')
+        ax1.plot(range(epochs), accuracy, label='Accuracy')
+        ax1.legend()
 
-        ax2 = fig.add_subplot(312)
-        ax2.set_title('Supervised Loss')
-        ax2.plot(range(epochs), sup_losses)
-
-        ax3 = fig.add_subplot(313)
-        ax3.set_title('Unsupervised Loss')
-        ax3.plot(range(epochs), unsup_losses)
-
+        ax2 = fig.add_subplot(212)
+        ax2.set_title('Loss')
+        ax2.plot(range(epochs), losses, label='Total loss')
+        ax2.plot(range(epochs), sup_losses, label='Supervised loss')
+        ax2.plot(range(epochs), unsup_losses, label='Unsupervised loss')
+        ax2.legend()
+        
         plt.show()
 
     def show_example(args):

@@ -99,8 +99,10 @@ def update_checkpoint(model, epoch_id, logs_path):
                 os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
     os.remove(os.path.join(logs_path, latest_log))
 
-def save_graphs(graphs_path, losses, sup_losses, unsup_losses):
+def save_graphs(graphs_path, accuracy, losses, sup_losses, unsup_losses):
 
+    with open(os.path.join(graphs_path, 'accuracy.pkl'), 'wb') as f:
+        pickle.dump(accuracy, f)
     with open(os.path.join(graphs_path, 'loss.pkl'), 'wb') as f:
         pickle.dump(losses, f)
     with open(os.path.join(graphs_path, 'sup_loss.pkl'), 'wb') as f:

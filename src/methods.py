@@ -122,7 +122,32 @@ class SSLMethodClass:
                                                                                                  (loss_epoch / self.nb_batches).item()))
         return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
-    def train(self, train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, batch_size, epochs, trained_model_path, start_epoch_id, verbose):
+    def eval(self, valuation_dataloader, model):
+
+        model.eval()
+
+        real_labels = []
+        pred_labels = []
+
+        with torch.no_grad():
+            for batch_idx, (data, target) in enumerate(valuation_dataloader):
+
+                if self.cuda_var:
+                    data, target = data.cuda(), target.cuda()
+
+                # Make the prediciton using the already trained model
+                bs, c, h, w = data.size()
+                result = model.forward(data.view(-1, c, h, w))
+                result = F.softmax(result, dim=1)
+                pred = result.data.max(1, keepdim=True)[1]
+
+                # Grab the predictions and the labels into arrays
+                real_labels.extend(target.data.cpu().numpy())
+                pred_labels.extend(pred.squeeze().cpu().numpy())
+
+        return accuracy_score(real_labels, pred_labels)
+
+    def train(self, train_dataloader, valuation_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, batch_size, epochs, trained_model_path, start_epoch_id, verbose):
 
         logs_path = os.path.join(trained_model_path, 'logs')
         if not os.path.exists(logs_path):
@@ -136,11 +161,14 @@ class SSLMethodClass:
             torch.save({'epoch': 0,
                         'state_dict': model.state_dict()},
                        os.path.join(logs_path, f'checkpoint_0.pth'))
+            accuracy = []
             losses = []
             sup_losses = []
             unsup_losses = []
-            utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
+            utils.save_graphs(graphs_path, accuracy, losses, sup_losses, unsup_losses)
         else:
+            with open(os.path.join(graphs_path, 'accuracy.pkl'), 'rb') as f:
+                accuracy = pickle.load(f)
             with open(os.path.join(graphs_path, 'loss.pkl'), 'rb') as f:
                 losses = pickle.load(f)
             with open(os.path.join(graphs_path, 'sup_loss.pkl'), 'rb') as f:
@@ -152,17 +180,18 @@ class SSLMethodClass:
             self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs, start_epoch_id)
             self.update_vars(epoch_id)
 
+            accuracy.append(self.eval(valuation_dataloader, model))
             losses.append(loss / (nb_img_train / batch_size))
             sup_losses.append(sup_loss / (nb_img_train / batch_size))
             unsup_losses.append(unsup_loss / (nb_img_train / batch_size))
 
             if epoch_id % TRAIN_STEP == 0:
                 utils.update_checkpoint(model, epoch_id, logs_path)
-                utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
+                utils.save_graphs(graphs_path, accuracy, losses, sup_losses, unsup_losses)
 
         if epoch_id % TRAIN_STEP != 0:
             utils.update_checkpoint(model, epoch_id, logs_path)
-            utils.save_graphs(graphs_path, losses, sup_losses, unsup_losses)
+            utils.save_graphs(graphs_path, accuracy, losses, sup_losses, unsup_losses)
 
 ################################################################################
 #   Children train classes                                                     #

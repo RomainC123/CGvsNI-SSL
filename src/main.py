@@ -148,6 +148,11 @@ def main():
                                                             False,
                                                             transform=train_dataset_transforms)
             train_dataloader = DataLoader(train_dataset, **kwargs_train)
+            valuation_dataset = DATASETS_IMPLEMENTED[args.data](args,
+                                                                'valuation',
+                                                                False,
+                                                                transform=train_dataset_transforms)
+            valuation_dataloader = DataLoader(valuation_dataset, **kwargs_train)
         else:
             raise RuntimeError(f'Dataset object not implemented for {args.data}')
 
@@ -201,7 +206,7 @@ def main():
         with open(os.path.join(args.trained_model_path, 'info.txt'), 'a') as f:
             f.write(train_info)
 
-        method.train(train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, args.batch_size, args.epochs,
+        method.train(train_dataloader, valuation_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, args.batch_size, args.epochs,
                      args.trained_model_path, start_epoch_id, args.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
 
     def test(args, mode='default'):
