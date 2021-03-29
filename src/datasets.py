@@ -42,10 +42,17 @@ class DatasetSSL(data.Dataset):
             else:
                 df_imgs = df_imgs[['Name', 'Train label']]
         else:
-            df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Real label']]
+            if mode == 'training_set':
+                df_imgs = df_imgs.loc[~df_imgs['Test']][['Name', 'Real label']]
+            else:
+                df_imgs = df_imgs.loc[df_imgs['Test']][['Name', 'Real label']]
 
         df_imgs.rename(columns={df_imgs.columns[0]: 'Name', df_imgs.columns[1]: 'Label'}, inplace=True)
         return df_imgs.reset_index(drop=True)
+
+    def load_val(self, fpath):
+
+        pass
 
     def get_info(self, df_imgs, idx):
         # Grabs the name and label of the given idx
@@ -71,6 +78,8 @@ class DatasetSSL(data.Dataset):
             raise RuntimeError('Dataset not found')
 
         self.df_imgs = self.load_dataset(fpath, mode, test)
+        if not test:
+            self.df_val = self.load_val(fpath)
 
         labels = self.df_imgs['Label'].unique()
         if not test:

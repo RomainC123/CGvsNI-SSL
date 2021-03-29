@@ -30,12 +30,13 @@ parser = argparse.ArgumentParser(description='Dataset maker')
 parser.add_argument('--data', type=str, help='type of data to use for creating the dataset')
 parser.add_argument('--dataset_name', type=str, help='name of the created dataset')
 
-parser.add_argument('--dataset_size', type=int, default=-1, help='desired number of images in dataset (train and test) (default: 30000)')
+parser.add_argument('--dataset_size', type=int, default=-1, help='desired number of images in dataset (train and test) (default: -1)')
+parser.add_argument('--val_size', type=int, default=1000, help='desired number of images in valuation set, only for display purposes (default: 1000)')
 parser.add_argument('--test_size', type=float, default=0.2, help='percent of samples to be used for testing (default: 0.2)')
 parser.add_argument('--use-presplit', dest='use_presplit', action='store_true')
 parser.set_defaults(use_presplit=False)
 
-parser.add_argument('--nb_labels', type=float, default=0.1, help='percent of test samples to be labelized (defautl: 0.1)')
+parser.add_argument('--nb_labels', type=float, default=1000, help='number of labelized train samples (defautl: 1000)')
 
 args = parser.parse_args()
 
@@ -51,7 +52,7 @@ class DatasetMaker:
         assert (self.dataset_size * self.test_size).is_integer()
         assert (self.dataset_size * (1 - self.test_size) * self.nb_labels).is_integer()
 
-    def mask_labels(self, list_labels, nb_labels):
+    def get_even_class_labels(self, list_labels, nb_labels):
 
         id_kept = list(range(len(list_labels)))
         labels_ids = {}
@@ -65,28 +66,32 @@ class DatasetMaker:
 
         sum = 0
         cnt = 0
-        labels_per_class = len(list_labels) * nb_labels / len(unique_labels)
+        labels_per_class = nb_labels / len(unique_labels)
         upper_labels = math.ceil(labels_per_class)
         lower_labels = math.floor(labels_per_class)
-        labels_kept = []
+        even_labels_list = []
         for label in unique_labels:
-            if sum + upper_labels + (len(unique_labels) - cnt - 1) * lower_labels <= int(len(list_labels) * nb_labels):
-                labels_kept += random.sample(labels_ids[label], upper_labels)
+            if sum + upper_labels + (len(unique_labels) - cnt - 1) * lower_labels <= nb_labels:
+                even_labels_list += random.sample(labels_ids[label], upper_labels)
                 sum += upper_labels
             else:
-                labels_kept += random.sample(labels_ids[label], lower_labels)
+                even_labels_list += random.sample(labels_ids[label], lower_labels)
                 sum += lower_labels
             cnt += 1
 
-        assert len(labels_kept) == len(list_labels) * nb_labels
+        return even_labels_list
 
-        cnt = 0
+    def get_masked_labels(self, list_labels, list_unmasked_labels):
+
         for i in range(len(list_labels)):
-            if i not in labels_kept:
+            if i not in list_unmasked_labels:
                 list_labels[i] = -1
-                cnt += 1
 
         return list_labels
+
+    def get_valuation_bool(self, list_labels, list_valuation_idx):
+
+        return [i in list_valuation_idx for i in range(len(list_labels))]
 
     def get_images(self):
         # To overload
@@ -100,6 +105,7 @@ class DatasetMaker:
 
         self.dataset_name = args.dataset_name
         self.dataset_size = args.dataset_size
+        self.val_size = args.val_size
         self.test_size = args.test_size
         self.use_presplit = args.use_presplit
         self.nb_labels = args.nb_labels
@@ -141,19 +147,26 @@ class DatasetMaker:
         self.train_imgs['real_label'] = self.train_imgs['Label']
         self.test_imgs['real_label'] = self.test_imgs['Label']
 
+        list_valuation_idx = self.get_even_class_labels(self.train_imgs['Label'], self.val_size)
+        self.train_imgs['valuation'] = self.get_valuation_bool(self.train_imgs['Label'], list_valuation_idx)
+        self.test_imgs['valuation'] = [False for i in range(len(self.test_imgs['Label']))]
+
         # Column containing masked data for the train set, and unmasked data for the tests set, as this column isn't used for the testing set
-        self.train_imgs['train_label'] = self.mask_labels(self.train_imgs['Label'], self.nb_labels)
+        list_unmasked_labels = self.get_even_class_labels(self.train_imgs['Label'], self.nb_labels)
+        self.train_imgs['train_label'] = self.get_masked_labels(self.train_imgs['Label'], list_unmasked_labels)
         self.test_imgs['train_label'] = self.test_imgs['Label']
 
         self.df_data = pd.concat([self.train_imgs, self.test_imgs]).reset_index(drop=True)
         self.df_data.drop('Label', axis=1, inplace=True)
-        self.df_data.insert(3, "Test", [False for x in range(len(self.train_imgs))] + [True for x in range(len(self.test_imgs))])
+        self.df_data.insert(4, "Test", [False for x in range(len(self.train_imgs))] + [True for x in range(len(self.test_imgs))])
+
+        self.df_data = self.df_data[['Name', 'real_label', 'train_label', 'valuation', 'Test']]
 
         if os.path.exists(self.dataset_path):
             raise NameError('Dataset already exists')
         else:
             with open(self.dataset_path, 'w+') as f:
-                f.write('Name,Real label,Train label,Test\n')
+                f.write('Name,Real label,Train label,Val,Test\n')
                 f.write(self.df_data.to_csv(header=False))
 
         print('Dataset created: ', self.dataset_name)

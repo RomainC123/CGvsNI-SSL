@@ -204,7 +204,7 @@ def main():
         method.train(train_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, args.batch_size, args.epochs,
                      args.trained_model_path, start_epoch_id, args.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
 
-    def test(args):
+    def test(args, mode='default'):
         """
         Runs a set number of tests on a given trained model
         --------------------------------------
@@ -219,7 +219,7 @@ def main():
         if args.data in DATASETS_IMPLEMENTED.keys():
             test_dataset_transforms = TEST_TRANSFORMS[args.img_mode]
             test_dataset = DATASETS_IMPLEMENTED[args.data](args,
-                                                           'default',
+                                                           mode,
                                                            True,
                                                            transform=test_dataset_transforms)
             test_dataloader = DataLoader(test_dataset, **kwargs_test)
@@ -244,7 +244,7 @@ def main():
 
         report = f'Number of test runs: {args.test_runs}\n' + report
 
-        with open(os.path.join(args.trained_model_path, 'results.txt'), 'w+') as f:
+        with open(os.path.join(args.trained_model_path, f'results_{mode}.txt'), 'w+') as f:
             f.write(report)
 
         return metrics
@@ -276,6 +276,7 @@ def main():
 
         args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
         train(args)
+        test(args, 'training_set')
 
         print('Training done!')
 
