@@ -19,11 +19,8 @@ Only supervised: 68.4%
 Only supervised no unsup loss: 69.1%
 Full dataset: 79.6%
 
-Balanced sampler ?
-
-RGB et pas l'autre ?
-Type d'images (0 - 255) ou autre)
-Voir le problème
-Test sur te train test
-
 Lancer en L pour CIFAR10
+résultat : Aucun changements, toujours 25% d'accuracy
+
+Lancer en RGB pour MNIST
+Aucun problème sur MNIST-10, 98% pépouze
