@@ -1,0 +1,22 @@
+Data: CIFAR10
+Dataset name: CIFAR10-full-10000
+Image mode: RGB
+-----------------------------------------------
+Train_id: 2
+Model: VGG
+Number of training images: 50000
+Number of classes: 10
+Percent of labeled samples: 20.00
+Epochs: 100
+Batch size: 100
+Number of batches: 500
+Shuffle train set: True
+Method: Temporal Ensembling
+Alpha: 0.6
+Unsupervised loss max weight (corrected with percent labels): 6.0
+Ramp epochs: 80
+Ramp mult: 5
+Optimizer: Adam
+Learning rate: 0.003
+Betas: (0.9, 0.999)
+Init mode: Normal
