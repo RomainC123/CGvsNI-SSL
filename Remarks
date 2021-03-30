@@ -24,3 +24,7 @@ résultat : Aucun changements, toujours 25% d'accuracy
 
 Lancer en RGB pour MNIST
 Aucun problème sur MNIST-10, 98% pépouze
+
+CIFAR10 => Good performances up until the unsup loss gets unleached, and the the performances goes to shit
+Need to fix the loss balance
+Trying to remove unsup loss normalization

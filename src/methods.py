@@ -272,7 +272,6 @@ class TestingClass:
                 # Make the prediciton using the already trained model
                 bs, c, h, w = data.size()
                 result = model.forward(data.view(-1, c, h, w))
-                result = F.softmax(result, dim=1)
                 pred = result.data.max(1, keepdim=True)[1]
 
                 # Grab the predictions and the labels into arrays

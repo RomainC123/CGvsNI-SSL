@@ -1,7 +1,5 @@
 Debug CIFAR10
 Add a testing on train set functionality at the end of train
-Check RGB vs L
-Check img pixel range (0 - 255 or 0 - 1)
 
 
 Add accuracy averaging on only supervised runs
