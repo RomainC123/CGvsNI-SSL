@@ -38,9 +38,8 @@ class TemporalLoss(object):
     def mse_loss(self, out1, out2, w):
 
         quad_diff = torch.sum((F.softmax(out1, dim=1) - F.softmax(out2, dim=1)) ** 2)
-        unsup_loss = quad_diff / out1.data.nelement()
 
-        return w * unsup_loss
+        return w * quad_diff
 
     def __call__(self, pred, target, labels, w):
 
