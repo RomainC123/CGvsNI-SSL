@@ -11,4 +11,4 @@ source /applis/environments/conda.sh
 conda activate CGDetection
 
 cd ~/code/CGvsNI-SSL/src
-python ./main.py --train-test --data CIFAR10 --dataset_name CIFAR10-full-10 --img_mode RGB --method TemporalEnsembling --epochs 150 --no-verbose
+python ./main.py --train-test --data MNIST --dataset_name MNIST-1000 --img_mode L --method TemporalEnsembling --epochs 150
