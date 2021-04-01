@@ -96,8 +96,9 @@ def update_checkpoint(model, epoch_id, logs_path):
     latest_log, latest_log_epoch_id = get_latest_log(logs_path)
     torch.save({'epoch': epoch_id,
                 'state_dict': model.state_dict()},
-                os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
+               os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
     os.remove(os.path.join(logs_path, latest_log))
+
 
 def save_graphs(graphs_path, accuracy, losses, sup_losses, unsup_losses):
 
@@ -156,3 +157,26 @@ def get_hyperparameters_combinations(method):
     permutations_dicts = [dict(zip(keys, v)) for v in itertools.product(*values)]
 
     return permutations_dicts
+
+
+def get_avg_metrics(list_dict_metrics):
+
+    avg_metrics = {}
+
+    for metric_name in METRICS.keys():
+        avg_metrics[metric_name] = 0.
+        for i in range(ONLY_SUP_RUNS):
+            avg_metrics[metric_name] += list_dict_metrics[i][metric_name]
+        avg_metrics[metric_name] /= ONLY_SUP_RUNS
+
+    return avg_metrics
+
+
+def get_metrics_report(dict_metrics):
+
+    report = ''
+
+    for metric_name in dict_metrics.keys():
+        report += metric_name.capitalize() + ': {:.3f}\n'.format(dict_metrics[metric_name])
+
+    return report

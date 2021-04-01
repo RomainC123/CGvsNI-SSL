@@ -75,7 +75,6 @@ parser.add_argument('--batch_size', type=int, default=100, help='input batch siz
 parser.add_argument('--shuffle', type=bool, default=True, help='shuffle bool for train dataset (default: True)')
 
 # Testing paramaters
-parser.add_argument('--test_runs', type=int, default=3, help='number of test runs used to compute avg')
 parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
 parser.add_argument('--decisive_metric', type=str, default='accuracy', help='deciding metric to use in order to choose optimal model')
 
@@ -132,9 +131,10 @@ def main():
         header += f'Dataset name: {args.dataset_name}\n'
         header += f'Image mode: {args.img_mode}'
 
-        print('')
-        print(header)
-        print('Cuda: ', args.cuda)
+        if args.verbose:
+            print('')
+            print(header)
+            print('Cuda: ', args.cuda)
 
         if not args.pretrained:
             with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
@@ -209,6 +209,63 @@ def main():
         method.train(train_dataloader, valuation_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, args.batch_size, args.epochs,
                      args.trained_model_path, start_epoch_id, args.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
 
+    def train_multi(args, mode, subfolder, nb_runs, list_hyperparameters=None):
+        """
+        Automaticly trains a set number of models, with the same hyperparams or with different ones
+        --------------------------------------
+        Inputs:
+        - All relevant infos for normal training
+        - Subfolder in which to save all models (set to None to save in the root model folder)
+        - Number of runs to do
+        - List of hyperparamters to test (overrides the number of runs if provided)
+        Outputs:
+        - Saved models in the given folder
+        - List of dict containing all calculated metrics
+        """
+
+        main_train_id = args.train_id
+        main_full_name = args.full_name
+        main_trained_model_path = args.trained_model_path
+        main_verbose = args.verbose
+
+        list_metrics = []
+
+        if subfolder != None:
+            sub_trained_model_path = os.path.join(main_trained_model_path, subfolder)
+            if not os.path.exists(sub_trained_model_path):
+                os.makedirs(sub_trained_model_path)
+        else:
+            sub_trained_model_path = main_trained_model_path
+
+        args.verbose = False
+
+        if list_hyperparameters != None:
+            for param in tqdm(list_hyperparameters):
+                args.hyperparameters = params
+                args.train_id = utils.get_train_id(sub_trained_model_path)
+                args.full_name = args.train_id
+                args.trained_model_path = os.path.join(sub_trained_model_path, args.full_name)
+                if not os.path.exists(args.trained_model_path):
+                    os.makedirs(args.trained_model_path)
+                train(args, mode)
+                list_metrics.append(test(args))
+        else:
+            for i in tqdm(range(nb_runs)):
+                args.train_id = utils.get_train_id(sub_trained_model_path)
+                args.full_name = args.train_id
+                args.trained_model_path = os.path.join(sub_trained_model_path, args.full_name)
+                if not os.path.exists(args.trained_model_path):
+                    os.makedirs(args.trained_model_path)
+                train(args, mode)
+                list_metrics.append(test(args))
+
+        args.train_id = main_train_id
+        args.full_name = main_full_name
+        args.trained_model_path = main_trained_model_path
+        args.verbose = main_verbose
+
+        return list_metrics
+
     def test(args, mode='default'):
         """
         Runs a set number of tests on a given trained model
@@ -245,9 +302,9 @@ def main():
 
         # Creating testing class
         test_method = methods.TestingClass(args.verbose, args.cuda)
-        report, metrics = test_method.test(test_dataloader, model, args.test_runs)
+        report, metrics = test_method.test(test_dataloader, model, TEST_RUNS)
 
-        report = f'Number of test runs: {args.test_runs}\n' + report
+        report = f'Number of test runs: {TEST_RUNS}\n' + report
 
         with open(os.path.join(args.trained_model_path, f'results_{mode}.txt'), 'w+') as f:
             f.write(report)
@@ -351,39 +408,51 @@ def main():
     if args.supervised_vs_full:
 
         args.pretrained = False
-        args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
 
-        main_train_id = args.train_id
-        main_full_name = args.full_name
-        main_trained_model_path = args.trained_model_path
+        # -----------------------------
 
         print('Training only on the supervised part of the dataset...')
 
-        args.full_name = 'only_supervised'
-        args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
-        if not os.path.exists(args.trained_model_path):
-            os.makedirs(args.trained_model_path)
-        train(args, 'only_supervised')
-        test(args)
+        args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
 
-        print('\nTraining only on the supervised part of the dataset, without the unsupervised loss...')
+        subfolder = 'only_supervised'
+        list_metrics_only_sup = train_multi(args, 'only_supervised', subfolder, ONLY_SUP_RUNS)
+        avg_metrics_only_sup = utils.get_avg_metrics(list_metrics_only_sup)
+        avg_report_only_sup = utils.get_metrics_report(avg_metrics_only_sup)
+
+        if args.verbose:
+            print(avg_report_only_sup)
+
+        with open(os.path.join(args.trained_model_path, subfolder, 'metrics.txt'), 'w+') as f:
+            f.write(avg_report_only_sup)
+
+        # -----------------------------
+
+        print('Training only on the supervised part of the dataset, without the unsupervised loss...')
 
         main_unsup_loss_max_weight = args.hyperparameters['unsup_loss_max_weight']
         args.hyperparameters['unsup_loss_max_weight'] = 0.
 
-        args.full_name = 'only_supervised_no_unsup_loss'
-        args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
-        if not os.path.exists(args.trained_model_path):
-            os.makedirs(args.trained_model_path)
-        train(args, 'only_supervised')
-        test(args)
+        subfolder = 'only_supervised_no_unsup_loss'
+        list_metrics_only_sup_no_unsup_loss = train_multi(args, 'only_supervised', subfolder, ONLY_SUP_RUNS)
+        avg_metrics_only_sup_no_unsup_loss = utils.get_avg_metrics(list_metrics_only_sup_no_unsup_loss)
+        avg_report_only_sup_no_unsup_loss = utils.get_metrics_report(avg_metrics_only_sup_no_unsup_loss)
+
+        if args.verbose:
+            print(avg_report_only_sup_no_unsup_loss)
+
+        with open(os.path.join(args.trained_model_path, subfolder, 'metrics.txt'), 'w+') as f:
+            f.write(avg_report_only_sup_no_unsup_loss)
 
         args.hyperparameters['unsup_loss_max_weight'] = main_unsup_loss_max_weight
 
-        print('\nTraining on all of the dataset')
+        # -----------------------------
 
+        print('Training on all of the dataset')
+
+        args.verbose = False
         args.full_name = 'full_dataset'
-        args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
+        args.trained_model_path = os.path.join(args.trained_model_path, args.full_name)
         if not os.path.exists(args.trained_model_path):
             os.makedirs(args.trained_model_path)
         train(args, 'default')

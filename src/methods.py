@@ -285,7 +285,12 @@ class TestingClass:
         list_classification_reports = []
         dict_metrics_scores = {}
 
-        for i in tqdm(range(nb_runs)):
+        if self.verbose:
+            pbar = tqdm(range(nb_runs))
+        else:
+            pbar = range(nb_runs)
+
+        for i in pbar:
             pred_labels, real_labels = self.test_run(test_dataloader, model)
             list_classification_reports.append(classification_report(real_labels, pred_labels, digits=3, output_dict=True))
             for metric_funct in METRICS.keys():
@@ -295,6 +300,6 @@ class TestingClass:
 
         full_classification_report = utils.avg_classifications_reports(list_classification_reports)
         for metric_funct in dict_metrics_scores.keys():
-            dict_metrics_scores[metric_funct] /= i
+            dict_metrics_scores[metric_funct] /= (i + 1)
 
         return full_classification_report, dict_metrics_scores

@@ -8,6 +8,8 @@ import torchvision.transforms as transforms
 from sklearn.metrics import accuracy_score, f1_score
 
 TRAIN_STEP = 30  # To be set manually
+TEST_RUNS = 3
+ONLY_SUP_RUNS = 10
 
 ROOT_PATH = pathlib.Path(__file__).resolve().parents[1].absolute()
 
