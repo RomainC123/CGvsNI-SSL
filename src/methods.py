@@ -215,10 +215,7 @@ class TemporalEnsemblingClass(SSLMethodClass):
         for idx in range(len(self.y_ema)):
             self.y_ema[idx] = (self.alpha * self.y_ema[idx] + (1 - self.alpha) * self.epoch_output[idx]) / (1 - self.alpha ** epoch_id)
         # Updating unsup weight
-        if epoch_id >= self.ramp_epochs:
-            self.unsup_weight = self.unsup_loss_max_weight
-        else:
-            self.unsup_weight = self.unsup_loss_max_weight * np.exp(-self.ramp_mult * (1 - epoch_id / self.ramp_epochs) ** 2)
+        self.unsup_weight = self.unsup_loss_max_weight * utils.get_weight_ramp_up(epoch_id, self.ramp_mult, self.ramp_epochs)
 
     def set_criterion(self):
         self.criterion = criterions.TemporalLoss(self.cuda)
