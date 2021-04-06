@@ -12,3 +12,6 @@ Balanced sampler
 CGvsNI setup:
   clean folder: dataset files
   raw folder: name_labels at the root of the folder, and then all images in their own folder by dataset
+
+
+Check y_ema

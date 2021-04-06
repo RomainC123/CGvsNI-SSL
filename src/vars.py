@@ -8,6 +8,7 @@ import torchvision.transforms as transforms
 from sklearn.metrics import accuracy_score, f1_score
 
 TRAIN_STEP = 30  # To be set manually
+LOG_INTERVAL = 10  # To be set manually
 TEST_RUNS = 3
 ONLY_SUP_RUNS = 10
 
@@ -35,17 +36,27 @@ TRAIN_TRANSFORMS = {
 
 TEST_TRANSFORMS = {
     'L': transforms.Compose([transforms.ToTensor(),
-                                 transforms.Normalize((0.5), (0.5))]),
+                             transforms.Normalize((0.5), (0.5))]),
     'RGB': transforms.Compose([transforms.ToTensor(),
-                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]),
+                               transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]),
     'CGvsNI': None
+}
+
+OPTIMIZER_PARAMS = {
+    'Adam': {
+        'max_lr': 0.001,
+        'ramp_up_epochs': 50,
+        'ramp_up_mult': 5,
+        'ramp_down_epochs': 20,
+        'ramp_down_mult': 12.5
+    }
 }
 
 HYPERPARAMETERS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
-        'ramp_epochs': 80,
-        'ramp_mult': 5,
+        'unsup_loss_ramp_up_epochs': 80,
+        'unsup_loss_ramp_up_mult': 5,
         'unsup_loss_max_weight': 30.
     }
 }
@@ -53,8 +64,8 @@ HYPERPARAMETERS_DEFAULT = {
 HYPERPARAMETERS_SEARCH = {
     'TemporalEnsembling': {
         'alpha': [0.6],
-        'ramp_epochs': [5],
-        'ramp_mult': [2, 5],
+        'unsup_loss_ramp_up_epochs': [5],
+        'unsup_loss_ramp_up_mult': [2, 5],
         'unsup_loss_max_weight': [20.]
     }
 }

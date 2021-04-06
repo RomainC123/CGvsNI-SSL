@@ -11,8 +11,10 @@ from vars import *
 import methods
 import datasets
 import models
+import optimizer
 import utils
 import networks
+
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -112,102 +114,130 @@ else:
 ################################################################################
 
 
-def main():
+class ModelContainer:
 
-    def train(args, mode='default'):
-        """
-        Trains one model
-        --------------------------------------
-        Inputs:
-        - data type and dataset_name
-        - method and hyperparamters
-        - optimizer
-        Outputs:
-        - saved model logs in logs/
-        - loss graphs in graphs/
-        """
+    def get_info(self):
 
-        header = f'Data: {args.data}\n'
-        header += f'Dataset name: {args.dataset_name}\n'
-        header += f'Image mode: {args.img_mode}'
+        header = f'Train_id: {self.train_id}\n'
+        header += f'Data: {self.data}\n'
+        header += f'Dataset name: {self.dataset_name}\n'
+        header += f'Image mode: {self.img_mode}\n'
+        header += f'Number of training images: {self.nb_img_train}\n'
+        header += f'Number of classes: {self.nb_classes}\n'
+        header += 'Percent of labeled samples: {:.2f}\n\n'.format(self.percent_labeled * 100)
+        header += str(self.model)
+        header += f'\nInit mode: {self.init_mode}\n'
+        header += utils.get_nb_parameters(self.model)
+        header += self.optimizer_wrapper.get_info()
+        header += '-----------------------------------------------\n'
 
-        if args.verbose:
-            print('')
-            print(header)
-            print('Cuda: ', args.cuda)
+        return header
 
-        if not args.pretrained:
-            with open(os.path.join(args.trained_model_path, 'info.txt'), 'w+') as f:
-                f.write(header)
+    def __init__(self, data, dataset_name, img_mode, train_id, optimizer_name, trained_model_path, pretrained, verbose, cuda):
 
-        # Creating Dataloader
-        if args.data in DATASETS_IMPLEMENTED.keys():
-            train_dataset_transforms = TRAIN_TRANSFORMS[args.img_mode]
-            train_dataset = DATASETS_IMPLEMENTED[args.data](args,
-                                                            mode,
-                                                            False,
-                                                            transform=train_dataset_transforms)
-            train_dataloader = DataLoader(train_dataset, **kwargs_train)
-            valuation_dataset = DATASETS_IMPLEMENTED[args.data](args,
-                                                                'valuation',
-                                                                False,
-                                                                transform=train_dataset_transforms)
-            valuation_dataloader = DataLoader(valuation_dataset, **kwargs_train)
-        else:
-            raise RuntimeError(f'Dataset object not implemented for {args.data}')
+        self.data = data
+        self.dataset_name = dataset_name
+        self.img_mode = img_mode
+        self.train_id = train_id
+        self.optimizer_name = optimizer_name
+
+        self.trained_model_path = trained_model_path
+        self.verbose = verbose
+        self.cuda = cuda
 
         # Creating model
-        if args.data in MODELS.keys():
-            model = MODELS[args.data]
-            if args.pretrained:
-                logs_path = os.path.join(args.trained_model_path, 'logs')
-                latest_log, start_epoch_id = utils.get_latest_log(logs_path)
-                checkpoint = torch.load(os.path.join(logs_path, latest_log))
-                model.load_state_dict(checkpoint['state_dict'])
-                init_mode = 'Pretrained'
+        if self.data in MODELS.keys():
+            self.model = MODELS[self.data]
+            if pretrained:
+                self.logs_path = os.path.join(self.trained_model_path, 'logs')
+                latest_log, self.start_epoch_id = utils.get_latest_log(self.logs_path)
+                checkpoint = torch.load(os.path.join(self.logs_path, latest_log))
+                self.model.load_state_dict(checkpoint['state_dict'])
+                self.init_mode = 'Pretrained'
             else:
-                start_epoch_id = 0
-                init_mode = networks.init_weights(model, args.verbose, init_type='normal')
-                # init_mode = 'Normal'
-            if args.cuda:
-                model = model.cuda()
+                self.start_epoch_id = 0
+                self.init_mode = networks.init_weights(self.model, verbose, init_type='normal')
+            if self.cuda:
+                self.model = self.model.cuda()
         else:
-            raise RuntimeError(f'Model object not implemented for {args.data}')
+            raise RuntimeError(f'Model object not implemented for {self.data}')
+
+        # Creating Dataloaders
+        if data in DATASETS_IMPLEMENTED.keys():
+            train_dataset_transforms = TRAIN_TRANSFORMS[self.img_mode]
+            train_dataset = DATASETS_IMPLEMENTED[data](self.data,
+                                                       self.dataset_name,
+                                                       self.img_mode,
+                                                       'Train',
+                                                       transform=train_dataset_transforms)
+            self.train_dataloader = DataLoader(train_dataset, **kwargs_train)
+            only_sup_dataset = DATASETS_IMPLEMENTED[self.data](self.data,
+                                                                self.dataset_name,
+                                                                self.img_mode,
+                                                                'Only Supervised',
+                                                                transform=train_dataset_transforms)
+            self.only_sup_dataloader = DataLoader(only_sup_dataset, **kwargs_train)
+            valuation_dataset = DATASETS_IMPLEMENTED[self.data](self.data,
+                                                                self.dataset_name,
+                                                                self.img_mode,
+                                                                'Valuation',
+                                                                transform=train_dataset_transforms)
+            self.valuation_dataloader = DataLoader(valuation_dataset, **kwargs_train)
+
+            test_dataset_transforms = TEST_TRANSFORMS[self.img_mode]
+            test_dataset = DATASETS_IMPLEMENTED[self.data](self.data,
+                                                           self.dataset_name,
+                                                           self.img_mode,
+                                                           'Test',
+                                                           transform=test_dataset_transforms)
+            self.test_dataloader = DataLoader(test_dataset, **kwargs_test)
+        else:
+            raise RuntimeError(f'Dataset object not implemented for {self.data}')
 
         # Useful variables
-        nb_img_train = len(train_dataset)
-        nb_classes = train_dataset.nb_classes
-        percent_labeled = train_dataset.percent_labeled
-        nb_batches = len(train_dataloader)
+        self.nb_img_train = len(train_dataset)
+        self.nb_classes = train_dataset.nb_classes
+        self.percent_labeled = train_dataset.percent_labeled
+        self.nb_batches = len(self.train_dataloader)
+
+        self.nb_img_test = len(test_dataset)
+
+        # Weight schedules
+        self.optimizer_wrapper = optimizer.OptimizerWrapper(self.optimizer_name)
+
+        # Getting all relevant info
+        header = self.get_info()
+        with open(os.path.join(trained_model_path, 'info.txt'), 'a+') as f:
+            f.write(header)
+        if verbose:
+            print(header)
+
+    def train(self, mode, method, hyperparameters, epochs, nb_train=1):
 
         # Creating training method
-        if args.method in METHODS_IMPLEMENTED:
-            method = METHODS_IMPLEMENTED[args.method](args.hyperparameters, nb_img_train, nb_classes, percent_labeled, nb_batches, args.batch_size, args.log_interval, args.cuda, args.verbose)
+        if method in METHODS_IMPLEMENTED.keys():
+            method = METHODS_IMPLEMENTED[method](hyperparameters, self.nb_img_train, self.nb_classes, self.percent_labeled,
+                                                 self.nb_batches, args.batch_size, self.verbose, self.cuda)
         else:
-            raise RuntimeError(f'Method not implemented: {args.method}')
+            raise RuntimeError(f'Method not implemented: {method}')
 
-        # Creating optimizer
-        if args.optimizer == 'Adam':
-            optimizer = Adam(model.parameters(), lr=0.003, betas=(0.9, 0.999))
-        elif args.optimizer == 'SGD':
-            optimizer = None  # TODO!
+        if mode == 'Train':
+            train_dataloader = self.train_dataloader
+        elif mode == 'Only Supervised':
+            train_dataloader = self.only_sup_dataloader
+
+        if nb_train == 1:
+            method.train(train_dataloader, self.valuation_dataloader, self.model, self.optimizer_wrapper,
+                         self.nb_img_train, self.nb_classes, self.nb_batches, args.batch_size, epochs,
+                         self.trained_model_path, self.start_epoch_id, self.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
         else:
-            raise RuntimeError(f'Optimizer not implemented: {args.optimizer}')
+            for i in range(1, nb_runs + 1):
+                sub_model_path = os.path.join(self.trained_model_path, i)
+                method.train(train_dataloader, self.valuation_dataloader, self.model, self.optimizer_wrapper,
+                             self.nb_img_train, self.nb_classes, self.nb_batches, args.batch_size, epochs,
+                             sub_model_path, self.start_epoch_id, self.verbose)
 
-        train_info = '\n-----------------------------------------------\n'
-        train_info += utils.get_train_info(model, nb_img_train, nb_classes, percent_labeled, args.epochs, args.batch_size, nb_batches, args.shuffle, method, args.train_id, optimizer, init_mode)
-
-        if args.verbose:
-            print(train_info)
-            print(model)
-            print(f'Initialisation mode: {init_mode}')
-            print(utils.get_nb_parameters(model))
-
-        with open(os.path.join(args.trained_model_path, 'info.txt'), 'a') as f:
-            f.write(train_info)
-
-        method.train(train_dataloader, valuation_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, args.batch_size, args.epochs,
-                     args.trained_model_path, start_epoch_id, args.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
+def main():
 
     def train_multi(args, mode, subfolder, nb_runs, list_hyperparameters=None):
         """
@@ -332,13 +362,17 @@ def main():
     if not os.path.exists(args.trained_model_path):
         os.makedirs(args.trained_model_path)
 
+    container = ModelContainer(args.data, args.dataset_name, args.img_mode,
+                               args.train_id, 'Adam', args.trained_model_path, args.pretrained,
+                               args.verbose, args.cuda)
+
     if args.train:  # Trains one model
 
         print('Starting training...')
 
-        args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
-        train(args)
-        test(args, 'training_set')
+        train_mode = 'Train'
+        nb_runs = 1
+        container.train(train_mode, args.method, HYPERPARAMETERS_DEFAULT[args.method], args.epochs, nb_runs)
 
         print('Training done!')
 

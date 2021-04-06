@@ -30,24 +30,23 @@ class DatasetSSL(data.Dataset):
         len and getitem
     """
 
-    def load_dataset(self, fpath, mode, test):
+    def load_dataset(self, fpath, mode):
         # Loads the dataframe containing image names and labels
 
         df_imgs = pd.read_csv(fpath)
 
-        if not test:
-            df_imgs = df_imgs[~df_imgs['Test']]
-            if mode == 'only_supervised':
-                df_imgs = df_imgs[(df_imgs['Train label'] != -1) & (df_imgs['Train label'] != '-1')][['Name', 'Train label']]
-            elif mode =='valuation':
-                df_imgs = df_imgs[df_imgs['Val']][['Name', 'Real label']]
-            else:
-                df_imgs = df_imgs[['Name', 'Train label']]
+        if mode == 'Train':
+            df_imgs = df_imgs[~df_imgs['Test']][['Name', 'Train label']]
+        elif mode == 'Only Supervised':
+            df_imgs = df_imgs[~df_imgs['Test'] & (df_imgs['Train label'] != -1) & (df_imgs['Train label'] != '-1')][['Name', 'Train label']]
+        elif mode == 'Valuation':
+            df_imgs = df_imgs[~df_imgs['Test'] & df_imgs['Val']][['Name', 'Real label']]
+        elif mode == 'Test':
+            df_imgs = df_imgs[df_imgs['Test']][['Name', 'Real label']]
+        elif mode == 'Test Training':
+            df_imgs = df_imgs[~df_imgs['Test']][['Name', 'Real label']]
         else:
-            if mode == 'training_set':
-                df_imgs = df_imgs[~df_imgs['Test']][['Name', 'Real label']]
-            else:
-                df_imgs = df_imgs[df_imgs['Test']][['Name', 'Real label']]
+            raise RuntimeError(f'Unknown mode: {mode}')
 
         df_imgs.rename(columns={df_imgs.columns[0]: 'Name', df_imgs.columns[1]: 'Label'}, inplace=True)
         return df_imgs.reset_index(drop=True)
@@ -61,24 +60,24 @@ class DatasetSSL(data.Dataset):
         # To overload
         pass
 
-    def __init__(self, args, mode, test, transform=None, target_transform=None):
+    def __init__(self, data, dataset_name, img_mode, mode, transform=None, target_transform=None):
 
-        self.raw_path = os.path.join(DATASETS_PATH, args.data, 'raw')
+        self.raw_path = os.path.join(DATASETS_PATH, data, 'raw')
         if not os.path.exists(self.raw_path):
             raise RuntimeError('Please create raw folder and populate it')
 
-        self.clean_path = os.path.join(DATASETS_PATH, args.data, 'clean')
+        self.clean_path = os.path.join(DATASETS_PATH, data, 'clean')
         if not os.path.exists(self.clean_path):
             raise RuntimeError('Please create clean folder and populate it')
 
-        fpath = os.path.join(self.clean_path, args.dataset_name + '.csv')
+        fpath = os.path.join(self.clean_path, dataset_name + '.csv')
         if not os.path.exists(fpath):
             raise RuntimeError('Dataset not found')
 
-        self.df_imgs = self.load_dataset(fpath, mode, test)
+        self.df_imgs = self.load_dataset(fpath, mode)
 
         labels = self.df_imgs['Label'].unique()
-        if not test:
+        if not mode.split(' ')[0] == 'Test':
             if -1 in labels:
                 self.nb_classes = len(labels) - 1
             else:
@@ -88,7 +87,7 @@ class DatasetSSL(data.Dataset):
             self.nb_classes = len(labels)
             self.percent_labeled = 1.
 
-        self.img_mode = args.img_mode
+        self.img_mode = img_mode
         self.transform = transform
         self.target_transform = target_transform
 

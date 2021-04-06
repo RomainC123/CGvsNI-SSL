@@ -47,7 +47,7 @@ class SSLMethodClass:
         # To be overloaded
         pass
 
-    def __init__(self, hyperparameters, nb_img_train, nb_classes, percent_labeled, nb_batches, batch_size, log_interval, cuda, verbose):
+    def __init__(self, hyperparameters, nb_img_train, nb_classes, percent_labeled, nb_batches, batch_size, verbose, cuda):
 
         self.batch_idx = 0
 
@@ -56,9 +56,10 @@ class SSLMethodClass:
         self.percent_labeled = percent_labeled
         self.nb_batches = nb_batches
         self.batch_size = batch_size
-        self.log_interval = log_interval
-        self.cuda_var = cuda
         self.verbose = verbose
+        self.cuda_var = cuda
+
+        self.unsup_weight_scheduler = utils.WeightSchedule(hyperparameters['unsup_loss_ramp_up_epochs'], hyperparameters['unsup_loss_ramp_up_epochs'])
 
         self.set_hyperparameters(hyperparameters)
         self.init_vars()
@@ -105,7 +106,7 @@ class SSLMethodClass:
             sup_loss_epoch += sup_loss.detach()
             unsup_loss_epoch += unsup_loss.detach()
 
-            if batch_idx % self.log_interval == 0 and self.verbose:
+            if batch_idx % LOG_INTERVAL == 0 and self.verbose:
                 pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f}'.format(epoch_id,
                                                                                                  epochs + start_epoch_id,
                                                                                                  batch_idx * len(data),
@@ -147,7 +148,10 @@ class SSLMethodClass:
 
         return accuracy_score(real_labels, pred_labels)
 
-    def train(self, train_dataloader, valuation_dataloader, model, optimizer, nb_img_train, nb_classes, nb_batches, batch_size, epochs, trained_model_path, start_epoch_id, verbose):
+    def train(self, train_dataloader, valuation_dataloader, model, optimizer_wrapper, nb_img_train, nb_classes, nb_batches, batch_size, epochs, trained_model_path, start_epoch_id, verbose):
+
+        self.start_epoch_id = start_epoch_id
+        self.epochs = epochs
 
         logs_path = os.path.join(trained_model_path, 'logs')
         if not os.path.exists(logs_path):
@@ -176,8 +180,9 @@ class SSLMethodClass:
             with open(os.path.join(graphs_path, 'unsup_loss.pkl'), 'rb') as f:
                 unsup_losses = pickle.load(f)
 
-        for epoch_id in range(1 + start_epoch_id, epochs + 1 + start_epoch_id):
-            self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs, start_epoch_id)
+        for epoch_id in range(1 + self.start_epoch_id, epochs + 1 + self.start_epoch_id):
+            optimizer = optimizer_wrapper.get(model, self.start_epoch_id, epochs + self.start_epoch_id)
+            self.epoch_output, loss, sup_loss, unsup_loss = self.epoch(train_dataloader, model, optimizer, epoch_id, epochs, self.start_epoch_id)
             self.update_vars(epoch_id)
 
             accuracy.append(self.eval(valuation_dataloader, model))
@@ -202,8 +207,8 @@ class TemporalEnsemblingClass(SSLMethodClass):
 
     def set_hyperparameters(self, hyperparameters):
         self.alpha = hyperparameters['alpha']
-        self.ramp_epochs = hyperparameters['ramp_epochs']
-        self.ramp_mult = hyperparameters['ramp_mult']
+        self.ramp_epochs = hyperparameters['unsup_loss_ramp_up_epochs']
+        self.ramp_mult = hyperparameters['unsup_loss_ramp_up_mult']
         self.unsup_loss_max_weight = hyperparameters['unsup_loss_max_weight'] * self.percent_labeled
 
     def init_vars(self):
@@ -215,7 +220,7 @@ class TemporalEnsemblingClass(SSLMethodClass):
         for idx in range(len(self.y_ema)):
             self.y_ema[idx] = (self.alpha * self.y_ema[idx] + (1 - self.alpha) * self.epoch_output[idx]) / (1 - self.alpha ** epoch_id)
         # Updating unsup weight
-        self.unsup_weight = self.unsup_loss_max_weight * utils.get_weight_ramp_up(epoch_id, self.ramp_mult, self.ramp_epochs)
+        self.unsup_weight = self.unsup_loss_max_weight * self.unsup_weight_scheduler.step(self.start_epoch_id, self.epochs)
 
     def set_criterion(self):
         self.criterion = criterions.TemporalLoss(self.cuda)
@@ -236,8 +241,8 @@ class TemporalEnsemblingClass(SSLMethodClass):
         info_string += f'Ramp mult: {self.ramp_mult}\n'
         return info_string
 
-    def __init__(self, hyperparameters, nb_img_train, nb_classes, percent_labeled, nb_batches, batch_size, log_interval, cuda, verbose):
-        SSLMethodClass.__init__(self, hyperparameters, nb_img_train, nb_classes, percent_labeled, nb_batches, batch_size, log_interval, cuda, verbose)
+    def __init__(self, hyperparameters, nb_img_train, nb_classes, percent_labeled, nb_batches, batch_size, verbose, cuda):
+        SSLMethodClass.__init__(self, hyperparameters, nb_img_train, nb_classes, percent_labeled, nb_batches, batch_size, verbose, cuda)
 
 ################################################################################
 #   Testing class                                                              #

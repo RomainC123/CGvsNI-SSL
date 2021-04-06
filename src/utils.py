@@ -5,6 +5,7 @@
 import os
 import pickle
 import pandas as pd
+import numpy as np
 
 from vars import *
 
@@ -18,40 +19,29 @@ from sklearn.metrics import classification_report
 
 class WeightSchedule:
 
-    def __init__(self, up_epochs, ramp_mult_up, down_epochs=0, total_epochs=0, ramp_mult_down=0):
+    def __init__(self, ramp_up_epochs, ramp_up_mult, ramp_down_epochs=0, ramp_down_mult=0):
 
-        self.up_epochs = up_epochs
-        self.down_epochs = down_epochs
-        self.total_epochs = total_epochs
+        self.ramp_up_epochs = ramp_up_epochs
         self.ramp_up_mult = ramp_up_mult
+        self.ramp_down_epochs = ramp_down_epochs
         self.ramp_down_mult = ramp_down_mult
 
         self.weight = 0.
         self.epoch = 0
 
-    def step(self):
+    def step(self, start_epoch, total_epochs):
 
-        selF.epoch += 1
-        self.weight = np.exp(-self.ramp_up_mult * (1 - self.epoch / self.up_epochs) ** 2)
+        self.epoch = start_epoch
+        self.epoch += 1
+
+        if self.epoch < self.ramp_up_epochs:
+            self.weight = np.exp(-self.ramp_up_mult * (1 - self.epoch / self.ramp_up_epochs) ** 2)
+        elif self.epoch > total_epochs - self.ramp_down_epochs and self.ramp_down_epochs != 0:
+            self.weight = np.exp(-self.ramp_down_mult * ((self.epoch - (total_epochs - self.ramp_down_epochs)) / self.ramp_down_epochs) ** 2)
+        else:
+            self.weight = 1.
+
         return self.weight
-
-
-def get_weight_ramp_up(epoch_id, ramp_mult, ramp_epochs):
-
-    if epoch_id >= ramp_epochs:
-        return 1.
-    else:
-        return np.exp(-ramp_mult * (1 - epoch_id / ramp_epochs) ** 2)
-
-
-def get_weight_ramp_up_down(epoch_id, up_epochs, down_epochs, total_epochs, ramp_mult_up, ramp_mult_down):
-
-    if epoch_id < up_epochs:
-        return np.exp(-ramp_mult_up * (1 - epoch_id / up_epochs) ** 2)
-    elif epoch_id > down_epochs:
-        return np.exp(-ramp_mult_down * (1 - (total_epochs - epoch_id) / (total_epochs - down_epochs)) ** 2)
-    else:
-        return 1.
 
 
 def get_train_id(fpath):
@@ -79,7 +69,7 @@ def get_trained_model_from_id(train_id):
     raise RuntimeError(f'Train id not found: {train_id}')
 
 
-def get_train_info(model, nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer, init_mode):
+def get_container_info(model, nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer, init_mode):
 
     def get_optimizer_info(optimizer):
         params_dict = optimizer.state_dict()['param_groups'][0]
