@@ -342,6 +342,8 @@ def main():
 
         print('Training done!')
 
+    # -----------------------------
+
     if args.test:  # Tests one trained model
 
         print('Running tests...')
@@ -349,6 +351,8 @@ def main():
         test(args)  # Here, the function returns something, but it's not usefull
 
         print('Tests done!')
+
+    # -----------------------------
 
     if args.train_test:  # Tests one trained model
 
@@ -362,6 +366,8 @@ def main():
         test(args)
 
         print('Tests done!')
+
+    # -----------------------------
 
     if args.params_optim:  # From a number of hyperparamters, returns the set that goves the best performance
 

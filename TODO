@@ -1,8 +1,6 @@
 Debug CIFAR10
 Add a testing on train set functionality at the end of train
 
-
-Add accuracy averaging on only supervised runs
 Implement CGvsNI dataset structure (image folder complete)
 Normalize display (saved graphs) for the losses
 
