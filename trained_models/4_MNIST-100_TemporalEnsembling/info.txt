@@ -1,0 +1,32 @@
+Data: MNIST
+Dataset name: MNIST-100
+Image mode: L
+Number of training images: 56000
+Number of classes: 10
+Percent of labeled samples: 0.18
+-----------------------------------------------
+Train_id: 4
+MNISTModel(
+  (act): ReLU()
+  (drop): Dropout(p=0.5, inplace=False)
+  (conv1): Conv2d(1, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv2): Conv2d(16, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (mp): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  (fc): Linear(in_features=1568, out_features=10, bias=True)
+)
+Init mode: Normal
+Trainable paramaters: 20538
+-----------------------------------------------
+
+Optimizer: Adam
+Max learning rate: 0.003
+Ramp up epochs: 80
+Ramp up mult: 5
+Ramp down epochs: 50
+Ramp down mult: 12.5
+-----------------------------------------------
+Method: Temporal Ensembling
+Alpha: 0.6
+Unsupervised loss max weight (corrected with percent labels): 0.1
+Ramp epochs: 80
+Ramp mult: 5
