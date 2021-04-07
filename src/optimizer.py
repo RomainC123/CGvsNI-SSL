@@ -28,7 +28,7 @@ class OptimizerWrapper:
 
     def get_info(self):
 
-        infos = f'\nOptimizer: {self.name}\n'
+        infos = f'Optimizer: {self.name}\n'
         infos += f'Max learning rate: {self.max_lr}\n'
         infos += f'Ramp up epochs: {self.ramp_up_epochs}\n'
         infos += f'Ramp up mult: {self.ramp_up_mult}\n'

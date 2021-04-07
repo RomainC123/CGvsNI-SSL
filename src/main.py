@@ -259,7 +259,7 @@ class ModelContainer:
         with open(os.path.join(self.trained_model_path, 'info.txt'), 'a+') as f:
             f.write(infos_model_optim + infos_method)
         if self.verbose:
-            print(infos_model_optim + infos_method)
+            print(infos_model_optim + infos_method + f'Cuda: {self.cuda}\n')
 
         if mode == 'default':
             train_dataloader = self.train_dataloader
@@ -274,7 +274,7 @@ class ModelContainer:
 
         # Creating testing class
         test_method = methods.TestingClass(self.verbose, self.cuda)
-        report, metrics = test_method.test(self.test_dataloader, self.model, TEST_RUNS)
+        report, self.metrics = test_method.test(self.test_dataloader, self.model, TEST_RUNS)
 
         if self.verbose:
             print(report)
@@ -356,34 +356,26 @@ def main():
         list_hyperparameters = utils.get_hyperparameters_combinations(args.method)
         print(f'Testing {len(list_hyperparameters)} combinations')
 
-        main_train_id = args.train_id
-        main_full_name = args.full_name
-        main_trained_model_path = args.trained_model_path
-
         best_model_id = 0
         best_model_metrics = {}
         for metric_funct in METRICS.keys():
             best_model_metrics[metric_funct] = 0.
 
-        for params in list_hyperparameters:
-            args.train_id = utils.get_train_id(main_trained_model_path)
-            args.full_name = args.train_id
-            args.trained_model_path = os.path.join(main_trained_model_path, args.full_name)
-            if not os.path.exists(args.trained_model_path):
-                os.makedirs(args.trained_model_path)
+        train_mode = 'default'
+        for i in range(len(list_hyperparameters)):
 
-            args.hyperparameters = params
+            sub_model_path = os.path.join(args.trained_model_path, str(i + 1))
+            if not os.path.exists(sub_model_path):
+                os.makedirs(sub_model_path)
 
-            train(args)
-            model_metrics = test(args)
+            model_container = ModelContainer(data_container, args.train_id, args.optimizer, sub_model_path, args.pretrained, args.verbose, args.cuda)
 
-            if model_metrics[args.decisive_metric] > best_model_metrics[args.decisive_metric]:
-                best_model_id = args.train_id
-                best_model_metrics = model_metrics
+            model_container.train(train_mode, args.method, list_hyperparameters[i], args.epochs)
+            model_container.test()
 
-        args.train_id = main_train_id
-        args.full_name = main_full_name
-        args.trained_model_path = main_trained_model_path
+            if model_container.metrics[args.decisive_metric] > best_model_metrics[args.decisive_metric]:
+                best_model_id = i
+                best_model_metrics = model_container.metrics
 
         copy_tree(os.path.join(args.trained_model_path, best_model_id), os.path.join(args.trained_model_path, 'best-model'))
 
@@ -398,7 +390,7 @@ def main():
 
         print('Training only on the supervised part of the dataset...')
 
-        args.hyperparameters = HYPERPARAMETERS_DEFAULT[args.method]
+        HYPERPARAMETERS_DEFAULT[args.method]
 
         subfolder = 'only_supervised'
         list_metrics_only_sup = train_multi(args, 'only_supervised', subfolder, ONLY_SUP_RUNS)
