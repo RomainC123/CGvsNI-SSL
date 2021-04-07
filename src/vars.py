@@ -44,10 +44,10 @@ TEST_TRANSFORMS = {
 
 OPTIMIZER_PARAMS = {
     'Adam': {
-        'max_lr': 0.001,
-        'ramp_up_epochs': 50,
+        'max_lr': 0.003,
+        'ramp_up_epochs': 80,
         'ramp_up_mult': 5,
-        'ramp_down_epochs': 20,
+        'ramp_down_epochs': 50,
         'ramp_down_mult': 12.5
     }
 }

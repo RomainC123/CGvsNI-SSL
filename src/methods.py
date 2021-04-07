@@ -220,7 +220,7 @@ class TemporalEnsemblingClass(SSLMethodClass):
         for idx in range(len(self.y_ema)):
             self.y_ema[idx] = (self.alpha * self.y_ema[idx] + (1 - self.alpha) * self.epoch_output[idx]) / (1 - self.alpha ** epoch_id)
         # Updating unsup weight
-        self.unsup_weight = self.unsup_loss_max_weight * self.unsup_weight_scheduler.step(self.start_epoch_id, self.epochs)
+        self.unsup_weight = self.unsup_loss_max_weight * self.unsup_weight_scheduler.step(self.epochs, self.start_epoch_id)
 
     def set_criterion(self):
         self.criterion = criterions.TemporalLoss(self.cuda)

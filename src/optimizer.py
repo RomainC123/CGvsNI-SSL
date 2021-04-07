@@ -39,5 +39,5 @@ class OptimizerWrapper:
 
     def get(self, model, start_epoch, total_epochs):
 
-        self.lr = self.lr_schedule.step(start_epoch, total_epochs) * self.max_lr
+        self.lr = self.lr_schedule.step(total_epochs, start_epoch) * self.max_lr
         return self.optimizer_function(model.parameters(), lr=self.lr, betas=(0.9, 0.999))
