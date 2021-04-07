@@ -122,7 +122,7 @@ class DataContainer:
         header = f'Data: {self.data}\n'
         header += f'Dataset name: {self.dataset_name}\n'
         header += f'Image mode: {self.img_mode}\n'
-        header += f'Number of training images: {self.nb_img_train}\n'
+        header += f'Number of training images: {self.default_info["nb_imgs_train"]}\n'
         header += f'Number of classes: {self.nb_classes}\n'
         header += 'Percent of labeled samples: {:.2f}\n'.format(self.percent_labeled * 100)
         header += '-----------------------------------------------\n'
@@ -170,11 +170,18 @@ class DataContainer:
             raise RuntimeError(f'Dataset object not implemented for {self.data}')
 
         # Useful variables
-        self.nb_img_train = len(train_dataset)
+        self.default_info = {
+            'nb_imgs_train': len(train_dataset),
+            'nb_batches': len(self.train_dataloader)
+        }
+
+        self.only_sup_info = {
+            'nb_imgs_train': len(only_sup_dataset),
+            'nb_batches': len(self.only_sup_dataloader)
+        }
+
         self.nb_classes = train_dataset.nb_classes
         self.percent_labeled = train_dataset.percent_labeled
-        self.nb_batches = len(self.train_dataloader)
-
         self.nb_img_test = len(test_dataset)
 
         # Saving all relevant info
@@ -212,10 +219,11 @@ class ModelContainer:
         self.valuation_dataloader = data_container.valuation_dataloader
         self.test_dataloader = data_container.test_dataloader
 
-        self.nb_img_train = data_container.nb_img_train
+        self.default_info = data_container.default_info
+        self.only_sup_info = data_container.only_sup_info
+
         self.nb_classes = data_container.nb_classes
         self.percent_labeled = data_container.percent_labeled
-        self.nb_batches = data_container.nb_batches
         self.nb_img_test = data_container.nb_img_test
 
         self.train_id = train_id
@@ -246,28 +254,33 @@ class ModelContainer:
 
     def train(self, mode, method, hyperparameters, epochs):
 
+        if mode == 'default':
+            train_dataloader = self.train_dataloader
+            nb_img_train = self.default_info['nb_imgs_train']
+            nb_batches = self.default_info['nb_batches']
+        elif mode == 'only_supervised':
+            train_dataloader = self.only_sup_dataloader
+            nb_img_train = self.only_sup_info['nb_imgs_train']
+            nb_batches = self.only_sup_info['nb_batches']
+
         # Creating training method
         if method in METHODS_IMPLEMENTED.keys():
-            method_container = METHODS_IMPLEMENTED[method](hyperparameters, self.nb_img_train, self.nb_classes, self.percent_labeled,
-                                                           self.nb_batches, args.batch_size, self.verbose, self.cuda)
+            method_container = METHODS_IMPLEMENTED[method](hyperparameters, nb_img_train, self.nb_classes, self.percent_labeled,
+                                                           nb_batches, args.batch_size, self.verbose, self.cuda)
         else:
             raise RuntimeError(f'Method not implemented: {method}')
 
         # Saving all relevant info
         infos_model_optim = self.get_info_model_optim()
         infos_method = method_container.get_info()
+        save_str = infos_model_optim + infos_method + f'-----------------------------------------------\nEpochs: {epochs}\n'
         with open(os.path.join(self.trained_model_path, 'info.txt'), 'a+') as f:
-            f.write(infos_model_optim + infos_method)
+            f.write(save_str)
         if self.verbose:
-            print(infos_model_optim + infos_method + f'Cuda: {self.cuda}\n')
-
-        if mode == 'default':
-            train_dataloader = self.train_dataloader
-        elif mode == 'only_supervised':
-            train_dataloader = self.only_sup_dataloader
+            print(save_str + f'Cuda: {self.cuda}\n')
 
         method_container.train(train_dataloader, self.valuation_dataloader, self.model, self.optimizer_wrapper,
-                               self.nb_img_train, self.nb_classes, self.nb_batches, args.batch_size, epochs,
+                               nb_img_train, self.nb_classes, nb_batches, args.batch_size, epochs,
                                self.trained_model_path, self.start_epoch_id, self.verbose)  # Doesn't return anything, just saves all relevant data its dedicated folder
 
     def test(self):
@@ -390,50 +403,92 @@ def main():
 
         print('Training only on the supervised part of the dataset...')
 
-        HYPERPARAMETERS_DEFAULT[args.method]
-
         subfolder = 'only_supervised'
-        list_metrics_only_sup = train_multi(args, 'only_supervised', subfolder, ONLY_SUP_RUNS)
+        train_mode = 'only_supervised'
+        list_metrics_only_sup = []
+
+        if args.verbose:
+            pbar = tqdm(range(ONLY_SUP_RUNS))
+        else:
+            pbar = range(ONLY_SUP_RUNS)
+
+        for i in pbar:
+
+            sub_model_path = os.path.join(args.trained_model_path, subfolder, str(i + 1))
+            if not os.path.exists(sub_model_path):
+                os.makedirs(sub_model_path)
+
+            model_container = ModelContainer(data_container, args.train_id, args.optimizer, sub_model_path, args.pretrained, False, args.cuda)
+
+            model_container.train(train_mode, args.method, HYPERPARAMETERS_DEFAULT[args.method], args.epochs)
+            model_container.test()
+
+            list_metrics_only_sup.append(model_container.metrics)
+
         avg_metrics_only_sup = utils.get_avg_metrics(list_metrics_only_sup)
         avg_report_only_sup = utils.get_metrics_report(avg_metrics_only_sup)
 
-        if args.verbose:
-            print(avg_report_only_sup)
-
         with open(os.path.join(args.trained_model_path, subfolder, 'metrics.txt'), 'w+') as f:
             f.write(avg_report_only_sup)
+
+        if args.verbose:
+            print(avg_report_only_sup)
 
         # -----------------------------
 
         print('Training only on the supervised part of the dataset, without the unsupervised loss...')
 
-        main_unsup_loss_max_weight = args.hyperparameters['unsup_loss_max_weight']
-        args.hyperparameters['unsup_loss_max_weight'] = 0.
+        hyperparameters_no_unsup_loss = HYPERPARAMETERS_DEFAULT[args.method]
+        hyperparameters_no_unsup_loss['unsup_loss_max_weight'] = 0.
 
         subfolder = 'only_supervised_no_unsup_loss'
-        list_metrics_only_sup_no_unsup_loss = train_multi(args, 'only_supervised', subfolder, ONLY_SUP_RUNS)
-        avg_metrics_only_sup_no_unsup_loss = utils.get_avg_metrics(list_metrics_only_sup_no_unsup_loss)
-        avg_report_only_sup_no_unsup_loss = utils.get_metrics_report(avg_metrics_only_sup_no_unsup_loss)
+        train_mode = 'only_supervised'
+        list_metrics_only_sup_no_unsup_loss = []
 
         if args.verbose:
-            print(avg_report_only_sup_no_unsup_loss)
+            pbar = tqdm(range(ONLY_SUP_RUNS))
+        else:
+            pbar = range(ONLY_SUP_RUNS)
+
+        for i in pbar:
+
+            sub_model_path = os.path.join(args.trained_model_path, subfolder, str(i + 1))
+            if not os.path.exists(sub_model_path):
+                os.makedirs(sub_model_path)
+
+            model_container = ModelContainer(data_container, args.train_id, args.optimizer, sub_model_path, args.pretrained, False, args.cuda)
+
+            model_container.train(train_mode, args.method, hyperparameters_no_unsup_loss, args.epochs)
+            model_container.test()
+
+            list_metrics_only_sup_no_unsup_loss.append(model_container.metrics)
+
+        avg_metrics_only_sup_no_unsup_loss = utils.get_avg_metrics(list_metrics_only_sup_no_unsup_loss)
+        avg_report_only_sup_no_unsup_loss = utils.get_metrics_report(avg_metrics_only_sup_no_unsup_loss)
 
         with open(os.path.join(args.trained_model_path, subfolder, 'metrics.txt'), 'w+') as f:
             f.write(avg_report_only_sup_no_unsup_loss)
 
-        args.hyperparameters['unsup_loss_max_weight'] = main_unsup_loss_max_weight
+        if args.verbose:
+            print(avg_report_only_sup_no_unsup_loss)
 
         # -----------------------------
 
         print('Training on all of the dataset')
 
-        args.verbose = False
-        args.full_name = 'full_dataset'
-        args.trained_model_path = os.path.join(args.trained_model_path, args.full_name)
-        if not os.path.exists(args.trained_model_path):
-            os.makedirs(args.trained_model_path)
-        train(args, 'default')
-        test(args)
+        subfolder = 'full_dataset'
+        train_mode = 'default'
+        sub_model_path = os.path.join(args.trained_model_path, subfolder)
+        if not os.path.exists(sub_model_path):
+            os.makedirs(sub_model_path)
+            
+        model_container = ModelContainer(data_container, args.train_id, args.optimizer, sub_model_path, args.pretrained, False, args.cuda)
+
+        model_container.train(train_mode, args.method, HYPERPARAMETERS_DEFAULT[args.method], args.epochs)
+        model_container.test()
+
+        if args.verbose:
+            print(utils.get_metrics_report(model_container.metrics))
 
 
 if __name__ == '__main__':

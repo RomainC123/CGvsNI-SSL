@@ -1,0 +1,7 @@
+Data: MNIST
+Dataset name: MNIST-100
+Image mode: L
+Number of training images: 56000
+Number of classes: 10
+Percent of labeled samples: 0.18
+-----------------------------------------------
