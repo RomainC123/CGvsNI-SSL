@@ -1,7 +1,0 @@
-Data: CIFAR10
-Dataset name: CIFAR10-full-10000
-Image mode: RGB
-Number of training images: 50000
-Number of classes: 10
-Percent of labeled samples: 20.00
------------------------------------------------
