@@ -22,6 +22,10 @@ TRAINED_MODELS_PATH = os.path.join(ROOT_PATH, 'trained_models')  # Graphs path
 if not os.path.exists(TRAINED_MODELS_PATH):
     os.makedirs(TRAINED_MODELS_PATH)
 
+SAVED_MODELS_PATH = os.path.join(ROOT_PATH, 'saved_models')  # Graphs path
+if not os.path.exists(SAVED_MODELS_PATH):
+    os.makedirs(SAVED_MODELS_PATH)
+
 METRICS = {
     'accuracy': accuracy_score,
 }

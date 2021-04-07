@@ -48,6 +48,12 @@ NB_IMGS_TO_SHOW = 9
 
 parser = argparse.ArgumentParser(description='Semi-supervised MNIST display')
 
+# Folder to use
+parser.add_argument('--trained', dest='trained', action='store_true')
+parser.set_defaults(trained=False)
+parser.add_argument('--saved', dest='saved', action='store_true')
+parser.set_defaults(saved=False)
+
 # Functionalities
 parser.add_argument('--graphs', dest='graphs', action='store_true')
 parser.set_defaults(graphs=False)
@@ -60,6 +66,8 @@ parser.add_argument('--dataset_name', type=str, help='name of the saved dataset 
 parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
 parser.add_argument('--train_id', type=int, help='index of the trained model to load for tests. In case of training, gets overwritten')
 parser.add_argument('--subfolder', type=str, help='Subfolder to use, default to None')
+
+parser.add_argument('--full_name', type=str, help='full name of the model to check (only used to check saved models)')
 
 # Hardware parameter
 parser.add_argument('--no_cuda', default=False, help='disables CUDA')
@@ -110,7 +118,7 @@ def main():
         ax2.plot(range(epochs), sup_losses, label='Supervised loss')
         ax2.plot(range(epochs), unsup_losses, label='Unsupervised loss')
         ax2.legend()
-        
+
         plt.show()
 
     def show_example(args):
@@ -169,12 +177,16 @@ def main():
 
 # ------------------------------------------------------------------------------
 
-    args.full_name = utils.get_trained_model_from_id(args.train_id)
+    if args.trained:
+        main_path = TRAINED_MODELS_PATH
+        args.full_name = utils.get_trained_model_from_id(args.train_id)
+    elif args.saved:
+        main_path = SAVED_MODELS_PATH
 
     if args.subfolder != None:
         args.full_name = os.path.join(args.full_name, args.subfolder)
 
-    args.trained_model_path = os.path.join(TRAINED_MODELS_PATH, args.full_name)
+    args.trained_model_path = os.path.join(main_path, args.full_name)
     if not os.path.exists(args.trained_model_path):
         raise RuntimeError('Please provide a valid train_id')
 
