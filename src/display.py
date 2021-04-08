@@ -59,6 +59,8 @@ parser.add_argument('--graphs', dest='graphs', action='store_true')
 parser.set_defaults(graphs=False)
 parser.add_argument('--examples', dest='examples', action='store_true')
 parser.set_defaults(examples=False)
+parser.add_argument('--weight-schedule', dest='weight_schedule', action='store_true')
+parser.set_defaults(weight_schedule=False)
 
 # Data to use
 parser.add_argument('--data', type=str, help='data to use')
@@ -175,6 +177,19 @@ def main():
 
         plt.show()
 
+    def show_weight_schedule():
+
+        total_epochs = 200
+        schedule = utils.WeightSchedule(ramp_up_epochs=80, ramp_up_mult=5, ramp_down_epochs=50, ramp_down_mult=12.5)
+
+        list_weights = []
+
+        for i in range(total_epochs):
+            list_weights.append(schedule.step(total_epochs=total_epochs))
+
+        plt.plot(list(range(total_epochs)), list_weights)
+        plt.show()
+
 # ------------------------------------------------------------------------------
 
     if args.trained:
@@ -182,13 +197,16 @@ def main():
         args.full_name = utils.get_trained_model_from_id(args.train_id)
     elif args.saved:
         main_path = SAVED_MODELS_PATH
+    else:
+        main_path = None
 
     if args.subfolder != None:
         args.full_name = os.path.join(args.full_name, args.subfolder)
 
-    args.trained_model_path = os.path.join(main_path, args.full_name)
-    if not os.path.exists(args.trained_model_path):
-        raise RuntimeError('Please provide a valid train_id')
+    if main_path != None:
+        args.trained_model_path = os.path.join(main_path, args.full_name)
+        if not os.path.exists(args.trained_model_path):
+            raise RuntimeError('Please provide a valid train_id')
 
     if args.graphs:
 
@@ -197,6 +215,10 @@ def main():
     if args.examples:
 
         show_example(args)
+
+    if args.weight_schedule:
+
+        show_weight_schedule()
 
 
 if __name__ == '__main__':
