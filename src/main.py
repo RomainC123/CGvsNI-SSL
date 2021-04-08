@@ -75,7 +75,6 @@ parser.add_argument('--train_id', type=int, help='index of the trained model to 
 # Training parameters
 parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train (default: 300)')
 parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training (default: 100)')
-parser.add_argument('--shuffle', type=bool, default=True, help='shuffle bool for train dataset (default: True)')
 
 # Testing paramaters
 parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
@@ -104,11 +103,11 @@ if args.cuda:
     cudnn.benchmark = True
 
 if args.cuda:
-    kwargs_train = {'batch_size': args.batch_size, 'shuffle': args.shuffle, 'num_workers': 8, 'pin_memory': True}
-    kwargs_test = {'batch_size': args.test_batch_size, 'shuffle': args.shuffle, 'num_workers': 8, 'pin_memory': True}
+    kwargs_train = {'batch_size': args.batch_size, 'shuffle': False, 'num_workers': 8, 'pin_memory': True}
+    kwargs_test = {'batch_size': args.test_batch_size, 'shuffle': False, 'num_workers': 8, 'pin_memory': True}
 else:
-    kwargs_train = {'batch_size': args.batch_size, 'shuffle': args.shuffle}
-    kwargs_test = {'batch_size': args.test_batch_size, 'shuffle': args.shuffle}
+    kwargs_train = {'batch_size': args.batch_size, 'shuffle': False}
+    kwargs_test = {'batch_size': args.test_batch_size, 'shuffle': False}
 
 ################################################################################
 #   Main                                                                       #
@@ -481,7 +480,7 @@ def main():
         sub_model_path = os.path.join(args.trained_model_path, subfolder)
         if not os.path.exists(sub_model_path):
             os.makedirs(sub_model_path)
-            
+
         model_container = ModelContainer(data_container, args.train_id, args.optimizer, sub_model_path, args.pretrained, False, args.cuda)
 
         model_container.train(train_mode, args.method, HYPERPARAMETERS_DEFAULT[args.method], args.epochs)
