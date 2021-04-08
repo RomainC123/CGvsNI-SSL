@@ -12,6 +12,8 @@ LOG_INTERVAL = 10  # To be set manually
 TEST_RUNS = 3
 ONLY_SUP_RUNS = 10
 
+DATA_NO_LABEL = -1  # Label of the unlabeled data
+
 ROOT_PATH = pathlib.Path(__file__).resolve().parents[1].absolute()
 
 DATASETS_PATH = os.path.join(ROOT_PATH, 'datasets')  # dataset.csv files path
@@ -49,9 +51,9 @@ TEST_TRANSFORMS = {
 OPTIMIZER_PARAMS = {
     'Adam': {
         'max_lr': 0.003,
-        'ramp_up_epochs': 80,
+        'ramp_up_epochs': 0,
         'ramp_up_mult': 5,
-        'ramp_down_epochs': 50,
+        'ramp_down_epochs': 0,
         'ramp_down_mult': 12.5
     }
 }
@@ -59,7 +61,7 @@ OPTIMIZER_PARAMS = {
 HYPERPARAMETERS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
-        'unsup_loss_ramp_up_epochs': 80,
+        'unsup_loss_ramp_up_epochs': 10,
         'unsup_loss_ramp_up_mult': 5,
         'unsup_loss_max_weight': 30.
     }

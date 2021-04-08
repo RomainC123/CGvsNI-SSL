@@ -13,7 +13,6 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from sklearn.metrics import classification_report
 
-import criterions
 import utils
 
 ################################################################################
@@ -95,13 +94,14 @@ class SSLMethodClass:
             if self.cuda_var:
                 data, target = data.cuda(), target.cuda()
 
+            output = model.forward(data)
+
             optimizer.zero_grad()
-            prediction = model.forward(data)
-            loss, sup_loss, unsup_loss = self.get_loss(prediction, target)
+            loss, sup_loss, unsup_loss = self.get_loss(output, target)
             loss.backward()
             optimizer.step()
 
-            outputs[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size] = prediction.data.clone()
+            outputs[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size] = output.data.clone()
             loss_epoch += loss.detach()
             sup_loss_epoch += sup_loss.detach()
             unsup_loss_epoch += unsup_loss.detach()
@@ -222,15 +222,20 @@ class TemporalEnsemblingClass(SSLMethodClass):
         self.unsup_weight = self.unsup_loss_max_weight * self.unsup_weight_scheduler.step(self.epochs, self.start_epoch_id)
 
     def set_criterion(self):
-        self.criterion = criterions.TemporalLoss(self.cuda)
+        self.loss_sup = torch.nn.CrossEntropyLoss(reduction='sum', ignore_index=DATA_NO_LABEL)
+        self.loss_unsup = torch.nn.MSELoss(reduction='mean')
 
-    def get_loss(self, prediction, target):
+    def get_loss(self, output, labels):
         y_ema_batch = Variable(self.y_ema[self.batch_idx * self.batch_size: (self.batch_idx + 1) * self.batch_size], requires_grad=False)
-        return self.criterion(prediction, y_ema_batch, target, self.unsup_weight)
+        loss_sup = self.loss_sup(output, labels) / self.batch_size
+        loss_unsup = self.unsup_weight * self.loss_unsup(F.softmax(output), y_ema_batch)
+        return loss_sup + loss_unsup, loss_sup, loss_unsup
 
     def cuda(self):
         self.y_ema = self.y_ema.cuda()
         self.unsup_weight = self.unsup_weight.cuda()
+        self.loss_sup = self.loss_sup.cuda()
+        self.loss_unsup = self.loss_unsup.cuda()
 
     def get_info(self):
         info_string = 'Method: Temporal Ensembling\n'

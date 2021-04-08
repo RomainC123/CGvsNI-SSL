@@ -40,9 +40,9 @@ class TemporalLoss(object):
         quad_diff = torch.sum((F.softmax(out1, dim=1) - F.softmax(out2, dim=1)) ** 2)
         return w * quad_diff / len(out1)
 
-    def __call__(self, pred, target, labels, w):
+    def __call__(self, output, prediction, target, labels, w):
 
-        self.supervised_loss = self.masked_cross_entropy(pred, labels)
-        self.unsupervised_loss = self.mse_loss(pred, target, w)
+        self.supervised_loss = self.masked_cross_entropy(output, labels)
+        self.unsupervised_loss = self.mse_loss(prediction, target, w)
 
         return self.supervised_loss + self.unsupervised_loss, self.supervised_loss, self.unsupervised_loss
