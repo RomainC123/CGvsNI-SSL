@@ -217,8 +217,7 @@ class TemporalEnsemblingClass(SSLMethodClass):
 
     def update_vars(self, epoch_id):
         # Updating y_ema
-        for idx in range(len(self.y_ema)):
-            self.y_ema[idx] = (self.alpha * self.y_ema[idx] + (1 - self.alpha) * self.epoch_output[idx]) / (1 - self.alpha ** epoch_id)
+        self.y_ema = (self.alpha * self.y_ema + (1 - self.alpha) * F.softmax(self.epoch_output, dim=1)) / (1 - self.alpha ** epoch_id)
         # Updating unsup weight
         self.unsup_weight = self.unsup_loss_max_weight * self.unsup_weight_scheduler.step(self.epochs, self.start_epoch_id)
 

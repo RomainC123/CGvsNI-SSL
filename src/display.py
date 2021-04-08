@@ -126,10 +126,11 @@ def main():
     def show_example(args):
 
         if args.data in DATASETS_IMPLEMENTED.keys():
-            test_dataset_transforms = TEST_TRANSFORMS[args.data]
-            test_dataset = DATASETS_IMPLEMENTED[args.data](args,
-                                                           'default',
-                                                           True,
+            test_dataset_transforms = TEST_TRANSFORMS[args.img_mode]
+            test_dataset = DATASETS_IMPLEMENTED[args.data](args.data,
+                                                           args.dataset_name,
+                                                           args.img_mode,
+                                                           'Test',
                                                            transform=test_dataset_transforms)
             model = MODELS[args.data]
             logs_path = os.path.join(args.trained_model_path, 'logs')
