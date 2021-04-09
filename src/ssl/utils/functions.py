@@ -16,6 +16,35 @@ from sklearn.metrics import classification_report
 #   Utils                                                                      #
 ################################################################################
 
+def get_even_class_labels(list_labels, nb_labels):
+
+    id_kept = list(range(len(list_labels)))
+    labels_ids = {}
+
+    for i in range(len(list_labels)):
+        if list_labels[i] not in labels_ids.keys():
+            labels_ids[list_labels[i]] = []
+        labels_ids[list_labels[i]].append(i)
+
+    unique_labels = labels_ids.keys()
+
+    sum = 0
+    cnt = 0
+    labels_per_class = nb_labels / len(unique_labels)
+    upper_labels = math.ceil(labels_per_class)
+    lower_labels = math.floor(labels_per_class)
+    even_labels_list = []
+    for label in unique_labels:
+        if sum + upper_labels + (len(unique_labels) - cnt - 1) * lower_labels <= nb_labels:
+            even_labels_list += random.sample(labels_ids[label], upper_labels)
+            sum += upper_labels
+        else:
+            even_labels_list += random.sample(labels_ids[label], lower_labels)
+            sum += lower_labels
+        cnt += 1
+
+    return even_labels_list
+
 
 class WeightSchedule:
 

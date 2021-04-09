@@ -2,12 +2,14 @@
 #   Libraries                                                                  #
 ################################################################################
 
-import time
 import os
 import argparse
 from distutils.dir_util import copy_tree
 from tqdm import tqdm
-from vars import *
+
+import torch
+import torch.backends.cudnn as cudnn
+from torch.utils.data import DataLoader
 
 import methods
 import datasets
@@ -15,12 +17,7 @@ import models
 import optimizer
 import utils
 import networks
-
-
-import torch
-import torch.backends.cudnn as cudnn
-from torch.utils.data import DataLoader
-from torch.optim import Adam
+from vars import *
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -50,44 +47,46 @@ MODELS = {
 #   Argparse                                                                   #
 ################################################################################
 
-parser = argparse.ArgumentParser(description='Semi-supervised MNIST training and testing')
+def get_args():
 
-# Functionalities
-parser.add_argument('--train', dest='train', action='store_true')
-parser.set_defaults(train=False)
-parser.add_argument('--test', dest='test', action='store_true')
-parser.set_defaults(test=False)
-parser.add_argument('--train-test', dest='train_test', action='store_true')
-parser.set_defaults(train_test=False)
-parser.add_argument('--params-optim', dest='params_optim', action='store_true')
-parser.set_defaults(params_optim=False)
-parser.add_argument('--supervised-vs-full', dest='supervised_vs_full', action='store_true')
-parser.set_defaults(supervised_vs_full=False)
+    parser = argparse.ArgumentParser(description='Semi-supervised MNIST training and testing')
 
-# Data to use
-parser.add_argument('--data', type=str, help='data to use')
-parser.add_argument('--dataset_name', type=str, help='name of the saved dataset to use')
-parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
-parser.add_argument('--method', type=str, help='training method')
-parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
-parser.add_argument('--train_id', type=int, help='index of the trained model to load for tests. In case of training, gets overwritten')
+    # Functionalities
+    parser.add_argument('--train', dest='train', action='store_true')
+    parser.set_defaults(train=False)
+    parser.add_argument('--test', dest='test', action='store_true')
+    parser.set_defaults(test=False)
+    parser.add_argument('--train-test', dest='train_test', action='store_true')
+    parser.set_defaults(train_test=False)
+    parser.add_argument('--params-optim', dest='params_optim', action='store_true')
+    parser.set_defaults(params_optim=False)
+    parser.add_argument('--supervised-vs-full', dest='supervised_vs_full', action='store_true')
+    parser.set_defaults(supervised_vs_full=False)
 
-# Training parameters
-parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train (default: 300)')
-parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training (default: 100)')
+    # Data to use
+    parser.add_argument('--data', type=str, help='data to use')
+    parser.add_argument('--dataset_name', type=str, help='name of the saved dataset to use')
+    parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
+    parser.add_argument('--method', type=str, help='training method')
+    parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
+    parser.add_argument('--train_id', type=int, help='index of the trained model to load for tests. In case of training, gets overwritten')
 
-# Testing paramaters
-parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
-parser.add_argument('--decisive_metric', type=str, default='accuracy', help='deciding metric to use in order to choose optimal model')
+    # Training parameters
+    parser.add_argument('--epochs', type=int, default=50, help='number of epochs to train (default: 300)')
+    parser.add_argument('--batch_size', type=int, default=100, help='input batch size for training (default: 100)')
 
-# Hardware parameter
-parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
-parser.add_argument('--no-verbose', dest='verbose', action='store_false')
-parser.set_defaults(verbose=True)
-parser.add_argument('--no-cuda', dest='no_cuda', action='store_true')
-parser.set_defaults(no_cuda=False)
+    # Testing paramaters
+    parser.add_argument('--test_batch_size', type=int, default=50, help='input batch size for testing (default: 50)')
+    parser.add_argument('--decisive_metric', type=str, default='accuracy', help='deciding metric to use in order to choose optimal model')
 
-args = parser.parse_args()
+    # Hardware parameter
+    parser.add_argument('--log_interval', type=int, default=10, help='how many batches to wait before logging training status')
+    parser.add_argument('--no-verbose', dest='verbose', action='store_false')
+    parser.set_defaults(verbose=True)
+    parser.add_argument('--no-cuda', dest='no_cuda', action='store_true')
+    parser.set_defaults(no_cuda=False)
+
+    return parser.parse_args()
 
 if args.img_mode == None:
     raise RuntimeError('Please specify img_mode param')

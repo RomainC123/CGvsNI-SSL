@@ -1,0 +1,8 @@
+TRAIN_STEP = 30
+LOG_INTERVAL = 10
+
+DATA_NO_LABEL = -1  # Label of the unlabeled data
+
+VAL_NUMBER = 2000
+TEST_RUNS = 3
+ONLY_SUP_RUNS = 10

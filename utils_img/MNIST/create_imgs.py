@@ -12,6 +12,10 @@ RAW_PATH = os.path.join(ROOT_PATH, 'datasets', 'MNIST', 'raw')
 if not os.path.exists(RAW_PATH):
     os.makedirs(RAW_PATH)
 
+FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'MNIST')
+if not os.path.exists(FRAME_PATH):
+    os.makedirs(FRAME_PATH)
+
 print('Downloading MNIST...')
 
 try:
@@ -20,7 +24,7 @@ except:
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
     mnist = fetch_openml('mnist_784', as_frame=True)
-    
+
 X, y = mnist["data"], mnist["target"]
 y = pd.DataFrame(y)
 
@@ -36,5 +40,5 @@ for i in tqdm(range(len(X))):
 y.insert(0, "Name", list_names, True)
 y.rename(columns={'class': 'Label'}, inplace=True)
 
-with open(os.path.join(RAW_PATH, 'name_labels.csv'), 'w+') as f:
+with open(os.path.join(FRAME_PATH, 'dataset.csv'), 'w+') as f:
     f.write(y.to_csv(index=None))
