@@ -3,6 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import weight_norm
 
+from .base import BaseModelContainer
+
+
+################################################################################
+#   VGG Model class                                                            #
+################################################################################
 
 cfg = {
     'VGG11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
@@ -38,3 +44,17 @@ class VGG(nn.Module):
                 in_channels = x
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
         return nn.Sequential(*layers)
+
+
+################################################################################
+#   VGG Model container                                                        #
+################################################################################
+
+class VGGContainer(BaseModelContainer):
+
+    def __init__(self, init_mode):
+
+        self.name = 'VGG11'
+        self.model = VGG(self.name)
+
+        super(VGGContainer, self).__init__(init_mode)

@@ -30,7 +30,7 @@ class AdamOptimizer(BaseOptimizer):
         beta1 = B1_SCHEDULE(epoch, total_epochs) * self.beta1
         beta2 = self.beta2
 
-        return Adam(model.parameters(), lr=lr, betas=(beta1, beta2))
+        return Adam(model().parameters(), lr=lr, betas=(beta1, beta2))
 
     def get_info(self):
 

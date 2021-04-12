@@ -59,6 +59,7 @@ class BaseDataset(Dataset):
 class BaseDatasetContainer:
     """
     Base class for dataset containers
+    Given the data to use and the test and labeled splits, creates the frames to then be able to create dataloaders
     -----------------------------------------------
     Methods:
     - make_dataloaders
@@ -133,12 +134,3 @@ class BaseDatasetContainer:
         info += 'Percent of testing samples: {:.2f}%'.format(self.percent_test * 100)
 
         return info
-
-################################################################################
-#   Dataset factory class                                                      #
-################################################################################
-
-
-class DatasetFactory:
-
-    pass

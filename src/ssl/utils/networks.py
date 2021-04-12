@@ -66,7 +66,7 @@ def weights_init_bn(m):
         init.constant_(m.bias.data, 0.0)
 
 
-def init_weights(net, verbose, init_type='normal'):
+def init_weights(net, init_type='normal'):
     if init_type == 'normal':
         net.apply(weights_init_normal)
     elif init_type == 'xavier':
@@ -79,7 +79,6 @@ def init_weights(net, verbose, init_type='normal'):
         net.apply(weights_init_bn)
     else:
         raise NotImplementedError('Initialization method [%s] is not implemented' % init_type)
-    return init_type.capitalize()
 
 
 def get_norm_layer(norm_type='instance'):
