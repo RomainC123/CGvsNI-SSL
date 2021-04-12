@@ -1,9 +1,11 @@
-from ssl.datasets.base import ImageDatasetContainer
+from ssl.data.image import ImageDatasetContainer
 
 kwargs_train = {'batch_size': 100, 'shuffle': False}
 kwargs_test = {'batch_size': 100, 'shuffle': False}
 
 
-cont = ImageDatasetContainer('MNIST', 10000, 2000)
+cont = ImageDatasetContainer('CIFAR10', 10000, 2000)
 
-dataloaders = cont.get_dataloaders('RGB', kwargs_train)
+cont.make_dataloaders(kwargs_train, img_mode='RGB')
+dataloader_train, dataloader_valuation, dataloader_test = cont.get_dataloaders()
+print(cont.get_info())
