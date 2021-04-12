@@ -1,11 +1,9 @@
-from ssl.data.image import ImageDatasetContainer
+from ssl.models.VGG import VGGContainer
+from ssl.optimizers.adam import AdamOptimizer
+import os
+from ssl.utils.paths import TRAINED_MODELS_PATH
 
-kwargs_train = {'batch_size': 100, 'shuffle': False}
-kwargs_test = {'batch_size': 100, 'shuffle': False}
+model = VGGContainer('normal')
+optimizer = AdamOptimizer(max_lr=0.001, beta1=0.9, beta2=0.999)
 
-
-cont = ImageDatasetContainer('CIFAR10', 10000, 2000)
-
-cont.make_dataloaders(kwargs_train, img_mode='RGB')
-dataloader_train, dataloader_valuation, dataloader_test = cont.get_dataloaders()
-print(cont.get_info())
+print(optimizer(model, 40, 300))
