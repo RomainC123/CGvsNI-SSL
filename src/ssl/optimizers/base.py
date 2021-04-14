@@ -4,7 +4,7 @@
 
 class BaseOptimizerContainer:
 
-    def __init__(self, **kwargs):
+    def __init__(self, hyperparameters):
         # TO COMPLETE
         pass
 

@@ -15,7 +15,7 @@ from tqdm import tqdm
 from ssl.utils.constants import BATCH_SIZE
 from ssl.utils.paths import TRAINED_MODELS_PATH
 from ssl.utils.functionalities import DATASETS, MODELS, OPTIMIZERS, METHODS
-from ssl.utils.hyperparameters import HYPERPARAMETERS_DEFAULT
+from ssl.utils.hyperparameters import METHODS_DEFAULT, OPTIMIZERS_DEFAULT
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -98,8 +98,8 @@ def main():
     # Building all containers
     dataset = DATASETS[args.data]('CIFAR10', 10000, 1000, img_mode='RGB')
     model = MODELS[args.model]('normal')
-    optimizer = OPTIMIZERS[args.optimizer](max_lr=0.001, beta1=0.9, beta2=0.999)
-    method = METHODS[args.method](HYPERPARAMETERS_DEFAULT[args.method])
+    optimizer = OPTIMIZERS[args.optimizer](OPTIMIZERS_DEFAULT[args.optimizer])
+    method = METHODS[args.method](METHODS_DEFAULT[args.method])
 
     if cuda_state:
         model.cuda()

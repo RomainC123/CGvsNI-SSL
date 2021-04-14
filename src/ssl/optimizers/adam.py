@@ -14,15 +14,15 @@ from ..utils.schedules import LR_SCHEDULE, B1_SCHEDULE
 
 class AdamContainer(BaseOptimizerContainer):
 
-    def __init__(self, **kwargs):
+    def __init__(self, hyperparameters):
 
-        super(AdamContainer, self).__init__(**kwargs)
+        super(AdamContainer, self).__init__(hyperparameters)
 
         self.name = 'Adam'
 
-        self.max_lr = kwargs['max_lr']
-        self.beta1 = kwargs['beta1']
-        self.beta2 = kwargs['beta2']
+        self.max_lr = hyperparameters['max_lr']
+        self.beta1 = hyperparameters['beta1']
+        self.beta2 = hyperparameters['beta2']
 
     def __call__(self, model, epoch, total_epochs):
 

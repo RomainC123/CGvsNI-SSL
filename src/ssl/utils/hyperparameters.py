@@ -1,4 +1,4 @@
-HYPERPARAMETERS_DEFAULT = {
+METHODS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
         'unsup_loss_ramp_up_epochs': 10,
@@ -7,18 +7,17 @@ HYPERPARAMETERS_DEFAULT = {
     }
 }
 
-OPTIMIZER_PARAMS = {
+OPTIMIZERS_DEFAULT = {
     'Adam': {
-        'max_lr': 0.003,
-        'ramp_up_epochs': 0,
-        'ramp_up_mult': 5,
-        'ramp_down_epochs': 0,
-        'ramp_down_mult': 12.5
+        'max_lr': 0.001,
+        'beta1': 0.9,
+        'beta2': 0.999
     }
 }
 
+# ------------------------------------------------------------------------------
 
-HYPERPARAMETERS_SEARCH = {
+METHODS_SEARCH = {
     'TemporalEnsembling': {
         'alpha': [0.6],
         'unsup_loss_ramp_up_epochs': [5],
