@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 
 from ..utils.paths import DATASETS_PATH
-from ..utils.constants import VAL_NUMBER, DATA_NO_LABEL
+from ..utils.constants import VAL_NUMBER, DATA_NO_LABEL, DATALOADER_PARAMS_CUDA, DATALOADER_PARAMS_NO_CUDA
 
 ################################################################################
 #   Dataset class                                                              #
@@ -109,18 +109,29 @@ class BaseDatasetContainer:
         self._df_train_masked = self._df_train_full.copy()
         self._df_train_masked.loc[df_masked.index, 'Label'] = DATA_NO_LABEL
 
-    def make_dataloaders(self, dataloader_params, **kwargs):
+    def get_dataloaders_training(self, cuda_state, **kwargs):
 
         # TO OVERLOAD
 
-        dataloader_train = DataLoader(self._dataset_train, **dataloader_params)
-        dataloader_valuation = DataLoader(self._dataset_valuation, **dataloader_params)
-        dataloader_test = DataLoader(self._dataset_test, **dataloader_params)
+        if cuda_state:
+            dataloader_train = DataLoader(self._dataset_train, **DATALOADER_PARAMS_CUDA)
+            dataloader_valuation = DataLoader(self._dataset_valuation, **DATALOADER_PARAMS_CUDA)
+        else:
+            dataloader_train = DataLoader(self._dataset_train, **DATALOADER_PARAMS_NO_CUDA)
+            dataloader_valuation = DataLoader(self._dataset_valuation, **DATALOADER_PARAMS_NO_CUDA)
 
-        self.dataloaders = (dataloader_train, dataloader_valuation, dataloader_test)
+        return dataloader_train, dataloader_valuation
 
-    def get_dataloaders(self):
-        return self.dataloaders
+    def get_dataloaders_testing(self, cuda_state, **kwargs):
+
+        # TO OVERLOAD
+
+        if cuda_state:
+            dataloader_test = DataLoader(self._dataset_test, **DATALOADER_PARAMS_CUDA)
+        else:
+            dataloader_test = DataLoader(self._dataset_test, **DATALOADER_PARAMS_NO_CUDA)
+
+        return dataloader_test
 
     def get_info(self):
 

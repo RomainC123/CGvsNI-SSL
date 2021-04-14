@@ -19,9 +19,6 @@ class BaseModelContainer:
         self.init_mode = init_mode
         init_weights(self.model, self.init_mode)
 
-    def __call__(self):
-        return self.model
-
     def _get_nb_parameters(self):
 
         nb_params = 0
@@ -29,6 +26,9 @@ class BaseModelContainer:
             nb_params += param.numel()
 
         return nb_params
+
+    def cuda(self):
+        self.model.cuda()
 
     def load(self, path):
         checkpoint = torch.load(path)
@@ -41,6 +41,18 @@ class BaseModelContainer:
         torch.save({'epoch': epoch,
                     'state_dict': self.model.state_dict()},
                    os.path.join(path, f'checkpoint_{epoch}.pth'))
+
+    def train(self):
+        self.model.train()
+
+    def eval(self):
+        self.model.eval()
+
+    def test(self):
+        self.model.test()
+
+    def forward(self, x):
+        return self.model.forward(x)
 
     def get_info(self):
 
