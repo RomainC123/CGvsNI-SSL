@@ -2,6 +2,7 @@ import os
 import torch
 
 from ..utils.networks import init_weights
+from ..utils.tools import get_latest_log
 
 ################################################################################
 #   Base Model container                                                        #
@@ -14,10 +15,14 @@ class BaseModelContainer:
     Given the model name, creates a wrapper with get_info, save and load functions
     """
 
-    def __init__(self, init_mode):
+    def __init__(self, init_mode, pretrained_path=None):
 
         self.init_mode = init_mode
-        init_weights(self.model, self.init_mode)
+        self.pretrained_path = pretrained_path
+        if init_mode != 'pretrained':
+            init_weights(self.model, self.init_mode)
+        else:
+            self.load()
 
     def _get_nb_parameters(self):
 
@@ -30,10 +35,10 @@ class BaseModelContainer:
     def cuda(self):
         self.model.cuda()
 
-    def load(self, path):
-        checkpoint = torch.load(path)
+    def load(self):
+        latest_log, _ = get_latest_log(self.pretrained_path)
+        checkpoint = torch.load(os.path.join(self.pretrained_path, 'logs', latest_log))
         self.model.load_state_dict(checkpoint['state_dict'])
-        self.init_mode = 'pretrained'
 
     def save(self, path, epoch):
         if not os.path.exists(path):

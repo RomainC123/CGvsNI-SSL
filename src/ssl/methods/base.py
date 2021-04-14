@@ -45,9 +45,7 @@ class BaseMethod:
 
     def _init_checkpoint(self, model, start_epoch):
         if start_epoch == 0:
-            torch.save({'epoch': 0,
-                        'state_dict': model.model.state_dict()},
-                       os.path.join(self._logs_path, f'checkpoint_{0}.pth'))
+            model.save(self._logs_path, 0)
         else:
             self._load_checkpoint(model, start_epoch)
 
@@ -80,7 +78,7 @@ class BaseMethod:
             self.unsup_losses = pickle.load(f)
 
     def _update_checkpoint(self, model, epoch):
-        latest_log, latest_log_epoch = get_latest_log(self._logs_path)
+        latest_log, _ = get_latest_log(self.main_path)
         torch.save({'epoch': epoch,
                     'state_dict': model.model.state_dict()},
                    os.path.join(self._logs_path, f'checkpoint_{epoch}.pth'))

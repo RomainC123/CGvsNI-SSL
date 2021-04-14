@@ -8,5 +8,7 @@ ONLY_SUP_RUNS = 10
 NB_IMGS_TO_SHOW = 9
 BATCH_SIZE = 100
 
+DEFAULT_EPOCHS = 300
+
 DATALOADER_PARAMS_CUDA = {'batch_size': BATCH_SIZE, 'shuffle': False, 'num_workers': 8, 'pin_memory': True}
 DATALOADER_PARAMS_NO_CUDA = {'batch_size': BATCH_SIZE, 'shuffle': False}

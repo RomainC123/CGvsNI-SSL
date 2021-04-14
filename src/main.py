@@ -12,7 +12,7 @@ from distutils.dir_util import copy_tree
 from datetime import datetime
 from tqdm import tqdm
 
-from ssl.utils.constants import BATCH_SIZE
+from ssl.utils.constants import BATCH_SIZE, DEFAULT_EPOCHS
 from ssl.utils.paths import TRAINED_MODELS_PATH
 from ssl.utils.functionalities import DATASETS, MODELS, OPTIMIZERS, METHODS
 from ssl.utils.hyperparameters import METHODS_DEFAULT, OPTIMIZERS_DEFAULT
@@ -50,7 +50,7 @@ def get_args():
     parser.add_argument('--model', type=str, help='model to use')
     parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
     parser.add_argument('--method', type=str, help='method to use')
-    parser.add_argument('--epochs', type=int, default=300, help='number of epochs to train (default: 300)')
+    parser.add_argument('--epochs', type=int, default=DEFAULT_EPOCHS, help='number of epochs to train (default: 300)')
 
     # Hardware parameter
     parser.add_argument('--no-verbose', dest='verbose', action='store_false')
@@ -68,7 +68,7 @@ def get_args():
     assert(args.method != None)
     assert(args.epochs != None)
 
-    return parser.parse_args()
+    return args
 
 ################################################################################
 #   Main                                                                       #
@@ -91,9 +91,9 @@ def main():
     # Setting random seed
     np.random.seed(args.seed)
 
-    save_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
+    model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)
 
     # Building all containers
     dataset = DATASETS[args.data]('CIFAR10', 10000, 1000, img_mode='RGB')
@@ -111,18 +111,18 @@ def main():
         print('------------------------------------\n' + model.get_info())
         print('------------------------------------\n' + optimizer.get_info())
         print('------------------------------------\n' + method.get_info())
-    with open(os.path.join(save_path, 'info.txt'), 'a+') as f:
+    with open(os.path.join(model_path, 'info.txt'), 'a+') as f:
         f.write(dataset.get_info())
         f.write('\n------------------------------------\n' + model.get_info())
         f.write('\n------------------------------------\n' + optimizer.get_info())
         f.write('\n------------------------------------\n' + method.get_info())
 
     print('Starting training...')
-    method.train(dataset, model, optimizer, 0, args.epochs, save_path, args.verbose)
+    method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
     print('Training done\n')
 
     print('Testing...')
-    method.test(dataset, model, save_path, args.verbose)
+    method.test(dataset, model, model_path, args.verbose)
     print('Testing done')
 
 
