@@ -20,8 +20,7 @@ class TemporalEnsembling(BaseMethod):
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
 
     def _get_hyperparameters_info(self):
-        infos = 'Method: Temporal Ensembling\n'
-        infos += f'Alpha: {self.alpha}\n'
+        infos = f'Alpha: {self.alpha}\n'
         infos += 'Unsupervised loss max weight (uncorrected): {:.1f}\n'.format(self.unsup_loss_max_weight)
         infos += f'Ramp epochs: {self.ramp_epochs}\n'
         infos += f'Ramp mult: {self.ramp_mult}\n'

@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from sklearn.metrics import classification_report
 
-from ..utils.functionalities import METRICS
+from ..utils.metrics import METRICS
 from ..utils.constants import TRAIN_STEP, LOG_INTERVAL, TEST_RUNS
 from ..utils.tools import get_latest_log, avg_classification_reports
 

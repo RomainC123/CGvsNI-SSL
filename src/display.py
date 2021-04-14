@@ -20,29 +20,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 ################################################################################
-#   Functionalities                                                            #
-################################################################################
-
-METHODS_IMPLEMENTED = {
-    'TemporalEnsembling': methods.TemporalEnsemblingClass,
-    'Yolo': None
-}
-
-DATASETS_IMPLEMENTED = {
-    'MNIST': datasets.DatasetMNIST,
-    'CIFAR10': datasets.DatasetCIFAR10,
-    'CGvsNI': None
-}
-
-MODELS = {
-    'MNIST': models.MNISTModel(),
-    'CIFAR10': models.VGG('VGG11'),
-    'CGvsNI': None
-}
-
-NB_IMGS_TO_SHOW = 9
-
-################################################################################
 #   Argparse                                                                   #
 ################################################################################
 

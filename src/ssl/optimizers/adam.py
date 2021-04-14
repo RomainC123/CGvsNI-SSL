@@ -4,7 +4,7 @@
 
 from torch.optim import Adam
 
-from .base import BaseOptimizer
+from .base import BaseOptimizerContainer
 from ..utils.schedules import LR_SCHEDULE, B1_SCHEDULE
 
 ################################################################################
@@ -12,11 +12,11 @@ from ..utils.schedules import LR_SCHEDULE, B1_SCHEDULE
 ################################################################################
 
 
-class AdamOptimizer(BaseOptimizer):
+class AdamContainer(BaseOptimizerContainer):
 
     def __init__(self, **kwargs):
 
-        super(AdamOptimizer, self).__init__(**kwargs)
+        super(AdamContainer, self).__init__(**kwargs)
 
         self.name = 'Adam'
 
@@ -34,7 +34,7 @@ class AdamOptimizer(BaseOptimizer):
 
     def get_info(self):
 
-        infos = super(AdamOptimizer, self).get_info()
+        infos = super(AdamContainer, self).get_info()
 
         infos += f'Max learning rate: {self.max_lr}\n'
         infos += f'Betas: {(self.beta1, self.beta2)}'

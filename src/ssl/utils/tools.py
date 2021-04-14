@@ -4,10 +4,10 @@
 
 import os
 import pickle
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 import torch
+
 from sklearn.metrics import classification_report
 
 ################################################################################
@@ -41,61 +41,6 @@ class WeightSchedule:
 ################################################################################
 
 
-def get_even_class_labels(list_labels, nb_labels):
-
-    id_kept = list(range(len(list_labels)))
-    labels_ids = {}
-
-    for i in range(len(list_labels)):
-        if list_labels[i] not in labels_ids.keys():
-            labels_ids[list_labels[i]] = []
-        labels_ids[list_labels[i]].append(i)
-
-    unique_labels = labels_ids.keys()
-
-    sum = 0
-    cnt = 0
-    labels_per_class = nb_labels / len(unique_labels)
-    upper_labels = math.ceil(labels_per_class)
-    lower_labels = math.floor(labels_per_class)
-    even_labels_list = []
-    for label in unique_labels:
-        if sum + upper_labels + (len(unique_labels) - cnt - 1) * lower_labels <= nb_labels:
-            even_labels_list += random.sample(labels_ids[label], upper_labels)
-            sum += upper_labels
-        else:
-            even_labels_list += random.sample(labels_ids[label], lower_labels)
-            sum += lower_labels
-        cnt += 1
-
-    return even_labels_list
-
-
-def get_train_id(fpath):
-    """
-    Grabs a training id
-    """
-    list_full_names = [folder_name.split('_') for folder_name in os.listdir(fpath)]
-    list_idx_taken = []
-    for splitted_name in list_full_names:
-        list_idx_taken.append(int(splitted_name[0]))
-
-    idx = 1
-    while idx in list_idx_taken:
-        idx += 1
-    return str(idx)
-
-
-def get_trained_model_from_id(train_id):
-
-    folder_list = os.listdir(TRAINED_MODELS_PATH)
-    list_ids = [folder_name.split('_')[0] for folder_name in folder_list]
-    for i in range(len(folder_list)):
-        if int(list_ids[i]) == train_id:
-            return folder_list[i]
-    raise RuntimeError(f'Train id not found: {train_id}')
-
-
 def get_container_info(model, nb_img_train, nb_classes, percent_labeled, epochs, batch_size, nb_batches, shuffle, method, train_id, optimizer, init_mode):
 
     def get_optimizer_info(optimizer):
@@ -119,13 +64,6 @@ def get_container_info(model, nb_img_train, nb_classes, percent_labeled, epochs,
     info_string += f'Init mode: {init_mode}\n'
 
     return info_string
-
-
-def get_nb_parameters(model):
-    num_params = 0
-    for param in model.parameters():
-        num_params += param.numel()
-    return f'Trainable paramaters: {num_params}\n'
 
 
 def get_latest_log(logs_path):
@@ -191,19 +129,6 @@ def get_hyperparameters_combinations(method):
     permutations_dicts = [dict(zip(keys, v)) for v in itertools.product(*values)]
 
     return permutations_dicts
-
-
-def get_avg_metrics(list_dict_metrics):
-
-    avg_metrics = {}
-
-    for metric_name in METRICS.keys():
-        avg_metrics[metric_name] = 0.
-        for i in range(ONLY_SUP_RUNS):
-            avg_metrics[metric_name] += list_dict_metrics[i][metric_name]
-        avg_metrics[metric_name] /= ONLY_SUP_RUNS
-
-    return avg_metrics
 
 
 def get_metrics_report(dict_metrics):

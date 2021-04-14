@@ -2,7 +2,7 @@
 #   Base Optimizer class                                                       #
 ################################################################################
 
-class BaseOptimizer:
+class BaseOptimizerContainer:
 
     def __init__(self, **kwargs):
         # TO COMPLETE

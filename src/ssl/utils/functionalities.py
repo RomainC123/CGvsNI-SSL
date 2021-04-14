@@ -1,6 +1,20 @@
-from sklearn.metrics import accuracy_score, f1_score
+from ..data.image import ImageDatasetContainer
+from ..models.VGG import VGGContainer
+from ..optimizers.adam import AdamContainer
+from ..methods.tempens import TemporalEnsembling
 
-METRICS = {
-    'accuracy': accuracy_score
-    # 'f1_score': f1_score
+DATASETS = {
+    'CIFAR10': ImageDatasetContainer
+}
+
+MODELS = {
+    'VGG': VGGContainer
+}
+
+OPTIMIZERS = {
+    'Adam': AdamContainer
+}
+
+METHODS = {
+    'TemporalEnsembling': TemporalEnsembling
 }
