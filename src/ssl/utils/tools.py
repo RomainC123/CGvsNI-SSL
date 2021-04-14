@@ -96,6 +96,7 @@ def get_metrics_report(dict_metrics):
 
     return report
 
+
 def show_graphs(model_path):
 
     graphs_path = os.path.join(model_path, 'graphs')
@@ -128,6 +129,7 @@ def show_graphs(model_path):
 
     plt.show()
 
+
 def show_schedules(start_epoch=1, total_epochs=DEFAULT_EPOCHS):
 
     fig = plt.figure(figsize=(12, 24))
@@ -155,6 +157,8 @@ def show_schedules(start_epoch=1, total_epochs=DEFAULT_EPOCHS):
     plt.show()
 
 # TODO
+
+
 def show_example(args):
 
     if args.data in DATASETS_IMPLEMENTED.keys():

@@ -10,7 +10,7 @@ from sklearn.metrics import classification_report
 
 from ..utils.metrics import METRICS
 from ..utils.constants import TRAIN_STEP, LOG_INTERVAL, TEST_RUNS
-from ..utils.tools import get_latest_log, avg_classification_reports
+from ..utils.tools import get_latest_log, avg_classification_reports, get_metrics_report
 
 
 class BaseMethod:
@@ -185,7 +185,7 @@ class BaseMethod:
                                                                                                   100.,
                                                                                                   (loss_epoch / self.nb_batches).item()))
 
-        return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
+        return outputs, loss_epoch / self.nb_batches, sup_loss_epoch / self.nb_batches, unsup_loss_epoch / self.nb_batches
 
     def _eval(self, dataloader, model):
 
@@ -280,10 +280,10 @@ class BaseMethod:
 
         if verbose:
             print(full_classification_report)
-            print(dict_metrics_scores)
         with open(os.path.join(trained_model_path, 'results.txt'), 'a+') as f:
-            full_classification_report = f'Number of test runs: {TEST_RUNS}\n' + full_classification_report
+            full_classification_report = f'Number of test runs: {TEST_RUNS}\n' + full_classification_report + '\n'
             f.write(full_classification_report)
+            f.write(get_metrics_report(dict_metrics_scores))
 
     def get_info(self):
 
