@@ -17,6 +17,10 @@ RAW_PATH = os.path.join(ROOT_PATH, 'datasets', 'CIFAR10', 'raw')
 if not os.path.exists(RAW_PATH):
     os.makedirs(RAW_PATH)
 
+FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'CIFAR10')
+if not os.path.exists(FRAME_PATH):
+    os.makedirs(FRAME_PATH)
+
 print('Downloading CIFAR...')
 
 try:
@@ -25,8 +29,6 @@ except:
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-
-print(X_train[0].shape)
 
 list_names = []
 list_labels = []
@@ -41,20 +43,19 @@ for i in tqdm(range(nb_imgs_train)):
     im = im.convert("RGB")
     im.save(os.path.join(RAW_PATH, f'cifar10_{i}.jpeg'))
     list_names.append(f'cifar10_{i}.jpeg')
-    list_labels.append(y_train[i])
+    list_labels.append(int(y_train[i][0]))
 
 for i in tqdm(range(nb_imgs_test)):
     im = Image.fromarray(X_test[i])
     im = im.convert("RGB")
     im.save(os.path.join(RAW_PATH, f'cifar10_{i + nb_imgs_train}.jpeg'))
     list_names.append(f'cifar10_{i + nb_imgs_train}.jpeg')
-    list_labels.append(y_test[i])
+    list_labels.append(int(y_test[i][0]))
 
 print('Creating dataframe...')
-df_imgs = pd.DataFrame(columns=['Name', 'Label', 'Test'])
+df_imgs = pd.DataFrame(columns=['Name', 'Label'])
 df_imgs['Name'] = list_names
 df_imgs['Label'] = list_labels
-df_imgs['Test'] = [False for i in range(nb_imgs_train)] + [True for i in range(nb_imgs_test)]
 
-with open(os.path.join(RAW_PATH, 'name_labels.csv'), 'w+') as f:
+with open(os.path.join(FRAME_PATH, 'dataset.csv'), 'w+') as f:
     f.write(df_imgs.to_csv(index=None))

@@ -189,7 +189,7 @@ class MNISTDatasetMaker(DatasetMaker):
 
     def get_train_test(self):
 
-        self.train_imgs, self.test_imgs = train_test_split(self.df_imgs, test_size=self.test_size, shuffle=True)
+        self.train_imgs, self.test_imgs = train_test_split(self.df_imgs, test_size=self.test_size, shuffle=True, stratify=True)
 
     def __init__(self, args):
 
