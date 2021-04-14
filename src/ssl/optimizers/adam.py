@@ -27,7 +27,7 @@ class AdamContainer(BaseOptimizerContainer):
     def __call__(self, model, epoch, total_epochs):
 
         lr = LR_SCHEDULE(epoch, total_epochs) * self.max_lr
-        beta1 = B1_SCHEDULE(epoch, total_epochs) * self.beta1
+        beta1 = 0.5 + B1_SCHEDULE(epoch, total_epochs) * (self.beta1 - 0.5)
         beta2 = self.beta2
 
         return Adam(model.model.parameters(), lr=lr, betas=(beta1, beta2))
