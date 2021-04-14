@@ -146,28 +146,7 @@ def get_latest_log(logs_path):
     return latest_log, latest_log_epoch
 
 
-def update_checkpoint(model, epoch_id, logs_path):
-
-    latest_log, latest_log_epoch_id = get_latest_log(logs_path)
-    torch.save({'epoch': epoch_id,
-                'state_dict': model.state_dict()},
-               os.path.join(logs_path, f'checkpoint_{epoch_id}.pth'))
-    os.remove(os.path.join(logs_path, latest_log))
-
-
-def save_graphs(graphs_path, accuracy, losses, sup_losses, unsup_losses):
-
-    with open(os.path.join(graphs_path, 'accuracy.pkl'), 'wb') as f:
-        pickle.dump(accuracy, f)
-    with open(os.path.join(graphs_path, 'loss.pkl'), 'wb') as f:
-        pickle.dump(losses, f)
-    with open(os.path.join(graphs_path, 'sup_loss.pkl'), 'wb') as f:
-        pickle.dump(sup_losses, f)
-    with open(os.path.join(graphs_path, 'unsup_loss.pkl'), 'wb') as f:
-        pickle.dump(unsup_losses, f)
-
-
-def avg_classifications_reports(list_classification_reports):
+def avg_classification_reports(list_classification_reports):
 
     accuracy = 0
     avg_report = {}

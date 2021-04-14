@@ -65,31 +65,30 @@ class ImageDataset(BaseDataset):
 
 class ImageDatasetContainer(BaseDatasetContainer):
 
-    def __init__(self, data, nb_samples_test, nb_samples_labeled):
+    def __init__(self, data, nb_samples_test, nb_samples_labeled, **kwargs):
+
+        self.img_mode = kwargs['img_mode']
+
         super(ImageDatasetContainer, self).__init__(data, nb_samples_test, nb_samples_labeled)
 
-    def get_dataloaders_training(self, cuda_state, **kwargs):
-
-        img_mode = kwargs['img_mode']
+    def get_dataloaders_training(self, cuda_state):
 
         self._dataset_train = ImageDataset(self.data,
                                            self._df_train_masked,
-                                           img_mode=img_mode,
-                                           transform=IMAGE_TRANSFORMS_TRAIN[img_mode])
+                                           img_mode=self.img_mode,
+                                           transform=IMAGE_TRANSFORMS_TRAIN[self.img_mode])
         self._dataset_valuation = ImageDataset(self.data,
                                                self._df_valuation,
-                                               img_mode=img_mode,
-                                               transform=IMAGE_TRANSFORMS_TRAIN[img_mode])
+                                               img_mode=self.img_mode,
+                                               transform=IMAGE_TRANSFORMS_TRAIN[self.img_mode])
 
-        return super(ImageDatasetContainer, self).get_dataloaders_training(cuda_state, **kwargs)
+        return super(ImageDatasetContainer, self).get_dataloaders_training(cuda_state)
 
-    def get_dataloaders_testing(self, cuda_state, **kwargs):
-
-        img_mode = kwargs['img_mode']
+    def get_dataloaders_testing(self, cuda_state):
 
         self._dataset_test = ImageDataset(self.data,
                                           self._df_test,
-                                          img_mode=img_mode,
-                                          transform=IMAGE_TRANSFORMS_TEST[img_mode])
+                                          img_mode=self.img_mode,
+                                          transform=IMAGE_TRANSFORMS_TEST[self.img_mode])
 
-        return super(ImageDatasetContainer, self).get_dataloaders_testing(cuda_state, **kwargs)
+        return super(ImageDatasetContainer, self).get_dataloaders_testing(cuda_state)

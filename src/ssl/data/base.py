@@ -109,7 +109,7 @@ class BaseDatasetContainer:
         self._df_train_masked = self._df_train_full.copy()
         self._df_train_masked.loc[df_masked.index, 'Label'] = DATA_NO_LABEL
 
-    def get_dataloaders_training(self, cuda_state, **kwargs):
+    def get_dataloaders_training(self, cuda_state):
 
         # TO OVERLOAD
 
@@ -122,7 +122,7 @@ class BaseDatasetContainer:
 
         return dataloader_train, dataloader_valuation
 
-    def get_dataloaders_testing(self, cuda_state, **kwargs):
+    def get_dataloaders_testing(self, cuda_state):
 
         # TO OVERLOAD
 
