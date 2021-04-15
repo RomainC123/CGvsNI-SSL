@@ -44,7 +44,7 @@ class TemporalEnsembling(BaseMethod):
         if self.cuda_state:
             sup_loss_f = sup_loss_f.cuda()
             unsup_loss_f = unsup_loss_f.cuda()
-        sup_loss = sup_loss_f(output, target) / self.batch_size
+        sup_loss = sup_loss_f(output, target)
         unsup_loss = self.unsup_weight * self.percent_labeled * unsup_loss_f(output, y_ema_batch)
 
         return sup_loss + unsup_loss, sup_loss, unsup_loss

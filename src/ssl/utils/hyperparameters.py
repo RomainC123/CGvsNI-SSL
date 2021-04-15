@@ -15,28 +15,31 @@ OPTIMIZERS_DEFAULT = {
 
 # ------------------------------------------------------------------------------
 
+RAMP_UP_MULT = 5
+RAMP_DOWN_MULT = 12.5
+
 SCHEDULES_DEFAULT = {
     'lr': {
-        'ramp_up_epochs': 10,
-        'ramp_up_mult': 5,
-        'ramp_down_epochs': 0,
-        'ramp_down_mult': 12.5,
+        'ramp_up_epochs': 80,
+        'ramp_up_mult': RAMP_UP_MULT,
+        'ramp_down_epochs': 50,
+        'ramp_down_mult': RAMP_DOWN_MULT,
         'lower': 0.,
         'upper': 1.
     },
     'beta1': {
         'ramp_up_epochs': 0,
-        'ramp_up_mult': 0,
-        'ramp_down_epochs': 0,
-        'ramp_down_mult': 12.5,
+        'ramp_up_mult': RAMP_UP_MULT,
+        'ramp_down_epochs': 50,
+        'ramp_down_mult': RAMP_DOWN_MULT,
         'lower': 0.5,
         'upper': 0.9
     },
     'unsup_weight': {
-        'ramp_up_epochs': 10,
-        'ramp_up_mult': 5,
+        'ramp_up_epochs': 80,
+        'ramp_up_mult': RAMP_UP_MULT,
         'ramp_down_epochs': 0,
-        'ramp_down_mult': 0,
+        'ramp_down_mult': RAMP_DOWN_MULT,
         'lower': 0.,
         'upper': 1.
     }
