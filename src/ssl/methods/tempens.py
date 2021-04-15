@@ -14,16 +14,15 @@ class TemporalEnsembling(BaseMethod):
 
     def _set_hyperparameters(self, hyperparameters):
         self.alpha = hyperparameters['alpha']
-        self.ramp_epochs = hyperparameters['unsup_loss_ramp_up_epochs']
-        self.ramp_mult = hyperparameters['unsup_loss_ramp_up_mult']
-        self.unsup_loss_max_weight = hyperparameters['unsup_loss_max_weight']
+        self.max_unsup_weight = hyperparameters['max_unsup_weight']
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
+        self.ramp_epochs = self.unsup_weight_schedule.ramp_up_epochs
+        self.ramp_mult = self.unsup_weight_schedule.ramp_up_mult
 
     def _get_hyperparameters_info(self):
         infos = f'Alpha: {self.alpha}\n'
-        infos += 'Unsupervised loss max weight (uncorrected): {:.1f}\n'.format(self.unsup_loss_max_weight)
-        infos += f'Ramp epochs: {self.ramp_epochs}\n'
-        infos += f'Ramp mult: {self.ramp_mult}\n'
+        infos += 'Unsupervised loss max weight (uncorrected): {:.1f}\n'.format(self.max_unsup_weight)
+        infos += self.unsup_weight_schedule.get_info()
 
         return infos
 
@@ -36,7 +35,7 @@ class TemporalEnsembling(BaseMethod):
 
     def _update_vars(self, output, epoch, total_epochs):
         self.y_ema = (self.alpha * self.y_ema + (1 - self.alpha) * output) / (1 - self.alpha ** epoch)
-        self.unsup_weight = self.unsup_loss_max_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
+        self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
     def _get_loss(self, output, target, batch_idx):
         sup_loss_f = torch.nn.CrossEntropyLoss(reduction='sum', ignore_index=DATA_NO_LABEL)

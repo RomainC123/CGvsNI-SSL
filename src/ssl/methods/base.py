@@ -130,7 +130,7 @@ class BaseMethod:
         train_info += f'Total number of epochs: {total_epochs}\n'
 
         with open(os.path.join(self.main_path, 'info.txt'), 'a+') as f:
-            f.write(train_info)
+            f.write('\n' + train_info)
         if self.verbose_train:
             print(train_info)
 

@@ -1,9 +1,7 @@
 METHODS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
-        'unsup_loss_ramp_up_epochs': 80,
-        'unsup_loss_ramp_up_mult': 5,
-        'unsup_loss_max_weight': 30.
+        'max_unsup_weight': 30.
     }
 }
 
@@ -12,6 +10,35 @@ OPTIMIZERS_DEFAULT = {
         'max_lr': 0.001,
         'beta1': 0.9,
         'beta2': 0.999
+    }
+}
+
+# ------------------------------------------------------------------------------
+
+SCHEDULES_DEFAULT = {
+    'lr': {
+        'ramp_up_epochs': 10,
+        'ramp_up_mult': 5,
+        'ramp_down_epochs': 0,
+        'ramp_down_mult': 12.5,
+        'lower': 0.,
+        'upper': 1.
+    },
+    'beta1': {
+        'ramp_up_epochs': 0,
+        'ramp_up_mult': 0,
+        'ramp_down_epochs': 0,
+        'ramp_down_mult': 12.5,
+        'lower': 0.5,
+        'upper': 0.9
+    },
+    'unsup_weight': {
+        'ramp_up_epochs': 10,
+        'ramp_up_mult': 5,
+        'ramp_down_epochs': 0,
+        'ramp_down_mult': 0,
+        'lower': 0.,
+        'upper': 1.
     }
 }
 

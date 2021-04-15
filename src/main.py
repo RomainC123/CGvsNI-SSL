@@ -96,7 +96,7 @@ def main():
         os.makedirs(model_path)
 
     # Building all containers
-    dataset = DATASETS[args.data]('CIFAR10', 10000, 1000, img_mode='RGB')
+    dataset = DATASETS[args.data](args.data, 10000, 1000, img_mode=args.img_mode)
     model = MODELS[args.model]('normal')
     optimizer = OPTIMIZERS[args.optimizer](OPTIMIZERS_DEFAULT[args.optimizer])
     method = METHODS[args.method](METHODS_DEFAULT[args.method])
@@ -117,7 +117,7 @@ def main():
         f.write('\n------------------------------------\n' + optimizer.get_info())
         f.write('\n------------------------------------\n' + method.get_info())
 
-    print('Starting training...')
+    print('\nStarting training...')
     method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
     print('Training done\n')
 

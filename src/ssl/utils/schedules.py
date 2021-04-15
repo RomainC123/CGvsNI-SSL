@@ -1,16 +1,18 @@
 import numpy as np
+from .hyperparameters import SCHEDULES_DEFAULT
+
 
 class WeightSchedule:
 
-    def __init__(self, ramp_up_epochs, ramp_up_mult, ramp_down_epochs, ramp_down_mult, lower, upper):
+    def __init__(self, **kwargs):
 
-        self.ramp_up_epochs = ramp_up_epochs
-        self.ramp_up_mult = ramp_up_mult
-        self.ramp_down_epochs = ramp_down_epochs
-        self.ramp_down_mult = ramp_down_mult
+        self.ramp_up_epochs = kwargs['ramp_up_epochs']
+        self.ramp_up_mult = kwargs['ramp_up_mult']
+        self.ramp_down_epochs = kwargs['ramp_down_epochs']
+        self.ramp_down_mult = kwargs['ramp_down_mult']
 
-        self.lower = lower
-        self.upper = upper
+        self.lower = kwargs['lower']
+        self.upper = kwargs['upper']
 
     def __call__(self, epoch, total_epochs):
 
@@ -24,7 +26,22 @@ class WeightSchedule:
 
         return self.lower + weight * (self.upper - self.lower)
 
+    def get_info(self):
 
-LR_SCHEDULE = WeightSchedule(ramp_up_epochs=80, ramp_up_mult=5, ramp_down_epochs=50, ramp_down_mult=12.5, lower=0., upper=1.)
-B1_SCHEDULE = WeightSchedule(ramp_up_epochs=0, ramp_up_mult=0, ramp_down_epochs=50, ramp_down_mult=12.5, lower=0.5, upper=0.9)
-UNSUP_WEIGHT_SCHEDULE = WeightSchedule(ramp_up_epochs=80, ramp_up_mult=5, ramp_down_epochs=0, ramp_down_mult=0, lower=0., upper=1.)
+        infos = ''
+
+        if self.ramp_up_epochs != 0:
+            infos += f'Ramp up epochs: {self.ramp_up_epochs}\n'
+            infos += f'Ramp up mult: {self.ramp_up_mult}\n'
+        if self.ramp_down_epochs != 0:
+            infos += f'Ramp down epochs: {self.ramp_down_epochs}\n'
+            infos += f'Ramp down up: {self.ramp_down_mult}\n'
+        infos += f'Lower bound: {self.lower}\n'
+        infos += f'Upper bound: {self.upper}'
+
+        return infos
+
+
+LR_SCHEDULE = WeightSchedule(**SCHEDULES_DEFAULT['lr'])
+B1_SCHEDULE = WeightSchedule(**SCHEDULES_DEFAULT['beta1'])
+UNSUP_WEIGHT_SCHEDULE = WeightSchedule(**SCHEDULES_DEFAULT['unsup_weight'])
