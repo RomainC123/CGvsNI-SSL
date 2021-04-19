@@ -15,7 +15,7 @@ class BaseModelContainer:
     Given the model name, creates a wrapper with get_info, save and load functions
     """
 
-    def __init__(self, init_mode, pretrained_path=None):
+    def __init__(self, nb_classes, init_mode, pretrained_path=None):
 
         self.init_mode = init_mode
         self.pretrained_path = pretrained_path

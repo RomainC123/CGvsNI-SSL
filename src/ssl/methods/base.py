@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
+from datetime import datetime
 import torch.nn.functional as F
 from torch.autograd import Variable
 from sklearn.metrics import classification_report
@@ -127,12 +128,24 @@ class BaseMethod:
         train_info += f'Batch size: {self.batch_size}\n'
         train_info += f'Number of batches: {self.nb_batches}\n'
         train_info += f'Starting epoch: {start_epoch}\n'
-        train_info += f'Total number of epochs: {total_epochs}\n'
+        train_info += f'Total number of epochs: {total_epochs}'
 
         with open(os.path.join(self.main_path, 'info.txt'), 'a+') as f:
             f.write('\n' + train_info)
         if self.verbose_train:
             print(train_info)
+
+    def _save_train_duration(self, timer):
+
+        str_time = str(timer)
+        split_time = str_time.split(':')
+        split_time[2] = split_time[2][:2]
+        timer_info = f'Training time: {":".join(split_time)}'
+
+        with open(os.path.join(self.main_path, 'info.txt'), 'a+') as f:
+            f.write('\n' + timer_info)
+        if self.verbose_train:
+            print(timer_info)
 
     def _epoch(self, train_dataloader, model, optimizer, epoch, total_epochs):
 
@@ -237,6 +250,8 @@ class BaseMethod:
 
         self._save_train_info(start_epoch, total_epochs)
 
+        start_time = datetime.now()
+
         for epoch in range(1 + start_epoch, 1 + total_epochs):
 
             output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, model, optimizer, epoch, total_epochs)
@@ -252,6 +267,10 @@ class BaseMethod:
         if epoch % TRAIN_STEP != 0:
             self._update_checkpoint(model, epoch)
             self._save_graphs()
+
+        timer = datetime.now() - start_time
+
+        self._save_train_duration(timer)
 
     def test(self, dataset, model, trained_model_path, verbose):
 

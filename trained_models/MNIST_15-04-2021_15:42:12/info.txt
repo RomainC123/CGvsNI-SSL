@@ -1,0 +1,50 @@
+Data: MNIST
+Number of samples: 70000
+Number of classes: 10
+Number of training samples: 60000
+Number of labeled samples: 1000
+Percent of labeled samples: 1.67%
+Number of testing samples: 10000
+Percent of testing samples: 14.29%
+------------------------------------
+Model: MNISTModel
+MNISTModel(
+  (conv1): Conv2d(1, 32, kernel_size=(3, 3), stride=(1, 1))
+  (conv2): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1))
+  (dropout1): Dropout(p=0.25, inplace=False)
+  (dropout2): Dropout(p=0.5, inplace=False)
+  (fc1): Linear(in_features=9216, out_features=128, bias=True)
+  (fc2): Linear(in_features=128, out_features=10, bias=True)
+)
+Init mode: Normal
+Number of parameters: 1199882
+------------------------------------
+Optimizer: Adam
+Max learning rate: 0.001
+Betas: (0.9, 0.999)
+Learning rate schedule:
+Ramp up epochs: 80
+Ramp up mult: 5
+Ramp down epochs: 50
+Ramp down up: 12.5
+Lower bound: 0.0
+Upper bound: 1.0
+Beta 1 schedule:
+Ramp down epochs: 50
+Ramp down up: 12.5
+Lower bound: 0.5
+Upper bound: 0.9
+------------------------------------
+Method: Temporal Ensembling
+Alpha: 0.6
+Unsupervised loss max weight (uncorrected): 30.0
+Ramp up epochs: 80
+Ramp up mult: 5
+Lower bound: 0.0
+Upper bound: 1.0
+------------------------------------
+Batch size: 100
+Number of batches: 600
+Starting epoch: 0
+Total number of epochs: 300
+Training time: 0:29:06

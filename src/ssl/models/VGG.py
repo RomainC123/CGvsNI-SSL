@@ -19,10 +19,10 @@ cfg = {
 
 class VGG(nn.Module):
 
-    def __init__(self, vgg_name):
+    def __init__(self, nb_classes, vgg_name):
         super(VGG, self).__init__()
         self.features = self._make_layers(cfg[vgg_name])
-        self.classifier = nn.Linear(512, 10)
+        self.classifier = nn.Linear(512, nb_classes)
 
     def forward(self, x):
         out = self.features(x)
@@ -51,9 +51,9 @@ class VGG(nn.Module):
 
 class VGGContainer(BaseModelContainer):
 
-    def __init__(self, init_mode, pretrained_path=None):
+    def __init__(self, nb_classes, init_mode, pretrained_path=None):
 
         self.name = 'VGG11'
-        self.model = VGG(self.name)
+        self.model = VGG(nb_classes, self.name)
 
-        super(VGGContainer, self).__init__(init_mode, pretrained_path)
+        super(VGGContainer, self).__init__(nb_classes, init_mode, pretrained_path)

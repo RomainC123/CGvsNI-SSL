@@ -97,7 +97,7 @@ def main():
 
     # Building all containers
     dataset = DATASETS[args.data](args.data, 10000, 1000, img_mode=args.img_mode)
-    model = MODELS[args.model]('normal')
+    model = MODELS[args.model](dataset.nb_classes, 'normal')
     optimizer = OPTIMIZERS[args.optimizer](OPTIMIZERS_DEFAULT[args.optimizer])
     method = METHODS[args.method](METHODS_DEFAULT[args.method])
 
