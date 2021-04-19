@@ -2,6 +2,9 @@ Functionalities to add back to main.py
 - Train on only supervised training set
 - Hyperparameters optimization
 
+Take repo online and show curves
+Tester toutes les parties séparement supervisée et non supervisée
+
 Balanced sampler
 
 Add a testing on train set functionality at the end of train

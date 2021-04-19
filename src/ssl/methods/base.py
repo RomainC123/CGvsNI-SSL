@@ -173,12 +173,12 @@ class BaseMethod:
             output = model.forward(data)
 
             optimizer_epoch.zero_grad()
-            loss, sup_loss, unsup_loss = self._get_loss(output, target, batch_idx)
+            loss, sup_loss, unsup_loss, nbsup = self._get_loss(output, target, batch_idx)
             loss.backward()
             optimizer_epoch.step()
 
             loss_epoch += loss.detach()
-            sup_loss_epoch += sup_loss.detach()
+            sup_loss_epoch += sup_loss.detach() * nbsup
             unsup_loss_epoch += unsup_loss.detach()
             outputs[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size] = output.data.clone()
 
@@ -198,7 +198,7 @@ class BaseMethod:
                                                                                                   100.,
                                                                                                   (loss_epoch / self.nb_batches).item()))
 
-        return outputs, loss_epoch / self.nb_batches, sup_loss_epoch / self.nb_batches, unsup_loss_epoch / self.nb_batches
+        return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
     def _eval(self, dataloader, model):
 
@@ -255,6 +255,9 @@ class BaseMethod:
         for epoch in range(1 + start_epoch, 1 + total_epochs):
 
             output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, model, optimizer, epoch, total_epochs)
+            losses = losses / self.nb_batches
+            sup_losses = sup_losses / dataset.nb_samples_labeled
+            unsup_losses = unsup_losses / self.nb_batches
             real_labels, pred_labels = self._eval(dataloader_valuation, model)
             metrics = self._get_metrics(real_labels, pred_labels)
             self._update_graphs(metrics, losses, sup_losses, unsup_losses)

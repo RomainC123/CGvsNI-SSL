@@ -1,6 +1,6 @@
 from ..data.image import ImageDatasetContainer
 from ..models.VGG import VGGContainer
-from ..models.MNIST import MNISTModelContainer
+from ..models.CNN import CNNContainer
 from ..optimizers.adam import AdamContainer
 from ..methods.tempens import TemporalEnsembling
 
@@ -11,7 +11,7 @@ DATASETS = {
 
 MODELS = {
     'VGG': VGGContainer,
-    'MNISTModel': MNISTModelContainer
+    'CNN': CNNContainer
 }
 
 OPTIMIZERS = {
