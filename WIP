@@ -5,4 +5,5 @@ Loss non supervisée est normalisée en la divisant par le nombre d'elems, ie ba
 Tests sur MINST 1000 labels, 300 epochs
 => 98.7%
 Tests sur CIFAR10 1000 labels, 300 epochs
-=> 51.7%
+=> 50.1%
+CIFAR10 toujours avec des comportements de loss étranges
