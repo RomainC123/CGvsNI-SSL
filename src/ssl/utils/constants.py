@@ -1,4 +1,4 @@
-TRAIN_STEP = 30
+TRAIN_STEP = 10
 LOG_INTERVAL = 10
 
 DATA_NO_LABEL = -1  # Label of the unlabeled data

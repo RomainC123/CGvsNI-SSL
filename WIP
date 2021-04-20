@@ -10,5 +10,21 @@ CIFAR10 toujours avec des comportements de loss étranges
 
 MNIST 100 labels, 300 epochs
 => 96.1%
-MNIST 100 labels, 240 epochs, only supervised
+MNIST 100 labels, 300 epochs, only supervised
 => 86.4%
+MNIST 100 labels, 300 epochs, only unsup ?
+=>
+
+CIFAR10 : toujours remontée incompréhensible de la loss supervisée après 10 epochs
+
+Important: loss comparables seulement avec le même modèle!
+  Même si normalisée de façon à ignorer le grand nombre de labels sur la sup, et la batch size et nb classes sur l'unsup
+
+Chute de sup loss forte au début puis remontée
+  LR : pas de changement de comportement entre 0.0005, 0.001 et 0.003 => Probablement pas ça le problème
+Resnet18 => Utilisable pour les deux datasets (en mode RGB)
+Comparer les courbes de Resnet18 sur les deux datasets
+Si toujours le problème de la loss initiale, alors problème lié au modèle, pas au dataset
+
+Resnet18 RGB MNIST 1000 labels 60000 samples lr 0.001
+Resnet18 RGB CIFAR10 1000 labels 60000 samples lr 0.001

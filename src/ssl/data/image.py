@@ -65,11 +65,11 @@ class ImageDataset(BaseDataset):
 
 class ImageDatasetContainer(BaseDatasetContainer):
 
-    def __init__(self, data, nb_samples_test, nb_samples_labeled, **kwargs):
+    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled, **kwargs):
 
         self.img_mode = kwargs['img_mode']
 
-        super(ImageDatasetContainer, self).__init__(data, nb_samples_test, nb_samples_labeled)
+        super(ImageDatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled)
 
     def get_dataloaders_training(self, cuda_state):
 

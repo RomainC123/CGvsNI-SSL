@@ -69,9 +69,10 @@ class BaseDatasetContainer:
         In make_dataloaders, the dataset attributes need to be created
     """
 
-    def __init__(self, data, nb_samples_test, nb_samples_labeled):
+    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled):
 
         self.data = data
+        self.nb_samples_total = nb_samples_total
         self.nb_samples_test = nb_samples_test
         self.nb_samples_labeled = nb_samples_labeled
 
@@ -92,6 +93,8 @@ class BaseDatasetContainer:
 
         df_data = pd.read_csv(os.path.join(DATASETS_PATH, self.data, 'dataset.csv'))
 
+        if self.nb_samples_total != -1:
+            df_data, _ = train_test_split(df_data, train_size=self.nb_samples_total, shuffle=True, stratify=df_data['Label'])
         df_train, df_test = train_test_split(df_data, test_size=self.nb_samples_test, shuffle=True, stratify=df_data['Label'])
         _, df_valuation = train_test_split(df_train, test_size=VAL_NUMBER, shuffle=True, stratify=df_train['Label'])
 

@@ -44,6 +44,7 @@ def get_args():
     # Training parameters
     parser.add_argument('--seed', type=int, default=0, help='seed used to generate the dataset')
     parser.add_argument('--data', type=str, help='data to use')
+    parser.add_argument('--nb_samples_total', type=int, default=-1, help='number of testing samples')
     parser.add_argument('--nb_samples_test', type=int, default=10000, help='number of testing samples')
     parser.add_argument('--nb_samples_labeled', type=int, default=1000, help='number of labeled samples in the training set')
     parser.add_argument('--day', type=str, help='day of the trained model to load')
@@ -101,7 +102,7 @@ def main():
             os.makedirs(model_path)
 
     # Building all containers
-    dataset = DATASETS[args.data](args.data, args.nb_samples_test, args.nb_samples_labeled, img_mode=args.img_mode)
+    dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, img_mode=args.img_mode)
     model = MODELS[args.model](dataset.nb_classes, 'normal')
     optimizer = OPTIMIZERS[args.optimizer](OPTIMIZERS_DEFAULT[args.optimizer])
     method = METHODS[args.method](METHODS_DEFAULT[args.method])

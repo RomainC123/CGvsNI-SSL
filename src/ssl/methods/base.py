@@ -178,25 +178,27 @@ class BaseMethod:
             optimizer_epoch.step()
 
             loss_epoch += loss.detach()
-            sup_loss_epoch += sup_loss.detach() * nbsup
+            sup_loss_epoch += sup_loss.detach()
             unsup_loss_epoch += unsup_loss.detach()
             outputs[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size] = output.data.clone()
 
             if batch_idx % LOG_INTERVAL == 0 and self.verbose_train:
-                pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f} '.format(epoch,
-                                                                                                  total_epochs,
-                                                                                                  batch_idx * len(data),
-                                                                                                  self.nb_samples_train,
-                                                                                                  100. * batch_idx / self.nb_batches,
-                                                                                                  (loss_epoch / (batch_idx + 1)).item()))
+                pbar.set_description('Train Epoch: {}/{} (lr: {:.2E}) [{}/{} ({:.0f}%)]. Loss: {:.5f} '.format(epoch,
+                                                                                                               total_epochs,
+                                                                                                               optimizer_epoch.param_groups[0]['lr'],
+                                                                                                               batch_idx * len(data),
+                                                                                                               self.nb_samples_train,
+                                                                                                               100. * batch_idx / self.nb_batches,
+                                                                                                               (loss_epoch / (batch_idx + 1)).item()))
 
             if batch_idx + 1 >= self.nb_batches and self.verbose_train:
-                pbar.set_description('Train Epoch: {}/{} [{}/{} ({:.0f}%)]. Loss: {:.8f} '.format(epoch,
-                                                                                                  total_epochs,
-                                                                                                  self.nb_samples_train,
-                                                                                                  self.nb_samples_train,
-                                                                                                  100.,
-                                                                                                  (loss_epoch / self.nb_batches).item()))
+                pbar.set_description('Train Epoch: {}/{} (lr: {:.2E}) [{}/{} ({:.0f}%)]. Loss: {:.5f} '.format(epoch,
+                                                                                                               total_epochs,
+                                                                                                               optimizer_epoch.param_groups[0]['lr'],
+                                                                                                               self.nb_samples_train,
+                                                                                                               self.nb_samples_train,
+                                                                                                               100.,
+                                                                                                               (loss_epoch / self.nb_batches).item()))
 
         return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
