@@ -44,8 +44,10 @@ def get_args():
     # Training parameters
     parser.add_argument('--seed', type=int, default=0, help='seed used to generate the dataset')
     parser.add_argument('--data', type=str, help='data to use')
-    parser.add_argument('--nb_samples_test', type=int, help='number of testing samples')
-    parser.add_argument('--nb_samples_labeled', type=int, help='number of labeled samples in the training set')
+    parser.add_argument('--nb_samples_test', type=int, default=10000, help='number of testing samples')
+    parser.add_argument('--nb_samples_labeled', type=int, default=1000, help='number of labeled samples in the training set')
+    parser.add_argument('--day', type=str, help='day of the trained model to load')
+    parser.add_argument('--hour', type=str, help='hour of the trained model')
     parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
     parser.add_argument('--model', type=str, help='model to use')
     parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
@@ -91,9 +93,12 @@ def main():
     # Setting random seed
     np.random.seed(args.seed)
 
-    model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
-    if not os.path.exists(model_path):
-        os.makedirs(model_path)
+    if args.day != None and args.hour != None:
+        model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}_{args.day}_{args.hour}')
+    else:
+        model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+        if not os.path.exists(model_path):
+            os.makedirs(model_path)
 
     # Building all containers
     dataset = DATASETS[args.data](args.data, args.nb_samples_test, args.nb_samples_labeled, img_mode=args.img_mode)
@@ -117,13 +122,19 @@ def main():
         f.write('\n------------------------------------\n' + optimizer.get_info())
         f.write('\n------------------------------------\n' + method.get_info())
 
-    print('\nStarting training...')
-    method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
-    print('Training done\n')
+    if args.train_test:
+        print('\nStarting training...')
+        method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
+        print('Training done\n')
 
-    print('Testing...')
-    method.test(dataset, model, model_path, args.verbose)
-    print('Testing done')
+        print('Testing...')
+        method.test(dataset, model, model_path, args.verbose)
+        print('Testing done')
+
+    if args.test:
+        print('Testing...')
+        method.test(dataset, model, model_path, args.verbose)
+        print('Testing done')
 
 
 if __name__ == '__main__':

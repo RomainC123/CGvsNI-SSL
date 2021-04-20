@@ -7,3 +7,8 @@ Tests sur MINST 1000 labels, 300 epochs
 Tests sur CIFAR10 1000 labels, 300 epochs
 => 50.1%
 CIFAR10 toujours avec des comportements de loss étranges
+
+MNIST 100 labels, 300 epochs
+=> 96.1%
+MNIST 100 labels, 240 epochs, only supervised
+=> 86.4%

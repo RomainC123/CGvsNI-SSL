@@ -1,13 +1,13 @@
 METHODS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
-        'max_unsup_weight': 0.
+        'max_unsup_weight': 30.
     }
 }
 
 OPTIMIZERS_DEFAULT = {
     'Adam': {
-        'max_lr': 0.003,
+        'max_lr': 0.002,
         'beta1': 0.9,
         'beta2': 0.999
     }

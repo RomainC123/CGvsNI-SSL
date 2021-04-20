@@ -21,7 +21,7 @@ Init mode: Normal
 Number of parameters: 20538
 ------------------------------------
 Optimizer: Adam
-Max learning rate: 0.003
+Max learning rate: 0.002
 Betas: (0.9, 0.999)
 Learning rate schedule:
 Ramp up epochs: 80
@@ -48,3 +48,4 @@ Batch size: 100
 Number of batches: 600
 Starting epoch: 0
 Total number of epochs: 300
+Training time: 0:28:22

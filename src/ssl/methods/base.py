@@ -256,7 +256,7 @@ class BaseMethod:
 
             output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, model, optimizer, epoch, total_epochs)
             losses = losses / self.nb_batches
-            sup_losses = sup_losses / dataset.nb_samples_labeled
+            sup_losses = sup_losses / self.nb_batches
             unsup_losses = unsup_losses / self.nb_batches
             real_labels, pred_labels = self._eval(dataloader_valuation, model)
             metrics = self._get_metrics(real_labels, pred_labels)
@@ -278,6 +278,7 @@ class BaseMethod:
     def test(self, dataset, model, trained_model_path, verbose):
 
         dataloader_test = dataset.get_dataloaders_testing(self.cuda_state)
+        model.load(trained_model_path)
 
         list_classification_reports = []
         dict_metrics_scores = {}

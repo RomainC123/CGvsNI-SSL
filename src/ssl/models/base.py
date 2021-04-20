@@ -15,10 +15,9 @@ class BaseModelContainer:
     Given the model name, creates a wrapper with get_info, save and load functions
     """
 
-    def __init__(self, nb_classes, init_mode, pretrained_path=None):
+    def __init__(self, nb_classes, init_mode):
 
         self.init_mode = init_mode
-        self.pretrained_path = pretrained_path
         if init_mode != 'pretrained':
             init_weights(self.model, self.init_mode)
         else:
@@ -35,9 +34,9 @@ class BaseModelContainer:
     def cuda(self):
         self.model.cuda()
 
-    def load(self):
-        latest_log, _ = get_latest_log(self.pretrained_path)
-        checkpoint = torch.load(os.path.join(self.pretrained_path, 'logs', latest_log))
+    def load(self, pretrained_path):
+        latest_log, _ = get_latest_log(pretrained_path)
+        checkpoint = torch.load(os.path.join(pretrained_path, 'logs', latest_log))
         self.model.load_state_dict(checkpoint['state_dict'])
 
     def save(self, path, epoch):
