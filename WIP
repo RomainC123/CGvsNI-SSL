@@ -44,5 +44,5 @@ DO CGvsNI
 Problème semble provenir du dataset, pas de l'algo (fin ça marche pixel sur MNIST)
 Mérite d'être testé sur le problème final
 
-Run CIFAR10 same loss as repo
-=> 
+Run CIFAR10 same loss as repo, and using simpleNet (same model)
+=>
