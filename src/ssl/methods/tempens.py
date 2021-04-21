@@ -55,4 +55,4 @@ class TemporalEnsembling(BaseMethod):
         sup_loss, nbsup = masked_crossentropy(output, target)
         unsup_loss = self.unsup_weight * mse_loss(output, y_ema_batch)
 
-        return sup_loss + unsup_loss, sup_loss, unsup_loss, nbsup
+        return sup_loss + unsup_loss, sup_loss, unsup_loss

@@ -257,13 +257,14 @@ class BaseMethod:
         for epoch in range(1 + start_epoch, 1 + total_epochs):
 
             output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, model, optimizer, epoch, total_epochs)
+            self._update_vars(output, epoch, total_epochs)
+
             losses = losses / self.nb_batches
             sup_losses = sup_losses / self.nb_batches
             unsup_losses = unsup_losses / self.nb_batches
             real_labels, pred_labels = self._eval(dataloader_valuation, model)
             metrics = self._get_metrics(real_labels, pred_labels)
             self._update_graphs(metrics, losses, sup_losses, unsup_losses)
-            self._update_vars(output, epoch, total_epochs)
 
             if epoch % TRAIN_STEP == 0:
                 self._update_checkpoint(model, epoch)

@@ -51,6 +51,7 @@ def get_args():
     parser.add_argument('--hour', type=str, help='hour of the trained model')
     parser.add_argument('--img_mode', type=str, help='loading method (RGB or L)')
     parser.add_argument('--model', type=str, help='model to use')
+    parser.add_argument('--init_mode', type=str, default='normal', help='init mode to use')
     parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
     parser.add_argument('--method', type=str, help='method to use')
     parser.add_argument('--epochs', type=int, default=DEFAULT_EPOCHS, help='number of epochs to train (default: 300)')
@@ -103,7 +104,7 @@ def main():
 
     # Building all containers
     dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, img_mode=args.img_mode)
-    model = MODELS[args.model](dataset.nb_classes, 'normal')
+    model = MODELS[args.model](dataset.nb_classes, args.init_mode)
     optimizer = OPTIMIZERS[args.optimizer](OPTIMIZERS_DEFAULT[args.optimizer])
     method = METHODS[args.method](METHODS_DEFAULT[args.method])
 
