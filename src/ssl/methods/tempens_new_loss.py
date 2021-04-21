@@ -44,10 +44,10 @@ class TemporalEnsemblingNewLoss(BaseMethod):
         loss_unsup = torch.nn.MSELoss(reduction='mean')
         if self.cuda_state:
             loss_sup = loss_sup.cuda()
-            loss_unsup = loss_sup.cuda()
+            loss_unsup = loss_unsup.cuda()
 
         y_ema_batch = torch.autograd.Variable(self.y_ema[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size], requires_grad=False)
-        sup_loss, nbsup = loss_sup(output, target)
+        sup_loss = loss_sup(output, target)
         unsup_loss = self.unsup_weight * loss_unsup(F.softmax(output, dim=1), y_ema_batch)
 
-        return sup_loss + unsup_loss, sup_loss, unsup_loss, nbsup
+        return sup_loss + unsup_loss, sup_loss, unsup_loss

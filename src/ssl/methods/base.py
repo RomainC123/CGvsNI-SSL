@@ -173,7 +173,7 @@ class BaseMethod:
             output = model.forward(data)
 
             optimizer_epoch.zero_grad()
-            loss, sup_loss, unsup_loss, nbsup = self._get_loss(output, target, batch_idx)
+            loss, sup_loss, unsup_loss = self._get_loss(output, target, batch_idx)
             loss.backward()
             optimizer_epoch.step()
 
