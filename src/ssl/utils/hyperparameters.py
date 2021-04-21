@@ -11,7 +11,7 @@ METHODS_DEFAULT = {
 
 OPTIMIZERS_DEFAULT = {
     'Adam': {
-        'max_lr': 0.001,
+        'max_lr': 0.003,
         'beta1': 0.9,
         'beta2': 0.999
     }

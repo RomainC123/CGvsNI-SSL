@@ -9,7 +9,7 @@ class TemporalEnsemblingNewLoss(BaseMethod):
 
     def __init__(self, hyperparameters):
 
-        self.name = 'Temporal Ensembling'
+        self.name = 'Temporal Ensembling New Loss'
 
         super(TemporalEnsemblingNewLoss, self).__init__(hyperparameters)
 
@@ -47,7 +47,7 @@ class TemporalEnsemblingNewLoss(BaseMethod):
             loss_unsup = loss_unsup.cuda()
 
         y_ema_batch = torch.autograd.Variable(self.y_ema[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size], requires_grad=False)
-        sup_loss = loss_sup(output, target)
+        sup_loss = loss_sup(output, target) / self.batch_size
         unsup_loss = self.unsup_weight * loss_unsup(F.softmax(output, dim=1), y_ema_batch)
 
         return sup_loss + unsup_loss, sup_loss, unsup_loss

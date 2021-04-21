@@ -35,6 +35,8 @@ Toujours rien pour CIFAR10, même comportement de loss
 Adaptation d'un répo pour visualiser des courbes de loss d'un truc qui est sensé marcher
 Tracer courbes
 Regarder dataloader
+=> Pour chaque epoch, il voit toutes les samples non labelisées au plus une fois, et ensuite il ajoute à ces sampels non labeliusées un nombre fixe de samples labelisées, qui peuvent être réutilisées
+PAR DEFAUT, LANCE SANS CA !!!
 
 CNN RGB CIFAR10 1000 labels lr 0.001
 
