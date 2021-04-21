@@ -5,6 +5,8 @@ from ..models.Resnet import Resnet18Container
 from ..models.SimpleNet import SimpleNetContainer
 from ..optimizers.adam import AdamContainer
 from ..methods.tempens import TemporalEnsembling
+from ..methods.tempens_new_loss import TemporalEnsemblingNewLoss
+
 
 DATASETS = {
     'CIFAR10': ImageDatasetContainer,
@@ -23,5 +25,6 @@ OPTIMIZERS = {
 }
 
 METHODS = {
-    'TemporalEnsembling': TemporalEnsembling
+    'TemporalEnsembling': TemporalEnsembling,
+    'TemporalEnsemblingNewLoss': TemporalEnsemblingNewLoss
 }
