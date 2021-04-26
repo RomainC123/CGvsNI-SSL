@@ -2,17 +2,11 @@ Functionalities to add back to main.py
 - Train on only supervised training set
 - Hyperparameters optimization
 
-Take repo online and show curves
-Tester toutes les parties séparement supervisée et non supervisée
-
 Balanced sampler
-
 Add a testing on train set functionality at the end of train
 
-Implement CGvsNI dataset structure (image folder complete)
-
 Redo the downloader and img_crop for CG images
-
+DO CGvsNI
 CGvsNI setup:
   clean folder: dataset files
   raw folder: name_labels at the root of the folder, and then all images in their own folder by dataset

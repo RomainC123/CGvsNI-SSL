@@ -33,16 +33,9 @@ Resnet18 RGB CIFAR10 1000 labels 60000 samples lr 0.001
 Toujours rien pour CIFAR10, même comportement de loss
 
 Adaptation d'un répo pour visualiser des courbes de loss d'un truc qui est sensé marcher
-Tracer courbes
-Regarder dataloader
-=> Pour chaque epoch, il voit toutes les samples non labelisées au plus une fois, et ensuite il ajoute à ces sampels non labeliusées un nombre fixe de samples labelisées, qui peuvent être réutilisées
+=> Pour chaque epoch, il voit toutes les samples non labelisées au plus une fois, et ensuite il ajoute à ces samples non labeliusées un nombre fixe de samples labelisées, qui peuvent être réutilisées
 PAR DEFAUT, LANCE SANS CA !!!
 
-CNN RGB CIFAR10 1000 labels lr 0.001
-
-
-
-DO CGvsNI
 Problème semble provenir du dataset, pas de l'algo (fin ça marche pixel sur MNIST)
 Mérite d'être testé sur le problème final
 
@@ -51,10 +44,13 @@ Run CIFAR10 new loss VGG
 CIFAR10 new loss SimpleNet
 => 45% (21-04-2021_13:51:32)
 CIFAR10 old loss VGG (check ça)
-=> ~ 50% ()
+=> Not finished (21-04-2021_19:29:31)
 CIFAR10 old loss SimpleNet
-=>
+=> 53.3% (21-04-2021_20:52:53)
 CIFAR10 old loss VGG xavier
-=>
+=> Not finished (21-04-2021_20:27:04)
 CIFAR10 old loss SimpleNet xavier
-=>
+=> 50.5% (21-04-2021_21:30:12)
+
+
+Training with lr starting at 10% instead of 0%
