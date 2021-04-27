@@ -10,3 +10,5 @@ DO CGvsNI
 CGvsNI setup:
   clean folder: dataset files
   raw folder: name_labels at the root of the folder, and then all images in their own folder by dataset
+
+Tester LeakyReLU pour VGG (et ELU ?)

@@ -43,14 +43,16 @@ Run CIFAR10 new loss VGG
 => 41% (21-04-2021_13:07:22)
 CIFAR10 new loss SimpleNet
 => 45% (21-04-2021_13:51:32)
-CIFAR10 old loss VGG (check ça)
-=> Not finished (21-04-2021_19:29:31)
+CIFAR10 old loss VGG
+=> 49.5% (26-04-2021_10:58:21)
 CIFAR10 old loss SimpleNet
 => 53.3% (21-04-2021_20:52:53)
 CIFAR10 old loss VGG xavier
-=> Not finished (21-04-2021_20:27:04)
+=> 47.0% (26-04-2021_10:59:01)
 CIFAR10 old loss SimpleNet xavier
 => 50.5% (21-04-2021_21:30:12)
 
+Old loss vgg with xavier => NO MORE RANDOM BEHAVIOR AT THE START
+Test de ça avec new loss
 
 Training with lr starting at 10% instead of 0%
