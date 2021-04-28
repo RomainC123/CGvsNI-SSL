@@ -17,7 +17,7 @@ class CNN(nn.Module):
         self.gn = GaussianNoise(std=STD)
         self.act = nn.ReLU()
         self.drop = nn.Dropout(0.5)
-        self.conv1 = nn.utils.weight_norm(nn.Conv2d(3, 16, 3, padding=1))
+        self.conv1 = nn.utils.weight_norm(nn.Conv2d(1, 16, 3, padding=1))
         self.conv2 = nn.utils.weight_norm(nn.Conv2d(16, 32, 3, padding=1))
         self.mp = nn.MaxPool2d(3, stride=2, padding=1)
         self.fc = nn.Linear(32 * 7 * 7, nb_classes)

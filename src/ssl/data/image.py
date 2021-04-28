@@ -71,7 +71,7 @@ class ImageDatasetContainer(BaseDatasetContainer):
 
         super(ImageDatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled)
 
-    def get_dataloaders_training(self, cuda_state):
+    def get_dataloaders(self, cuda_state):
 
         self._dataset_train = ImageDataset(self.data,
                                            self._df_train_masked,
@@ -82,13 +82,9 @@ class ImageDatasetContainer(BaseDatasetContainer):
                                                img_mode=self.img_mode,
                                                transform=IMAGE_TRANSFORMS_TRAIN[self.img_mode])
 
-        return super(ImageDatasetContainer, self).get_dataloaders_training(cuda_state)
-
-    def get_dataloaders_testing(self, cuda_state):
-
         self._dataset_test = ImageDataset(self.data,
                                           self._df_test,
                                           img_mode=self.img_mode,
                                           transform=IMAGE_TRANSFORMS_TEST[self.img_mode])
 
-        return super(ImageDatasetContainer, self).get_dataloaders_testing(cuda_state)
+        return super(ImageDatasetContainer, self).get_dataloaders(cuda_state)

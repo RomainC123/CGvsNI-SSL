@@ -101,8 +101,10 @@ def show_graphs(model_path):
 
     graphs_path = os.path.join(model_path, 'graphs')
 
-    with open(os.path.join(graphs_path, 'metrics.pkl'), 'rb') as f:
-        metrics = pickle.load(f)
+    with open(os.path.join(graphs_path, 'metrics_eval.pkl'), 'rb') as f:
+        metrics_eval = pickle.load(f)
+    with open(os.path.join(graphs_path, 'metrics_test.pkl'), 'rb') as f:
+        metrics_test = pickle.load(f)
     with open(os.path.join(graphs_path, 'loss.pkl'), 'rb') as f:
         losses = pickle.load(f)
     with open(os.path.join(graphs_path, 'sup_loss.pkl'), 'rb') as f:
@@ -116,8 +118,10 @@ def show_graphs(model_path):
 
     ax1 = fig.add_subplot(211)
     ax1.set_title('Metrics')
-    for key in metrics.keys():
-        ax1.plot(range(epochs), metrics[key], label=key.capitalize())
+    for key in metrics_eval.keys():
+        ax1.plot(range(epochs), metrics_eval[key], label=key.capitalize() + ' eval')
+    for key in metrics_test.keys():
+        ax1.plot(range(epochs), metrics_test[key], label=key.capitalize() + 'test')
     ax1.legend()
 
     ax2 = fig.add_subplot(212)

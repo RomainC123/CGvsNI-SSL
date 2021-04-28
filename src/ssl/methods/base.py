@@ -52,9 +52,11 @@ class BaseMethod:
 
     def _init_graphs(self, start_epoch):
         if start_epoch == 0:
-            self.metrics = {}
+            self.metrics_eval = {}
+            self.metrics_test = {}
             for key in METRICS.keys():
-                self.metrics[key] = []
+                self.metrics_eval[key] = []
+                self.metrics_test[key] = []
             self.losses, self.sup_losses, self.unsup_losses = [], [], []
             self._save_graphs()
         else:
@@ -69,8 +71,10 @@ class BaseMethod:
         self.model.model.load_state_dict(checkpoint['state_dict'])
 
     def _load_graphs(self):
-        with open(os.path.join(self._graphs_path, 'metrics.pkl'), 'rb') as f:
-            self.metrics = pickle.load(f)
+        with open(os.path.join(self._graphs_path, 'metrics_eval.pkl'), 'rb') as f:
+            self.metrics_eval = pickle.load(f)
+        with open(os.path.join(self._graphs_path, 'metrics_test.pkl'), 'rb') as f:
+            self.metrics_test = pickle.load(f)
         with open(os.path.join(self._graphs_path, 'loss.pkl'), 'rb') as f:
             self.losses = pickle.load(f)
         with open(os.path.join(self._graphs_path, 'sup_loss.pkl'), 'rb') as f:
@@ -85,16 +89,19 @@ class BaseMethod:
                    os.path.join(self._logs_path, f'checkpoint_{epoch}.pth'))
         os.remove(os.path.join(self._logs_path, latest_log))
 
-    def _update_graphs(self, metrics, losses, sup_losses, unsup_losses):
-        for key in self.metrics.keys():
-            self.metrics[key].append(metrics[key])
+    def _update_graphs(self, metrics_eval, metrics_test, losses, sup_losses, unsup_losses):
+        for key in self.metrics_eval.keys():
+            self.metrics_eval[key].append(metrics_eval[key])
+            self.metrics_test[key].append(metrics_test[key])
         self.losses.append(losses)
         self.sup_losses.append(sup_losses)
         self.unsup_losses.append(unsup_losses)
 
     def _save_graphs(self):
-        with open(os.path.join(self._graphs_path, 'metrics.pkl'), 'wb') as f:
-            pickle.dump(self.metrics, f)
+        with open(os.path.join(self._graphs_path, 'metrics_eval.pkl'), 'wb') as f:
+            pickle.dump(self.metrics_eval, f)
+        with open(os.path.join(self._graphs_path, 'metrics_test.pkl'), 'wb') as f:
+            pickle.dump(self.metrics_test, f)
         with open(os.path.join(self._graphs_path, 'loss.pkl'), 'wb') as f:
             pickle.dump(self.losses, f)
         with open(os.path.join(self._graphs_path, 'sup_loss.pkl'), 'wb') as f:
@@ -237,7 +244,7 @@ class BaseMethod:
     def train(self, dataset, model, optimizer, start_epoch, total_epochs, trained_model_path, verbose):
         # Grab from objects: nb_img_train, nb_classes, nb_batches, batch_size
 
-        dataloader_train, dataloader_valuation = dataset.get_dataloaders_training(self.cuda_state)
+        dataloader_train, dataloader_valuation, dataloader_test = dataset.get_dataloaders(self.cuda_state)
         self.verbose_train = verbose
         self.nb_samples_train = dataset.nb_samples_train
         self.nb_classes = dataset.nb_classes
@@ -262,9 +269,13 @@ class BaseMethod:
             losses = losses / self.nb_batches
             sup_losses = sup_losses / self.nb_batches
             unsup_losses = unsup_losses / self.nb_batches
-            real_labels, pred_labels = self._eval(dataloader_valuation, model)
-            metrics = self._get_metrics(real_labels, pred_labels)
-            self._update_graphs(metrics, losses, sup_losses, unsup_losses)
+
+            real_labels_eval, pred_labels_eval = self._eval(dataloader_valuation, model)
+            real_labels_test, pred_labels_test = self._eval(dataloader_test, model)
+            metrics_eval = self._get_metrics(real_labels_eval, pred_labels_eval)
+            metrics_test = self._get_metrics(real_labels_test, pred_labels_test)
+
+            self._update_graphs(metrics_eval, metrics_test, losses, sup_losses, unsup_losses)
 
             if epoch % TRAIN_STEP == 0:
                 self._update_checkpoint(model, epoch)
@@ -280,7 +291,7 @@ class BaseMethod:
 
     def test(self, dataset, model, trained_model_path, verbose):
 
-        dataloader_test = dataset.get_dataloaders_testing(self.cuda_state)
+        _, _, dataloader_test = dataset.get_dataloaders(self.cuda_state)
         model.load(trained_model_path)
 
         list_classification_reports = []
