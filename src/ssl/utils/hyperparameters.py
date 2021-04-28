@@ -28,7 +28,7 @@ SCHEDULES_DEFAULT = {
         'ramp_up_mult': RAMP_UP_MULT,
         'ramp_down_epochs': 50,
         'ramp_down_mult': RAMP_DOWN_MULT,
-        'lower': 0.,
+        'lower': 0.1,
         'upper': 1.
     },
     'beta1': {

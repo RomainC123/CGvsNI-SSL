@@ -65,3 +65,7 @@ CIFAR10 new loss VGG xavier
 => 27% lel (27-04-2021_14:18:25)
 
 Training with lr starting at 10% instead of 0%
+CIFAR10 old loss VGG
+=>
+CIFAR10 new loss VGG
+=> 
