@@ -107,8 +107,11 @@ class BaseDatasetContainer:
         Creates self._df_train_masked (frame with all train images and masked and unmasked labels) and self._df_train_labeled (only rows that stayed labeled)
         """
 
-        df_masked, df_labeled = train_test_split(self._df_train_full, test_size=self.nb_samples_labeled, shuffle=True, stratify=self._df_train_full['Label'])
-        self._df_train_labeled = df_labeled.reset_index(drop=True)
+        if self.nb_samples_labeled != -1:
+            df_masked, df_labeled = train_test_split(self._df_train_full, test_size=self.nb_samples_labeled, shuffle=True, stratify=self._df_train_full['Label'])
+            self._df_train_labeled = df_labeled.reset_index(drop=True)
+        else:
+            df_masked = pd.DataFrame()
         self._df_train_masked = self._df_train_full.copy()
         self._df_train_masked.loc[df_masked.index, 'Label'] = DATA_NO_LABEL
 
