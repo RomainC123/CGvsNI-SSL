@@ -68,4 +68,8 @@ Training with lr starting at 10% instead of 0%
 CIFAR10 old loss VGG
 =>
 CIFAR10 new loss VGG
-=> 
+=>
+
+
+
+Problème dans la loss de la new tempens, à check maintenant que c'est fixé
