@@ -12,3 +12,4 @@ CGvsNI setup:
   raw folder: name_labels at the root of the folder, and then all images in their own folder by dataset
 
 Tester LeakyReLU pour VGG (et ELU ?)
+Tester lr schedule start at 20% or 10% instead of 0%

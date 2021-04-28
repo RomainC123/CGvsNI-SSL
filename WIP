@@ -39,20 +39,29 @@ PAR DEFAUT, LANCE SANS CA !!!
 Problème semble provenir du dataset, pas de l'algo (fin ça marche pixel sur MNIST)
 Mérite d'être testé sur le problème final
 
-Run CIFAR10 new loss VGG
-=> 41% (21-04-2021_13:07:22)
-CIFAR10 new loss SimpleNet
-=> 45% (21-04-2021_13:51:32)
 CIFAR10 old loss VGG
 => 49.5% (26-04-2021_10:58:21)
 CIFAR10 old loss SimpleNet
 => 53.3% (21-04-2021_20:52:53)
+
+CIFAR10 new loss VGG
+=> 41% (21-04-2021_13:07:22)
+    Massive supervised loss drop at the start, unsupervised loss is dominating here (very unstable valuation accuracy)
+CIFAR10 new loss SimpleNet
+=> 45% (21-04-2021_13:51:32)
+    Much smoother behavior, but very slow convergence of loss
+
 CIFAR10 old loss VGG xavier
 => 47.0% (26-04-2021_10:59:01)
+    Bad perf but good loss behavior (no more sup loss increase at the start)
 CIFAR10 old loss SimpleNet xavier
 => 50.5% (21-04-2021_21:30:12)
+    Weird loss behavior at the start
 
 Old loss vgg with xavier => NO MORE RANDOM BEHAVIOR AT THE START
 Test de ça avec new loss
+
+CIFAR10 new loss VGG xavier
+=> 27% lel (27-04-2021_14:18:25)
 
 Training with lr starting at 10% instead of 0%
