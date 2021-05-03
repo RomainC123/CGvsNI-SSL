@@ -14,14 +14,18 @@ IMAGE_TRANSFORMS_TRAIN = {
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     },
     'CGvsNI': {
-        'L': transforms.Compose([transforms.ToTensor(),
+        'L': transforms.Compose([transforms.RandomCrop(233),
+                                 transforms.RandomHorizontalFlip(),
+                                 transforms.ToTensor(),
                                  transforms.Normalize((0.5), (0.5))]),
-        'RGB': transforms.Compose([transforms.ToTensor(),
+        'RGB': transforms.Compose([transforms.RandomCrop(233),
+                                   transforms.RandomHorizontalFlip(),
+                                   transforms.ToTensor(),
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     }
 }
 
-IMAGE_TRANSFORMS_TEST={
+IMAGE_TRANSFORMS_TEST = {
     'MNIST': {
         'L': transforms.Compose([transforms.ToTensor(),
                                  transforms.Normalize((0.5), (0.5))]),
@@ -35,9 +39,13 @@ IMAGE_TRANSFORMS_TEST={
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     },
     'CGvsNI': {
-        'L': transforms.Compose([transforms.ToTensor(),
+        'L': transforms.Compose([transforms.RandomCrop(233),
+                                 transforms.RandomHorizontalFlip(),
+                                 transforms.ToTensor(),
                                  transforms.Normalize((0.5), (0.5))]),
-        'RGB': transforms.Compose([transforms.ToTensor(),
+        'RGB': transforms.Compose([transforms.RandomCrop(233),
+                                   transforms.RandomHorizontalFlip(),
+                                   transforms.ToTensor(),
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     }
 }
