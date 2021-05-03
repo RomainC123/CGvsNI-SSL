@@ -14,10 +14,12 @@ data_to_label = {
     'RAISE': 0,
     'VISION': 0,
     'Artlantis': 1,
-    'Corona': 2
+    'Autodesk': 2,
+    'Corona': 3,
+    'VRay': 4
 }
 
-ROOT_PATH = pathlib.Path(__file__).resolve().parents[2].absolute()
+ROOT_PATH = pathlib.Path(__file__).resolve().parents[3].absolute()
 
 FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'CGvsNI')
 if not os.path.exists(FRAME_PATH):
