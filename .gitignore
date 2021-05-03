@@ -132,8 +132,6 @@ dmypy.json
 *.ipynb
 
 # images
-*.jpeg
-*.jpg
-*.JPG
-*.png
-*.tif
+*/MNIST/raw
+*/CIFAR10/raw
+*/CGvsNI/raw
