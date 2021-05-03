@@ -155,4 +155,4 @@ class ENetContainer(BaseModelContainer):
         self.name = 'ENet'
         self.model = ENet(nb_classes)
 
-        super(VGGContainer, self).__init__(nb_classes, init_mode)
+        super(ENetContainer, self).__init__(nb_classes, init_mode)
