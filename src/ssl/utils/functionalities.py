@@ -4,7 +4,6 @@ from ..models.VGG import VGGContainer
 from ..models.CNN import CNNContainer
 from ..models.Resnet import Resnet18Container
 from ..models.SimpleNet import SimpleNetContainer
-from ..models.MLPduQ import MLPduQContainer
 
 from ..optimizers.adam import AdamContainer
 
@@ -21,8 +20,7 @@ MODELS = {
     'VGG': VGGContainer,
     'CNN': CNNContainer,
     'Resnet18': Resnet18Container,
-    'SimpleNet': SimpleNetContainer,
-    'MLPduQ': MLPduQContainer
+    'SimpleNet': SimpleNetContainer
 }
 
 OPTIMIZERS = {
