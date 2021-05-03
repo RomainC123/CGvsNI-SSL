@@ -11,4 +11,4 @@ source /applis/environments/conda.sh
 conda activate CGDetection
 
 cd ~/code/CGvsNI-SSL/src
-python ./main.py --train --data CGvsNI --datasets_to_use Artlantis --label_mode Biclass --nb_samples_total 4000 --nb_samples_test 500 --nb_samples_labeled 500 --img_mode RGB --model ENet --method TemporalEnsembling --epochs 300
+python ./main.py --train --data CGvsNI --datasets_to_use Artlantis --label_mode Biclass --nb_samples_total 2048 --nb_samples_test 512 --nb_samples_labeled 256 --img_mode RGB --model ENet --method TemporalEnsembling --epochs 300
