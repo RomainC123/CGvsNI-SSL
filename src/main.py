@@ -135,6 +135,11 @@ def main():
         method.test(dataset, model, model_path, args.verbose)
         print('Testing done')
 
+    if args.train:
+        print('\nStarting training...')
+        method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
+        print('Training done')
+
     if args.test:
         print('Testing...')
         method.test(dataset, model, model_path, args.verbose)
