@@ -9,8 +9,8 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 
-from ..utils.paths import DATASETS_PATH
 from ..utils.constants import VAL_NUMBER, DATA_NO_LABEL, DATALOADER_PARAMS_CUDA, DATALOADER_PARAMS_NO_CUDA
+from ..utils.paths import DATASETS_PATH
 
 ################################################################################
 #   Dataset class                                                              #
@@ -42,8 +42,7 @@ class BaseDataset(Dataset):
         if idx > len(self.df_data):
             raise ValueError(f'Index out of bounds: {idx}')
 
-        item = self._loader(idx)
-        label = self.df_data['Label'][idx]
+        item, label = self._loader(idx)
 
         return item, label
 

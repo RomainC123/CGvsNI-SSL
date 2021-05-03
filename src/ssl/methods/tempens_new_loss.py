@@ -11,6 +11,13 @@ class TemporalEnsemblingNewLoss(BaseMethod):
 
         self.name = 'Temporal Ensembling New Loss'
 
+        self.sup_loss = torch.nn.CrossEntropyLoss(reduction='sum', ignore_index=DATA_NO_LABEL)
+        self.unsup_loss = torch.nn.MSELoss(reduction='mean')
+
+        if self.cuda_state:
+            self.sup_loss = self.sup_loss.cuda()
+            self.unsup_loss = self.unsup_loss.cuda()
+
         super(TemporalEnsemblingNewLoss, self).__init__(hyperparameters)
 
     def _set_hyperparameters(self, hyperparameters):
@@ -39,20 +46,8 @@ class TemporalEnsemblingNewLoss(BaseMethod):
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
     def _get_loss(self, output, target, batch_idx):
-
-        def masked_crossentropy(out, labels):
-            nbsup = len(torch.nonzero(labels >= 0))
-            loss = F.cross_entropy(out, labels, size_average=False, ignore_index=DATA_NO_LABEL)
-            if nbsup != 0:
-                loss = loss / nbsup
-            return loss, nbsup
-
-        def mse_loss(out1, out2):
-            quad_diff = torch.sum((out1 - out2) ** 2)
-            return quad_diff / out1.data.nelement()
-
         y_ema_batch = torch.autograd.Variable(self.y_ema[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size], requires_grad=False)
-        sup_loss, nbsup = masked_crossentropy(output, target)
-        unsup_loss = self.unsup_weight * mse_loss(F.softmax(output, dim=1), y_ema_batch)
+        sup_loss = self.sup_loss(output, target) / self.batch_size
+        unsup_loss = self.unsup_loss * self.unsup_loss(F.softmax(output, dim=1), y_ema_batch)
 
         return sup_loss + unsup_loss, sup_loss, unsup_loss

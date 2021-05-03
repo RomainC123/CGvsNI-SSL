@@ -13,3 +13,10 @@ DEFAULT_EPOCHS = 300
 
 DATALOADER_PARAMS_CUDA = {'batch_size': BATCH_SIZE, 'shuffle': False, 'num_workers': 8, 'pin_memory': True}
 DATALOADER_PARAMS_NO_CUDA = {'batch_size': BATCH_SIZE, 'shuffle': False}
+
+CGVSNI_DATASETS_IDS = {
+    'Artlantis': 1,
+    'Autodesk': 2,
+    'Corona': 3,
+    'VRay': 4
+}
