@@ -1,11 +1,11 @@
 METHODS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
-        'max_unsup_weight': 30.
+        'max_unsup_weight': 0.
     },
     'TemporalEnsemblingNewLoss': {
         'alpha': 0.6,
-        'max_unsup_weight': 30.
+        'max_unsup_weight': 0.
     }
 }
 

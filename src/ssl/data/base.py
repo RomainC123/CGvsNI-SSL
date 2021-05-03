@@ -9,6 +9,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 
+from ..utils.paths import DATASETS_PATH
 from ..utils.constants import VAL_NUMBER, DATA_NO_LABEL, DATALOADER_PARAMS_CUDA, DATALOADER_PARAMS_NO_CUDA
 
 ################################################################################

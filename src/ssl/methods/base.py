@@ -222,9 +222,7 @@ class BaseMethod:
                 if self.cuda_state:
                     data, target = data.cuda(), target.cuda()
 
-                # Make the prediciton using the already trained model
-                batch_size, c, h, w = data.size()
-                output = model.forward(data.view(-1, c, h, w))
+                output = model.forward(data)
                 result = F.softmax(output, dim=1)
                 pred = result.data.max(1, keepdim=True)[1]
 
