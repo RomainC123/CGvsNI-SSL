@@ -9,7 +9,6 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 
-from ..utils.paths import DATASETS_PATH
 from ..utils.constants import VAL_NUMBER, DATA_NO_LABEL, DATALOADER_PARAMS_CUDA, DATALOADER_PARAMS_NO_CUDA
 
 ################################################################################
@@ -29,10 +28,6 @@ class BaseDataset(Dataset):
 
         self.data = data
         self.df_data = df_data
-
-        self._raw_data_path = os.path.join(DATASETS_PATH, data, 'raw')
-        if not os.path.exists(self._raw_data_path):
-            raise RuntimeError(f'Data type not implemented: {self.data}')
 
     def _loader(self, idx):
         # TO OVERLOAD

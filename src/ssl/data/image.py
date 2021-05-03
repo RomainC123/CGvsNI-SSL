@@ -26,6 +26,10 @@ class ImageDataset(BaseDataset):
 
         super(ImageDataset, self).__init__(data, df_data, **kwargs)
 
+        self._raw_data_path = os.path.join(DATASETS_PATH, data, 'raw')
+        if not os.path.exists(self._raw_data_path):
+            raise RuntimeError(f'Data type not implemented: {self.data}')
+
         self.img_mode = kwargs['img_mode']
         if 'transform' in kwargs.keys():
             self.transform = kwargs['transform']
