@@ -18,3 +18,7 @@ CGvsNI setup:
 
 Tester LeakyReLU pour VGG (et ELU ?)
 Tester lr schedule start at 20% or 10% instead of 0%
+
+
+Patcher le setup de bettik pour le dl des fichiers
+Crop VRay et les images réelles si c'est pas déjà fait

@@ -77,6 +77,10 @@ class ImageDatasetContainer(BaseDatasetContainer):
 
         super(ImageDatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled)
 
+    def _get_data(self):
+
+        return pd.read_csv(os.path.join(DATASETS_PATH, self.data, 'dataset.csv'))
+
     def get_dataloaders(self, cuda_state):
 
         self._dataset_train = ImageDataset(self.data,

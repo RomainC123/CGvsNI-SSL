@@ -135,3 +135,7 @@ dmypy.json
 */MNIST/raw
 */CIFAR10/raw
 */CGvsNI/raw
+
+#CGvsNI checkpoints
+trained_models/CGvsNI*/logs/*.pth
+saved_models/CGvsNI*/logs/*.pth

@@ -9,7 +9,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 
-from ..utils.constants import VAL_NUMBER, DATA_NO_LABEL, DATALOADER_PARAMS_CUDA, DATALOADER_PARAMS_NO_CUDA
+from ..utils.constants import VAL_NUMBER, DATA_NO_LABEL, BATCH_SIZE, DATALOADER_PARAMS_CUDA, DATALOADER_PARAMS_NO_CUDA
 from ..utils.paths import DATASETS_PATH
 
 ################################################################################
@@ -81,17 +81,21 @@ class BaseDatasetContainer:
 
         self.nb_classes = len(self._df_train_full['Label'].unique())
 
+    def _get_data(self):
+        # To overload
+        pass
+
     def _split_data(self):
         """
         Creates self._df_train_full, self._df_test and self._df_val
         """
 
-        df_data = pd.read_csv(os.path.join(DATASETS_PATH, self.data, 'dataset.csv'))
+        df_data = self._get_data()
 
-        if self.nb_samples_total != -1:
+        if self.nb_samples_total != -1 and self.nb_samples_total != len(df_data):
             df_data, _ = train_test_split(df_data, train_size=self.nb_samples_total, shuffle=True, stratify=df_data['Label'])
         df_train, df_test = train_test_split(df_data, test_size=self.nb_samples_test, shuffle=True, stratify=df_data['Label'])
-        _, df_valuation = train_test_split(df_train, test_size=VAL_NUMBER, shuffle=True, stratify=df_train['Label'])
+        _, df_valuation = train_test_split(df_train, test_size=VAL_NUMBER[self.data], shuffle=True, stratify=df_train['Label'])
 
         self._df_train_full = df_train.reset_index(drop=True)
         self._df_valuation = df_valuation.reset_index(drop=True)
@@ -102,7 +106,7 @@ class BaseDatasetContainer:
         Creates self._df_train_masked (frame with all train images and masked and unmasked labels) and self._df_train_labeled (only rows that stayed labeled)
         """
 
-        if self.nb_samples_labeled != -1:
+        if self.nb_samples_labeled != -1 and self.nb_samples_labeled != self.nb_samples_total - self.nb_samples_test:
             df_masked, df_labeled = train_test_split(self._df_train_full, test_size=self.nb_samples_labeled, shuffle=True, stratify=self._df_train_full['Label'])
             self._df_train_labeled = df_labeled.reset_index(drop=True)
         else:
@@ -115,13 +119,13 @@ class BaseDatasetContainer:
         # TO OVERLOAD
 
         if cuda_state:
-            dataloader_train = DataLoader(self._dataset_train, **DATALOADER_PARAMS_CUDA)
-            dataloader_valuation = DataLoader(self._dataset_valuation, **DATALOADER_PARAMS_CUDA)
-            dataloader_test = DataLoader(self._dataset_test, **DATALOADER_PARAMS_CUDA)
+            dataloader_train = DataLoader(self._dataset_train, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_CUDA)
+            dataloader_valuation = DataLoader(self._dataset_valuation, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_CUDA)
+            dataloader_test = DataLoader(self._dataset_test, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_CUDA)
         else:
-            dataloader_train = DataLoader(self._dataset_train, **DATALOADER_PARAMS_NO_CUDA)
-            dataloader_valuation = DataLoader(self._dataset_valuation, **DATALOADER_PARAMS_NO_CUDA)
-            dataloader_test = DataLoader(self._dataset_test, **DATALOADER_PARAMS_NO_CUDA)
+            dataloader_train = DataLoader(self._dataset_train, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_NO_CUDA)
+            dataloader_valuation = DataLoader(self._dataset_valuation, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_NO_CUDA)
+            dataloader_test = DataLoader(self._dataset_test, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_NO_CUDA)
 
         return dataloader_train, dataloader_valuation, dataloader_test
 
