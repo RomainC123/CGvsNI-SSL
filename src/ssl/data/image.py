@@ -11,8 +11,8 @@ import torch
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 
-from ..utils.paths import DATASETS_PATH
 from .base import BaseDatasetContainer, BaseDataset
+from ..utils.paths import DATASETS_PATH
 from ..utils.transforms import IMAGE_TRANSFORMS_TRAIN, IMAGE_TRANSFORMS_TEST
 
 ################################################################################
@@ -25,6 +25,10 @@ class ImageDataset(BaseDataset):
     def __init__(self, data, df_data, **kwargs):
 
         super(ImageDataset, self).__init__(data, df_data, **kwargs)
+
+        self._raw_data_path = os.path.join(DATASETS_PATH, data, 'raw')
+        if not os.path.exists(self._raw_data_path):
+            raise RuntimeError(f'Data type not implemented: {self.data}')
 
         self.img_mode = kwargs['img_mode']
         if 'transform' in kwargs.keys():
@@ -47,12 +51,14 @@ class ImageDataset(BaseDataset):
             elif self.img_mode == 'RGB':
                 img = img.convert('RGB')  # convert image to rgb image
 
+        target = self.df_data['Label'][idx]
+
         if self.transform is not None:
             img = self.transform(img)
         if self.label_transform is not None:
             target = self.label_transform(target)
 
-        return img
+        return img, target
 
     def show_img(self, idx):
         # TODO
@@ -76,15 +82,15 @@ class ImageDatasetContainer(BaseDatasetContainer):
         self._dataset_train = ImageDataset(self.data,
                                            self._df_train_masked,
                                            img_mode=self.img_mode,
-                                           transform=IMAGE_TRANSFORMS_TRAIN[self.img_mode])
+                                           transform=IMAGE_TRANSFORMS_TRAIN[self.data][self.img_mode])
         self._dataset_valuation = ImageDataset(self.data,
                                                self._df_valuation,
                                                img_mode=self.img_mode,
-                                               transform=IMAGE_TRANSFORMS_TRAIN[self.img_mode])
+                                               transform=IMAGE_TRANSFORMS_TRAIN[self.data][self.img_mode])
 
         self._dataset_test = ImageDataset(self.data,
                                           self._df_test,
                                           img_mode=self.img_mode,
-                                          transform=IMAGE_TRANSFORMS_TEST[self.img_mode])
+                                          transform=IMAGE_TRANSFORMS_TEST[self.data][self.img_mode])
 
         return super(ImageDatasetContainer, self).get_dataloaders(cuda_state)

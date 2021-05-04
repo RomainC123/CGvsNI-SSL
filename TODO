@@ -8,8 +8,13 @@ Add a testing on train set functionality at the end of train
 Redo the downloader and img_crop for CG images
 DO CGvsNI
 CGvsNI setup:
-  clean folder: dataset files
-  raw folder: name_labels at the root of the folder, and then all images in their own folder by dataset
+  dataset.csv (dataframe with image names, here Artlantis/image1.png for example, and labels, 0 for natural image and then 1 to 4 for each render engine)
+  raw/
+    Artlantis/
+      All images
+    Corona/
+      All images
+    ...
 
 Tester LeakyReLU pour VGG (et ELU ?)
 Tester lr schedule start at 20% or 10% instead of 0%

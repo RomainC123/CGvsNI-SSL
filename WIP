@@ -66,10 +66,20 @@ CIFAR10 new loss VGG xavier
 
 Training with lr starting at 10% instead of 0%
 CIFAR10 old loss VGG
-=>
+=> 45.3% (03-05-2021_09:08:32)
+Plus trop le comportement étrange en début d'entraînement
 CIFAR10 new loss VGG
+<<<<<<< HEAD
 =>
 
 
 
 Problème dans la loss de la new tempens, à check maintenant que c'est fixé
+=======
+=> 44.1% (03-05-2021_09:09:00)
+Pareil, pas d'anomalie au début
+
+Lancer CIFAR10 full labels no unsup loss
+=> 81.2 % (03-05-2021_11:48:53)
+Cela fonctionne correctement, donc pas de problème sur la partie supervisée
+>>>>>>> c607e0ddd57944184eeb313227c8b97a76376748

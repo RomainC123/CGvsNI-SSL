@@ -35,7 +35,7 @@ class WeightSchedule:
             infos += f'Ramp up mult: {self.ramp_up_mult}\n'
         if self.ramp_down_epochs != 0:
             infos += f'Ramp down epochs: {self.ramp_down_epochs}\n'
-            infos += f'Ramp down up: {self.ramp_down_mult}\n'
+            infos += f'Ramp down mult: {self.ramp_down_mult}\n'
         infos += f'Lower bound: {self.lower}\n'
         infos += f'Upper bound: {self.upper}'
 
