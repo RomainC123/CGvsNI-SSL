@@ -11,7 +11,7 @@ from tqdm import tqdm
 import warnings
 warnings.filterwarnings('ignore')
 
-ROOT_PATH = pathlib.Path(__file__).resolve().parents[2].absolute()
+ROOT_PATH = pathlib.Path(__file__).resolve().parents[3].absolute()
 
 RAW_PATH = os.path.join(ROOT_PATH, 'datasets', 'CIFAR10', 'raw')
 if not os.path.exists(RAW_PATH):
