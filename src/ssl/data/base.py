@@ -106,7 +106,7 @@ class BaseDatasetContainer:
         Creates self._df_train_masked (frame with all train images and masked and unmasked labels) and self._df_train_labeled (only rows that stayed labeled)
         """
 
-        if self.nb_samples_labeled != -1 and self.nb_samples_labeled != self.nb_samples_total - self.nb_samples_test:
+        if self.nb_samples_labeled != -1 and self.nb_samples_labeled != len(self._df_train_full):
             df_masked, df_labeled = train_test_split(self._df_train_full, test_size=self.nb_samples_labeled, shuffle=True, stratify=self._df_train_full['Label'])
             self._df_train_labeled = df_labeled.reset_index(drop=True)
         else:
