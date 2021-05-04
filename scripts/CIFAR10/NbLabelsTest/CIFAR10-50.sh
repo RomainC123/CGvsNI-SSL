@@ -2,7 +2,7 @@
 
 #OAR -n CIFAR10-50
 #OAR -t gpu
-#OAR -l /nodes=1/gpudevice=1,walltime=4:00:00
+#OAR -l /nodes=1/gpudevice=1,walltime=6:00:00
 #OAR --stdout scripts_logs/CIFAR10-50.out
 #OAR --stderr scripts_logs/CIFAR10-50.err
 #OAR --project cg4n6
