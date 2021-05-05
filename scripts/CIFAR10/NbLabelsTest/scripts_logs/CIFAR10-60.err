@@ -1,0 +1,64 @@
+Enter passphrase for /home/caplierr/.ssh/github: /bin/bash: ./CIFAR10-60.sh: Permission denied
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 150, in <module>
+    main()
+  File "./main.py", line 131, in main
+    method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 264, in train
+    output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, model, optimizer, epoch, total_epochs)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 175, in _epoch
+    for batch_idx, (data, target) in pbar:
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 435, in __next__
+    data = self._next_data()
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 1085, in _next_data
+    return self._process_data(data)
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 1111, in _process_data
+    data.reraise()
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/_utils.py", line 428, in reraise
+    raise self.exc_type(msg)
+FileNotFoundError: Caught FileNotFoundError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/_utils/worker.py", line 198, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/base.py", line 45, in __getitem__
+    item, label = self._loader(idx)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/image.py", line 47, in _loader
+    with open(img_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/caplierr/code/CGvsNI-SSL/datasets/CIFAR10/raw/cifar10_15331.jpeg'
+
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 150, in <module>
+    main()
+  File "./main.py", line 131, in main
+    method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 264, in train
+    output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, model, optimizer, epoch, total_epochs)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 175, in _epoch
+    for batch_idx, (data, target) in pbar:
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 435, in __next__
+    data = self._next_data()
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 1085, in _next_data
+    return self._process_data(data)
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 1111, in _process_data
+    data.reraise()
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/_utils.py", line 428, in reraise
+    raise self.exc_type(msg)
+FileNotFoundError: Caught FileNotFoundError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/_utils/worker.py", line 198, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 44, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/base.py", line 45, in __getitem__
+    item, label = self._loader(idx)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/image.py", line 47, in _loader
+    with open(img_path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/caplierr/code/CGvsNI-SSL/datasets/CIFAR10/raw/cifar10_15331.jpeg'
+
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: ## OAR [2021-05-05 01:34:29] Job 15838266 KILLED ##
