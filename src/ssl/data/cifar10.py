@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 import torch
 import torchvision.transforms as transforms
-from kornia.enhance.zca import zca_mean
 
 from PIL import Image
 
