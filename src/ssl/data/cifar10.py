@@ -33,6 +33,8 @@ class CIFAR10DatasetContainer(ImageDatasetContainer):
 
     def _init_preprocess(self):
 
+        print('Building ZCA transform...')
+
         list_imgs = []
         totensor = transforms.ToTensor()
 

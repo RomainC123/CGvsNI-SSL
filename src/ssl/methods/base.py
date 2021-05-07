@@ -211,7 +211,7 @@ class BaseMethod:
 
         return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
-    def _eval(self, dataloader, model):
+    def _eval(self, dataloader, preprocess, model):
 
         model.eval()
 
@@ -220,6 +220,8 @@ class BaseMethod:
 
         with torch.no_grad():
             for batch_idx, (data, target) in enumerate(dataloader):
+
+                data = preprocess(data)
 
                 if self.cuda_state:
                     data, target = data.cuda(), target.cuda()
@@ -270,8 +272,8 @@ class BaseMethod:
             sup_losses = sup_losses / self.nb_batches
             unsup_losses = unsup_losses / self.nb_batches
 
-            real_labels_eval, pred_labels_eval = self._eval(dataloader_valuation, model)
-            real_labels_test, pred_labels_test = self._eval(dataloader_test, model)
+            real_labels_eval, pred_labels_eval = self._eval(dataloader_valuation, dataset.preprocess, model)
+            real_labels_test, pred_labels_test = self._eval(dataloader_test, dataset.preprocess, model)
             metrics_eval = self._get_metrics(real_labels_eval, pred_labels_eval)
             metrics_test = self._get_metrics(real_labels_test, pred_labels_test)
 
