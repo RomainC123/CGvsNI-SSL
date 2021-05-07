@@ -98,3 +98,11 @@ CIFAR10 old loss 30% labels with unsup loss
 =>
 CIFAR10 old loss 20% labels with unsup loss
 =>
+
+Conclusion : Ba ça semble fonctionnner correctement pour la loss supervisée, mais la non supervisée aide pas
+Plus de progression d'accuracy après 100 epochs, ce qui n'est pas vraiment le comportement voulu
+
+ZCA pour CIFAR10 => Fait ressortir les edges, ptetre le truc qui fait la différence
+
+Calcul de l'acumulation différente !!!!!
+On divise par 1 - alpha ** t juste une fois !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

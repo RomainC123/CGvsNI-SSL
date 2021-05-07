@@ -81,8 +81,14 @@ class BaseDatasetContainer:
 
         self.nb_classes = len(self._df_train_full['Label'].unique())
 
+        self._init_preprocess()
+
     def _get_data(self):
         # To overload
+        pass
+
+    def _set_preprocess(self):
+        #To overload if needed
         pass
 
     def _split_data(self):

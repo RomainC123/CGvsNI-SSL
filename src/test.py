@@ -1,60 +1,51 @@
+import os
+import argparse
 import numpy as np
-from torch.utils.data.sampler import Sampler
-import itertools
+import torch
+import torch.backends.cudnn as cudnn
+
+from distutils.dir_util import copy_tree
+from datetime import datetime
+from tqdm import tqdm
+from PIL import Image
+import matplotlib.pyplot as plt
+
+from ssl.utils.constants import BATCH_SIZE, DEFAULT_EPOCHS
+from ssl.utils.paths import TRAINED_MODELS_PATH
+from ssl.utils.functionalities import DATASETS, MODELS, OPTIMIZERS, METHODS
+from ssl.utils.hyperparameters import METHODS_DEFAULT, OPTIMIZERS_DEFAULT
+from ssl.utils.paths import DATASETS_PATH
+
+data = 'CIFAR10'
+nb_samples_total = 60000
+nb_samples_test = 10000
+nb_samples_labeled = 1000
+img_mode = 'RGB'
+
+np.random.seed(0)
+
+dataset = DATASETS[data](data, nb_samples_total, nb_samples_test, nb_samples_labeled, img_mode=img_mode, epsilon=1e-1)
+train_dataloader, _, _ = dataset.get_dataloaders(True)
 
 
-class TwoStreamBatchSampler(Sampler):
-    """Iterate two sets of indices
-
-    An 'epoch' is one iteration through the primary indices.
-    During the epoch, the secondary indices are iterated through
-    as many times as needed.
-    """
-    def __init__(self, primary_indices, secondary_indices, batch_size, secondary_batch_size):
-        self.primary_indices = primary_indices
-        self.secondary_indices = secondary_indices
-        self.secondary_batch_size = secondary_batch_size
-        self.primary_batch_size = batch_size - secondary_batch_size
-
-        assert len(self.primary_indices) >= self.primary_batch_size > 0
-        assert len(self.secondary_indices) >= self.secondary_batch_size > 0
-
-    def __iter__(self):
-        primary_iter = iterate_once(self.primary_indices)
-        secondary_iter = iterate_eternally(self.secondary_indices)
-        return (
-            primary_batch + secondary_batch
-            for (primary_batch, secondary_batch)
-            in zip(grouper(primary_iter, self.primary_batch_size), grouper(secondary_iter, self.secondary_batch_size))
-        )
-
-    def __len__(self):
-        return len(self.primary_indices) // self.primary_batch_size
+def plotImage(X_init, X_processed):
+    plt.figure(figsize=(4, 8))
+    plt.subplot(211)
+    plt.imshow(X_init.permute(1, 2, 0))
+    plt.subplot(212)
+    plt.imshow(X_processed.permute(1, 2, 0))
+    plt.show()
 
 
-def iterate_once(iterable):
-    return np.random.permutation(iterable)
+pbar = enumerate(train_dataloader)
+for batch_idx, (data, target) in pbar:
 
+    data_preprocessed = dataset.preprocess(data)
+    print(data_preprocessed)
+    plotImage(data[0], data_preprocessed[0])
+    plotImage(data[1], data_preprocessed[1])
+    plotImage(data[2], data_preprocessed[2])
+    plotImage(data[3], data_preprocessed[3])
+    plotImage(data[4], data_preprocessed[4])
 
-def iterate_eternally(indices):
-    def infinite_shuffles():
-        while True:
-            yield np.random.permutation(indices)
-    return itertools.chain.from_iterable(infinite_shuffles())
-
-
-def grouper(iterable, n):
-    "Collect data into fixed-length chunks or blocks"
-    # grouper('ABCDEFG', 3) --> ABC DEF"
-    args = [iter(iterable)] * n
-    return zip(*args)
-
-
-unlabeled_indices = [0, 1, 2, 5, 6, 8, 9, 10]
-labeled_indices = [4,3,6,7,45]
-
-batch_size = 3
-labeled_batch_size = -1
-batch_sampler = TwoStreamBatchSampler(unlabeled_indices, labeled_indices, batch_size, labeled_batch_size)
-for i in batch_sampler:
-    print(i)
+    print(bleh)

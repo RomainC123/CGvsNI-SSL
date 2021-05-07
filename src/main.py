@@ -105,7 +105,7 @@ def main():
             os.makedirs(model_path)
 
     # Building all containers
-    dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode)
+    dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
     model = MODELS[args.model](dataset.nb_classes, args.init_mode)
     optimizer = OPTIMIZERS[args.optimizer](OPTIMIZERS_DEFAULT[args.optimizer])
     method = METHODS[args.method](METHODS_DEFAULT[args.method])

@@ -17,7 +17,7 @@ from ..utils.constants import CGVSNI_DATASETS_IDS
 from ..utils.paths import DATASETS_PATH
 
 ################################################################################
-#   CGvsNI dataset class                                                       #
+#   CGvsNI dataset container class                                             #
 ################################################################################
 
 

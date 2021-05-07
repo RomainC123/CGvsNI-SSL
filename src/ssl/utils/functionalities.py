@@ -1,4 +1,5 @@
-from ..data.image import ImageDatasetContainer
+from ..data.mnist import MNISTDatasetContainer
+from ..data.cifar10 import CIFAR10DatasetContainer
 from ..data.cgvsni import CGvsNIDatasetContainer
 
 from ..models.VGG import VGGContainer
@@ -14,8 +15,8 @@ from ..methods.tempens_new_loss import TemporalEnsemblingNewLoss
 
 
 DATASETS = {
-    'CIFAR10': ImageDatasetContainer,
-    'MNIST': ImageDatasetContainer,
+    'CIFAR10': CIFAR10DatasetContainer,
+    'MNIST': MNISTDatasetContainer,
     'CGvsNI': CGvsNIDatasetContainer
 }
 

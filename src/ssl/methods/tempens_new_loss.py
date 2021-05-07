@@ -1,8 +1,9 @@
 import torch
 import torch.nn.functional as F
+
 from .base import BaseMethod
-from ..utils.schedules import UNSUP_WEIGHT_SCHEDULE
 from ..utils.constants import DATA_NO_LABEL
+from ..utils.schedules import UNSUP_WEIGHT_SCHEDULE
 
 
 class TemporalEnsemblingNewLoss(BaseMethod):
@@ -42,7 +43,8 @@ class TemporalEnsemblingNewLoss(BaseMethod):
             self.unsup_weight = self.unsup_weight.cuda()
 
     def _update_vars(self, output, epoch, total_epochs):
-        self.y_ema = (self.alpha * self.y_ema + (1 - self.alpha) * F.softmax(output, dim=1)) / (1 - self.alpha ** epoch)
+        self.emsemble_prediction = (self.alpha * self.ensemble_prediction + (1 - self.alpha) * F.softmax(output, dim=1))
+        self.y_ema = self.ensemble_prediction / (1 - self.alpha ** epoch)  # Check ça !!!
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
     def _get_loss(self, output, target, batch_idx):

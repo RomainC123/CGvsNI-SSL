@@ -154,7 +154,7 @@ class BaseMethod:
         if self.verbose_train:
             print(timer_info)
 
-    def _epoch(self, train_dataloader, model, optimizer, epoch, total_epochs):
+    def _epoch(self, train_dataloader, preprocess, model, optimizer, epoch, total_epochs):
 
         model.train()
 
@@ -173,6 +173,8 @@ class BaseMethod:
             pbar = enumerate(train_dataloader)
 
         for batch_idx, (data, target) in pbar:
+
+            data = preprocess(data)
 
             if self.cuda_state:
                 data, target = data.cuda(), target.cuda()
@@ -261,7 +263,7 @@ class BaseMethod:
 
         for epoch in range(1 + start_epoch, 1 + total_epochs):
 
-            output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, model, optimizer, epoch, total_epochs)
+            output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, dataset.preprocess, model, optimizer, epoch, total_epochs)
             self._update_vars(output, epoch, total_epochs)
 
             losses = losses / self.nb_batches
