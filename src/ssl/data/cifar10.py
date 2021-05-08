@@ -21,9 +21,10 @@ from ..utils.transforms import IMAGE_TRANSFORMS_TRAIN, IMAGE_TRANSFORMS_TEST
 
 class CIFAR10DatasetContainer(ImageDatasetContainer):
 
-    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled, **kwargs):
+    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled, cuda_state, **kwargs):
 
         self.epsilon = kwargs['epsilon']
+        self.cuda_state = cuda_state
 
         super(CIFAR10DatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled, **kwargs)
 
@@ -55,7 +56,11 @@ class CIFAR10DatasetContainer(ImageDatasetContainer):
         X_center = X_flat - self.means
         cov = np.cov(X_center, rowvar=False)
         U, S, V = np.linalg.svd(cov)
-        self.W = U.dot(np.diag(1.0 / np.sqrt(S + self.epsilon))).dot(U.T)
+        self.W = torch.Tensor(U.dot(np.diag(1.0 / np.sqrt(S + self.epsilon))).dot(U.T))
+
+        if self.cuda_state:
+            self.means = self.means.cuda()
+            self.W = self.W.cuda()
 
     def _get_transforms(self):
 
@@ -66,7 +71,7 @@ class CIFAR10DatasetContainer(ImageDatasetContainer):
         real_shape = input.shape
         input_flat = torch.flatten(input, start_dim=1)
         input_center = input_flat - self.means
-        input_zca = torch.Tensor(self.W.dot(input_center.T).T)
+        input_zca = torch.transpose(torch.matmul(self.W, torch.transpose(input_center, 0, 1)), 0, 1)
         input_zca_min = torch.min(input_zca, dim=1, keepdim=True)[0]
         input_zca_max = torch.max(input_zca, dim=1, keepdim=True)[0]
 

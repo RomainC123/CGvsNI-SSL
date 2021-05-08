@@ -174,10 +174,10 @@ class BaseMethod:
 
         for batch_idx, (data, target) in pbar:
 
-            data = preprocess(data)
-
             if self.cuda_state:
                 data, target = data.cuda(), target.cuda()
+
+            data = preprocess(data)
 
             output = model.forward(data)
 
@@ -221,10 +221,10 @@ class BaseMethod:
         with torch.no_grad():
             for batch_idx, (data, target) in enumerate(dataloader):
 
-                data = preprocess(data)
-
                 if self.cuda_state:
                     data, target = data.cuda(), target.cuda()
+
+                data = preprocess(data)
 
                 output = model.forward(data)
                 result = F.softmax(output, dim=1)
