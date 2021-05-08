@@ -1,0 +1,8 @@
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 150, in <module>
+    main()
+  File "./main.py", line 135, in main
+    method.test(dataset, model, model_path, args.verbose)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 308, in test
+    real_labels, pred_labels = self._eval(dataloader_test, model)
+TypeError: _eval() missing 1 required positional argument: 'model'
