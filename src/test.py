@@ -24,21 +24,24 @@ img_mode = 'RGB'
 
 np.random.seed(0)
 
-dataset = DATASETS[data](data, nb_samples_total, nb_samples_test, nb_samples_labeled, img_mode=img_mode, epsilon=1e-1)
+dataset = DATASETS[data](data, nb_samples_total, nb_samples_test, nb_samples_labeled, True, img_mode=img_mode, epsilon=1e-1)
 train_dataloader, _, _ = dataset.get_dataloaders(True)
 
 
 def plotImage(X_init, X_processed):
     plt.figure(figsize=(4, 8))
     plt.subplot(211)
-    plt.imshow(X_init.permute(1, 2, 0))
+    plt.imshow(X_init.cpu().permute(1, 2, 0))
     plt.subplot(212)
-    plt.imshow(X_processed.permute(1, 2, 0))
+    plt.imshow(X_processed.cpu().permute(1, 2, 0))
     plt.show()
 
 
 pbar = enumerate(train_dataloader)
 for batch_idx, (data, target) in pbar:
+
+    data = data.cuda()
+    target = target.cuda()
 
     data_preprocessed = dataset.preprocess(data)
     print(data_preprocessed)

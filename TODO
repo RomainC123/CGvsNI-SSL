@@ -26,3 +26,8 @@ Crop VRay et les images réelles si c'est pas déjà fait
 Fix the CGvsNI dataset process to match the real one (multiply the CG images, match the datasets numbers used in the original paper)
 
 Check if the datasets are really fixed just by fixing the numpy seed
+
+Changer hyperparametres
+Relancer avec Resnet
+Envoyer article tempens
+Faire full supervisé sur CGvsNI
