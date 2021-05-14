@@ -305,7 +305,7 @@ class BaseMethod:
             pbar = range(TEST_RUNS)
 
         for i in pbar:
-            real_labels, pred_labels = self._eval(dataloader_test, model)
+            real_labels, pred_labels = self._eval(dataloader_test, dataset.preprocess, model)
             list_classification_reports.append(classification_report(real_labels, pred_labels, digits=3, output_dict=True))
             metrics = self._get_metrics(real_labels, pred_labels)
             for key in METRICS.keys():
