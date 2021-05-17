@@ -31,3 +31,15 @@ Changer hyperparametres
 Relancer avec Resnet
 Envoyer article tempens
 Faire full supervisé sur CGvsNI
+
+
+
+
+
+Comparer only sup et full loss
+Full sup, evolution en fonction du lr
+Voir en fonction du début de l'influence de la loss unsup l'accuracy du modèle
+En gros, voir l'utilité de la loss sup
+
+Mettre en évidence les hyperparamètres importants
+A faire mais genre dans longtemps
