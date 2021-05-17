@@ -26,8 +26,6 @@ class TemporalEnsemblingNewLoss(BaseMethod):
         self.alpha = hyperparameters['alpha']
         self.max_unsup_weight = hyperparameters['max_unsup_weight']
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
-        self.ramp_epochs = self.unsup_weight_schedule.ramp_up_epochs
-        self.ramp_mult = self.unsup_weight_schedule.ramp_up_mult
 
     def _get_hyperparameters_info(self):
         infos = f'Alpha: {self.alpha}\n'
@@ -37,8 +35,8 @@ class TemporalEnsemblingNewLoss(BaseMethod):
         return infos
 
     def _init_vars(self):
-        self.y_ema = torch.zeros(self.nb_samples_train, self.nb_classes).float()
-        self.ensemble_prediction = torch.zeros(self.nb_samples_train, self.nb_classes).float()
+        self.y_ema = torch.ones(self.nb_samples_train, self.nb_classes).float() * (1 / self.nb_classes)
+        self.ensemble_prediction = torch.ones(self.nb_samples_train, self.nb_classes).float() * (1 / self.nb_classes)
         self.unsup_weight = torch.autograd.Variable(torch.FloatTensor([0.]), requires_grad=False)
         if self.cuda_state:
             self.y_ema = self.y_ema.cuda()
@@ -46,12 +44,12 @@ class TemporalEnsemblingNewLoss(BaseMethod):
             self.unsup_weight = self.unsup_weight.cuda()
 
     def _update_vars(self, output, epoch, total_epochs):
-        self.emsemble_prediction = (self.alpha * self.ensemble_prediction + (1 - self.alpha) * F.softmax(output, dim=1))
-        self.y_ema = self.ensemble_prediction / (1 - self.alpha ** epoch)  # Check ça !!!
+        self.emsemble_prediction = self.alpha * self.ensemble_prediction + (1 - self.alpha) * F.softmax(output, dim=1)
+        self.y_ema = self.ensemble_prediction / (1 - self.alpha ** epoch)
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
-    def _get_loss(self, output, target, batch_idx):
-        y_ema_batch = torch.autograd.Variable(self.y_ema[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size], requires_grad=False)
+    def _get_loss(self, output, target, idxes, batch_idx):
+        y_ema_batch = torch.autograd.Variable(self.y_ema[idxes], requires_grad=False)
         sup_loss = self.sup_loss(output, target) / self.batch_size
         unsup_loss = self.unsup_weight * self.unsup_loss(F.softmax(output, dim=1), y_ema_batch)
 

@@ -64,7 +64,7 @@ class CIFAR10DatasetContainer(ImageDatasetContainer):
 
     def _get_transforms(self):
 
-        return transforms.Compose(IMAGE_TRANSFORMS_TRAIN[self.data][self.img_mode]), transforms.Compose(IMAGE_TRANSFORMS_TEST[self.data][self.img_mode])
+        return IMAGE_TRANSFORMS_TRAIN[self.data][self.img_mode], IMAGE_TRANSFORMS_TEST[self.data][self.img_mode]
 
     def preprocess(self, input):
         # Input needs to be a (_, 3, 32, 32) tensor with values between 0 and 1

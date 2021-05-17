@@ -121,11 +121,11 @@ class BaseMethod:
         loss_epoch = torch.tensor([0.], requires_grad=False)
         sup_loss_epoch = torch.tensor([0.], requires_grad=False)
         unsup_loss_epoch = torch.tensor([0.], requires_grad=False)
-        outputs = torch.zeros(self.nb_samples_train, self.nb_classes).float()
+        outputs = torch.zeros((self.nb_samples_train, self.nb_classes))
 
         return loss_epoch, sup_loss_epoch, unsup_loss_epoch, outputs
 
-    def _get_loss(self, output, target, batch_idx):
+    def _get_loss(self, output, target, idxes, batch_idx):
         # TO OVERLOAD
         pass
 
@@ -159,7 +159,7 @@ class BaseMethod:
         model.train()
 
         loss_epoch, sup_loss_epoch, unsup_loss_epoch, outputs = self._init_vars_epoch()
-        optimizer_epoch = optimizer(model, epoch, total_epochs)
+        optimizer.update_params(epoch, total_epochs)
 
         if self.cuda_state:
             loss_epoch = loss_epoch.cuda()
@@ -172,29 +172,30 @@ class BaseMethod:
         else:
             pbar = enumerate(train_dataloader)
 
-        for batch_idx, (data, target) in pbar:
+        for batch_idx, (data, target, idxes) in pbar:
 
             if self.cuda_state:
                 data, target = data.cuda(), target.cuda()
 
             data = preprocess(data)
+            data_var = torch.autograd.Variable(data)
+            target_var = torch.autograd.Variable(target)
 
-            output = model.forward(data)
-
-            optimizer_epoch.zero_grad()
-            loss, sup_loss, unsup_loss = self._get_loss(output, target, batch_idx)
+            optimizer.optim.zero_grad()
+            output = model.forward(data_var)
+            loss, sup_loss, unsup_loss = self._get_loss(output, target_var, idxes, batch_idx)
             loss.backward()
-            optimizer_epoch.step()
+            optimizer.optim.step()
 
             loss_epoch += loss.detach()
             sup_loss_epoch += sup_loss.detach()
             unsup_loss_epoch += unsup_loss.detach()
-            outputs[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size] = output.data.clone()
+            outputs[idxes] = output.data.clone()
 
             if batch_idx % LOG_INTERVAL == 0 and self.verbose_train:
                 pbar.set_description('Train Epoch: {}/{} (lr: {:.2E}) [{}/{} ({:.0f}%)]. Loss: {:.5f} '.format(epoch,
                                                                                                                total_epochs,
-                                                                                                               optimizer_epoch.param_groups[0]['lr'],
+                                                                                                               optimizer.optim.param_groups[0]['lr'],
                                                                                                                batch_idx * len(data),
                                                                                                                self.nb_samples_train,
                                                                                                                100. * batch_idx / self.nb_batches,
@@ -203,13 +204,15 @@ class BaseMethod:
             if batch_idx + 1 >= self.nb_batches and self.verbose_train:
                 pbar.set_description('Train Epoch: {}/{} (lr: {:.2E}) [{}/{} ({:.0f}%)]. Loss: {:.5f} '.format(epoch,
                                                                                                                total_epochs,
-                                                                                                               optimizer_epoch.param_groups[0]['lr'],
+                                                                                                               optimizer.optim.param_groups[0]['lr'],
                                                                                                                self.nb_samples_train,
                                                                                                                self.nb_samples_train,
                                                                                                                100.,
                                                                                                                (loss_epoch / self.nb_batches).item()))
+        self._update_vars(outputs, epoch, total_epochs)
+        del outputs
 
-        return outputs, loss_epoch, sup_loss_epoch, unsup_loss_epoch
+        return loss_epoch, sup_loss_epoch, unsup_loss_epoch
 
     def _eval(self, dataloader, preprocess, model):
 
@@ -219,7 +222,7 @@ class BaseMethod:
         pred_labels = []
 
         with torch.no_grad():
-            for batch_idx, (data, target) in enumerate(dataloader):
+            for batch_idx, (data, target, idxes) in enumerate(dataloader):
 
                 if self.cuda_state:
                     data, target = data.cuda(), target.cuda()
@@ -258,6 +261,7 @@ class BaseMethod:
         self._init_checkpoint(model, start_epoch)
         self._init_graphs(start_epoch)
         self._init_vars()
+        optimizer.create_optim(model)
 
         self._save_train_info(start_epoch, total_epochs)
 
@@ -265,8 +269,7 @@ class BaseMethod:
 
         for epoch in range(1 + start_epoch, 1 + total_epochs):
 
-            output, losses, sup_losses, unsup_losses = self._epoch(dataloader_train, dataset.preprocess, model, optimizer, epoch, total_epochs)
-            self._update_vars(output, epoch, total_epochs)
+            losses, sup_losses, unsup_losses = self._epoch(dataloader_train, dataset.preprocess, model, optimizer, epoch, total_epochs)
 
             losses = losses / self.nb_batches
             sup_losses = sup_losses / self.nb_batches

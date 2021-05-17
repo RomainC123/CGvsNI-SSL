@@ -24,5 +24,5 @@ BATCH_SIZE = {
     'CGvsNI': 32
 }
 
-DATALOADER_PARAMS_CUDA = {'shuffle': False, 'num_workers': 8, 'pin_memory': True}
-DATALOADER_PARAMS_NO_CUDA = {'shuffle': False}
+DATALOADER_PARAMS_CUDA = {'shuffle': True, 'num_workers': 8, 'pin_memory': True}
+DATALOADER_PARAMS_NO_CUDA = {'shuffle': True}

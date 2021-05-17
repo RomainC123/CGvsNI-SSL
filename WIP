@@ -106,3 +106,6 @@ ZCA pour CIFAR10 => Fait ressortir les edges, ptetre le truc qui fait la différ
 
 Calcul de l'acumulation différente !!!!!
 On divise par 1 - alpha ** t juste une fois !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+BON
+Diminution brutale de la loss au début : ALED

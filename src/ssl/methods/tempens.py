@@ -38,7 +38,7 @@ class TemporalEnsembling(BaseMethod):
         self.y_ema = (self.alpha * self.y_ema + (1 - self.alpha) * output) / (1 - self.alpha ** epoch)
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
-    def _get_loss(self, output, target, batch_idx):
+    def _get_loss(self, output, target, idxes, batch_idx):
 
         def masked_crossentropy(out, labels):
             nbsup = len(torch.nonzero(labels >= 0))
@@ -51,7 +51,7 @@ class TemporalEnsembling(BaseMethod):
             quad_diff = torch.sum((F.softmax(out1, dim=1) - F.softmax(out2, dim=1)) ** 2)
             return quad_diff / out1.data.nelement()
 
-        y_ema_batch = torch.autograd.Variable(self.y_ema[batch_idx * self.batch_size: (batch_idx + 1) * self.batch_size], requires_grad=False)
+        y_ema_batch = torch.autograd.Variable(self.y_ema[idxes], requires_grad=False)
         sup_loss, nbsup = masked_crossentropy(output, target)
         unsup_loss = self.unsup_weight * mse_loss(output, y_ema_batch)
 

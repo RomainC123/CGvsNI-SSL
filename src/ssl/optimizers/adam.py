@@ -27,13 +27,15 @@ class AdamContainer(BaseOptimizerContainer):
         self.lr_schedule = LR_SCHEDULE
         self.beta1_schedule = B1_SCHEDULE
 
-    def __call__(self, model, epoch, total_epochs):
+    def create_optim(self, model):
 
-        lr = self.lr_schedule(epoch, total_epochs) * self.max_lr
-        beta1 = 0.5 + self.beta1_schedule(epoch, total_epochs) * (self.beta1 - 0.5)
-        beta2 = self.beta2
+        self.optim = Adam(model.model.parameters(), lr=0., betas=(self.beta1, self.beta2))
 
-        return Adam(model.model.parameters(), lr=lr, betas=(beta1, beta2))
+    def update_params(self, epoch, total_epochs):
+
+        for param_group in self.optim.param_groups:
+            param_group['lr'] = self.lr_schedule(epoch, total_epochs) * self.max_lr
+            param_group['betas'] = self.beta1_schedule(epoch, total_epochs) * self.beta1, self.beta2
 
     def get_info(self):
 

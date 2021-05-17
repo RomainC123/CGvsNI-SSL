@@ -44,7 +44,7 @@ class BaseDataset(Dataset):
 
         item, label = self._loader(idx)
 
-        return item, label
+        return item, label, idx
 
 ################################################################################
 #   Dataset container class                                                              #
