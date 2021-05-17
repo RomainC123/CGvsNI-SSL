@@ -35,8 +35,8 @@ class TemporalEnsemblingNewLoss(BaseMethod):
         return infos
 
     def _init_vars(self):
-        self.y_ema = torch.ones(self.nb_samples_train, self.nb_classes).float() * (1 / self.nb_classes)
-        self.ensemble_prediction = torch.ones(self.nb_samples_train, self.nb_classes).float() * (1 / self.nb_classes)
+        self.y_ema = torch.zeros(self.nb_samples_train, self.nb_classes).float()
+        self.ensemble_prediction = torch.zeros(self.nb_samples_train, self.nb_classes).float()
         self.unsup_weight = torch.autograd.Variable(torch.FloatTensor([0.]), requires_grad=False)
         if self.cuda_state:
             self.y_ema = self.y_ema.cuda()
