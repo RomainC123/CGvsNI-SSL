@@ -1,0 +1,61 @@
+Data: CIFAR10
+Number of samples: 60000
+Number of classes: 10
+Number of training samples: 50000
+Number of labeled samples: 1000
+Percent of labeled samples: 2.00%
+Number of testing samples: 10000
+Percent of testing samples: 16.67%
+------------------------------------
+Model: StandardNet
+StandardNet(
+  (gn): GaussianNoise()
+  (activation): LeakyReLU(negative_slope=0.1)
+  (conv1a): Conv2d(3, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv1b): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv1c): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (mp1): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (drop1): Dropout(p=0.5, inplace=False)
+  (conv2a): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv2b): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv2c): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (mp2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (drop2): Dropout(p=0.5, inplace=False)
+  (conv3a): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1))
+  (conv3b): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+  (conv3c): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+  (ap3): AvgPool2d(kernel_size=6, stride=2, padding=0)
+  (fc1): Linear(in_features=128, out_features=10, bias=True)
+)
+Init mode: Normal
+Number of parameters: 3119754
+------------------------------------
+Optimizer: Adam
+Max learning rate: 0.001
+Betas: (0.9, 0.999)
+Learning rate schedule:
+Ramp up epochs: 80
+Ramp up mult: 5
+Ramp down epochs: 50
+Ramp down mult: 12.5
+Lower bound: 0.1
+Upper bound: 1.0
+Beta 1 schedule:
+Ramp down epochs: 50
+Ramp down mult: 12.5
+Lower bound: 0.55
+Upper bound: 1.0
+------------------------------------
+Method: Temporal Ensembling New Loss
+Alpha: 0.6
+Unsupervised loss max weight (uncorrected): 0.0
+Ramp up epochs: 80
+Ramp up mult: 5
+Lower bound: 0.0
+Upper bound: 1.0
+------------------------------------
+Batch size: 100
+Number of batches: 500
+Starting epoch: 0
+Total number of epochs: 300
+Training time: 1:55:50
