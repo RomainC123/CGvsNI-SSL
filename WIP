@@ -118,3 +118,8 @@ Right now : split des cg fait avec le stratify, donc si ya pas exactement le mê
 Loss supervisée avec juste 1000 labels et les transforms conseillées : pas assez d'infos pour apprendre
 
 Test lr lancé, check ça
+
+SimpleNet New Loss only sup
+=> CIFAR10_21-05-2021_15:51:31
+
+Pourquoi SimpleNet marche et pas StandardNet ???
