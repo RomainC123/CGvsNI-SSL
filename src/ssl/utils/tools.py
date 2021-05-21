@@ -19,6 +19,23 @@ from .constants import DEFAULT_EPOCHS
 ################################################################################
 
 
+def save_info(model_path, dataset, model, optimizer, method, verbose):
+
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)
+
+    if verbose:
+        print(dataset.get_info())
+        print('------------------------------------\n' + model.get_info())
+        print('------------------------------------\n' + optimizer.get_info())
+        print('------------------------------------\n' + method.get_info())
+    with open(os.path.join(model_path, 'info.txt'), 'a+') as f:
+        f.write(dataset.get_info())
+        f.write('\n------------------------------------\n' + model.get_info())
+        f.write('\n------------------------------------\n' + optimizer.get_info())
+        f.write('\n------------------------------------\n' + method.get_info())
+
+
 def get_latest_log(model_path):
 
     list_logs = os.listdir(os.path.join(model_path, 'logs'))

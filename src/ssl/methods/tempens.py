@@ -7,15 +7,15 @@ from ..utils.constants import DATA_NO_LABEL
 
 class TemporalEnsembling(BaseMethod):
 
-    def __init__(self, hyperparameters):
+    def __init__(self, **kwargs):
 
         self.name = 'Temporal Ensembling'
 
-        super(TemporalEnsembling, self).__init__(hyperparameters)
+        super(TemporalEnsembling, self).__init__(**kwargs)
 
-    def _set_hyperparameters(self, hyperparameters):
-        self.alpha = hyperparameters['alpha']
-        self.max_unsup_weight = hyperparameters['max_unsup_weight']
+    def _set_hyperparameters(self, **kwargs):
+        self.alpha = kwargs['alpha']
+        self.max_unsup_weight = kwargs['max_unsup_weight']
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
         self.ramp_epochs = self.unsup_weight_schedule.ramp_up_epochs
         self.ramp_mult = self.unsup_weight_schedule.ramp_up_mult

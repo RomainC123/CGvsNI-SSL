@@ -2,7 +2,7 @@
 
 #OAR -n CIFAR10-New-StandardNet
 #OAR -t gpu
-#OAR -l /nodes=1/gpudevice=1,walltime=12:00:00
+#OAR -l /nodes=1/gpudevice=1,walltime=4:00:00
 #OAR --stdout scripts_logs/CIFAR10-New-StandardNet.out
 #OAR --stderr scripts_logs/CIFAR10-New-StandardNet.err
 #OAR --project pr-cg4n6

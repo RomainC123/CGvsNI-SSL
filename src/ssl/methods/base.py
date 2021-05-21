@@ -16,16 +16,16 @@ from ..utils.tools import get_latest_log, avg_classification_reports, get_metric
 
 class BaseMethod:
 
-    def __init__(self, hyperparameters):
+    def __init__(self, **kwargs):
 
         self.cuda_state = False
 
-        self._set_hyperparameters(hyperparameters)
+        self._set_hyperparameters(**kwargs)
 
     def cuda(self):
         self.cuda_state = True
 
-    def _set_hyperparameters(self, hyperparameters):
+    def _set_hyperparameters(self, **kwargs):
         # TO OVERLOAD
         pass
 

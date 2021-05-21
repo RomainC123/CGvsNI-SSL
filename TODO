@@ -27,13 +27,6 @@ Fix the CGvsNI dataset process to match the real one (multiply the CG images, ma
 
 Check if the datasets are really fixed just by fixing the numpy seed
 
-Changer hyperparametres
-Relancer avec Resnet
-Envoyer article tempens
-Faire full supervisé sur CGvsNI
-
-
-
 
 
 Comparer only sup et full loss

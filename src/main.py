@@ -16,6 +16,7 @@ from ssl.utils.constants import BATCH_SIZE, DEFAULT_EPOCHS
 from ssl.utils.paths import TRAINED_MODELS_PATH
 from ssl.utils.functionalities import DATASETS, MODELS, OPTIMIZERS, METHODS
 from ssl.utils.hyperparameters import METHODS_DEFAULT, OPTIMIZERS_DEFAULT
+from ssl.utils.tools import save_info
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -36,10 +37,8 @@ def get_args():
     parser.set_defaults(test=False)
     parser.add_argument('--train-test', dest='train_test', action='store_true')
     parser.set_defaults(train_test=False)
-    parser.add_argument('--params-optim', dest='params_optim', action='store_true')
-    parser.set_defaults(params_optim=False)
-    parser.add_argument('--supervised-vs-full', dest='supervised_vs_full', action='store_true')
-    parser.set_defaults(supervised_vs_full=False)
+    parser.add_argument('--test-lr', dest='test_lr', action='store_true')
+    parser.set_defaults(test_lr=False)
 
     # Training parameters
     parser.add_argument('--seed', type=int, default=0, help='seed used to generate the dataset')
@@ -101,50 +100,55 @@ def main():
         model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}_{args.day}_{args.hour}')
     else:
         model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
-        if not os.path.exists(model_path):
-            os.makedirs(model_path)
 
     # Building all containers
     dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
     model = MODELS[args.model](dataset.nb_classes, args.init_mode)
-    optimizer = OPTIMIZERS[args.optimizer](OPTIMIZERS_DEFAULT[args.optimizer])
-    method = METHODS[args.method](METHODS_DEFAULT[args.method])
+    optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
+    method = METHODS[args.method](**METHODS_DEFAULT[args.method])
 
     if cuda_state:
         model.cuda()
         method.cuda()
 
-    # Saving all infos
-    if args.verbose:
-        print(dataset.get_info())
-        print('------------------------------------\n' + model.get_info())
-        print('------------------------------------\n' + optimizer.get_info())
-        print('------------------------------------\n' + method.get_info())
-    with open(os.path.join(model_path, 'info.txt'), 'a+') as f:
-        f.write(dataset.get_info())
-        f.write('\n------------------------------------\n' + model.get_info())
-        f.write('\n------------------------------------\n' + optimizer.get_info())
-        f.write('\n------------------------------------\n' + method.get_info())
+    if args.test_lr:
+        base_model_path = os.path.join(TRAINED_MODELS_PATH, 'test_lr_' + f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+        print('Trying out a bunch of learning rates for only sup training...')
+        lr_to_test = [0.1, 0.03, 0.01, 0.003, 0.001, 0.0003, 0.0001, 0.00003, 0.00001]
+        for lr in lr_to_test:
+            print(f'Testing lr={lr}...')
+            model_path = os.path.join(base_model_path, str(lr))
+            optimizer = OPTIMIZERS[args.optimizer](max_lr=lr, beta1=0.9, beta2=0.999)
+            method = METHODS[args.method](alpha=0.6, max_unsup_weight=0.)
+            if cuda_state:
+                method.cuda()
+            save_info(model_path, dataset, model, optimizer, method, args.verbose)
+            method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
+            method.test(dataset, model, model_path, args.verbose)
+        print('Done!')
 
     if args.train_test:
         print('\nStarting training...')
+        save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
         print('Training done\n')
 
         print('Testing...')
+        save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.test(dataset, model, model_path, args.verbose)
         print('Testing done')
 
     if args.train:
         print('\nStarting training...')
+        save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
         print('Training done')
 
     if args.test:
         print('Testing...')
+        save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.test(dataset, model, model_path, args.verbose)
         print('Testing done')
-
 
 if __name__ == '__main__':
     main()

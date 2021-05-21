@@ -74,9 +74,8 @@ class BaseDatasetContainer:
         self._split_data()
         self._mask_data()
 
-        self.nb_samples = len(self._df_train_full) + len(self._df_test)
         self.nb_samples_train = len(self._df_train_full)
-        self.percent_test = self.nb_samples_test / self.nb_samples
+        self.percent_test = self.nb_samples_test / self.nb_samples_total
         self.percent_labeled = self.nb_samples_labeled / self.nb_samples_train
 
         self.nb_classes = len(self._df_train_full['Label'].unique())
@@ -87,9 +86,13 @@ class BaseDatasetContainer:
         # To overload
         pass
 
-    def _set_preprocess(self):
-        #To overload if needed
+    def _init_preprocess(self):
+        # To overload if needed
         pass
+
+    def preprocess(self, input):
+
+        return input
 
     def _split_data(self):
         """
@@ -100,6 +103,8 @@ class BaseDatasetContainer:
 
         if self.nb_samples_total != -1 and self.nb_samples_total != len(df_data):
             df_data, _ = train_test_split(df_data, train_size=self.nb_samples_total, shuffle=True, stratify=df_data['Label'])
+        else:
+            self.nb_samples_total = len(df_data)
         df_train, df_test = train_test_split(df_data, test_size=self.nb_samples_test, shuffle=True, stratify=df_data['Label'])
         _, df_valuation = train_test_split(df_train, test_size=VAL_NUMBER[self.data], shuffle=True, stratify=df_train['Label'])
 
@@ -138,7 +143,7 @@ class BaseDatasetContainer:
     def get_info(self):
 
         info = f'Data: {self.data}\n'
-        info += f'Number of samples: {self.nb_samples}\n'
+        info += f'Number of samples: {self.nb_samples_total}\n'
         info += f'Number of classes: {self.nb_classes}\n'
         info += f'Number of training samples: {self.nb_samples_train}\n'
         info += f'Number of labeled samples: {self.nb_samples_labeled}\n'

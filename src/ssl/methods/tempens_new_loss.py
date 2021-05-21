@@ -8,23 +8,23 @@ from ..utils.schedules import UNSUP_WEIGHT_SCHEDULE
 
 class TemporalEnsemblingNewLoss(BaseMethod):
 
-    def __init__(self, hyperparameters):
+    def __init__(self, **kwargs):
 
         self.name = 'Temporal Ensembling New Loss'
 
         self.sup_loss = torch.nn.CrossEntropyLoss(reduction='sum', ignore_index=DATA_NO_LABEL)
         self.unsup_loss = torch.nn.MSELoss(reduction='mean')
 
-        super(TemporalEnsemblingNewLoss, self).__init__(hyperparameters)
+        super(TemporalEnsemblingNewLoss, self).__init__(**kwargs)
 
     def cuda(self):
         self.cuda_state = True
         self.sup_loss = self.sup_loss.cuda()
         self.unsup_loss = self.unsup_loss.cuda()
 
-    def _set_hyperparameters(self, hyperparameters):
-        self.alpha = hyperparameters['alpha']
-        self.max_unsup_weight = hyperparameters['max_unsup_weight']
+    def _set_hyperparameters(self, **kwargs):
+        self.alpha = kwargs['alpha']
+        self.max_unsup_weight = kwargs['max_unsup_weight']
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
 
     def _get_hyperparameters_info(self):

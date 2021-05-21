@@ -1,4 +1,5 @@
 DATA_NO_LABEL = -1  # Label of the unlabeled data
+CG_IMG_MULT = 4 # Number of duplicates of CG imgs in CGvsNI datasets
 CGVSNI_DATASETS_IDS = {
     'Artlantis': 1,
     'Autodesk': 2,
@@ -9,7 +10,7 @@ CGVSNI_DATASETS_IDS = {
 VAL_NUMBER = {
     'CIFAR10': 5000,
     'MNIST': 5000,
-    'CGvsNI': 128
+    'CGvsNI': 200
 }
 STD = 0.15
 
