@@ -52,9 +52,6 @@ class BaseModelContainer:
     def eval(self):
         self.model.eval()
 
-    def test(self):
-        self.model.test()
-
     def forward(self, x):
         return self.model.forward(x)
 

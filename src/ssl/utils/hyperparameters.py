@@ -1,11 +1,11 @@
 METHODS_DEFAULT = {
     'TemporalEnsembling': {
         'alpha': 0.6,
-        'max_unsup_weight': 30.
+        'max_unsup_weight': 0.
     },
     'TemporalEnsemblingNewLoss': {
         'alpha': 0.6,
-        'max_unsup_weight': 30.
+        'max_unsup_weight': 0.
     }
 }
 
@@ -36,8 +36,8 @@ SCHEDULES_DEFAULT = {
         'ramp_up_mult': RAMP_UP_MULT,
         'ramp_down_epochs': 50,
         'ramp_down_mult': RAMP_DOWN_MULT,
-        'lower': 0.5,
-        'upper': 0.9
+        'lower': 0.55,
+        'upper': 1.
     },
     'unsup_weight': {
         'ramp_up_epochs': 80,

@@ -118,9 +118,9 @@ class BaseMethod:
         pass
 
     def _init_vars_epoch(self):
-        loss_epoch = torch.tensor([0.], requires_grad=False)
-        sup_loss_epoch = torch.tensor([0.], requires_grad=False)
-        unsup_loss_epoch = torch.tensor([0.], requires_grad=False)
+        loss_epoch = 0.
+        sup_loss_epoch = 0.
+        unsup_loss_epoch = 0.
         outputs = torch.zeros((self.nb_samples_train, self.nb_classes))
 
         return loss_epoch, sup_loss_epoch, unsup_loss_epoch, outputs
@@ -162,9 +162,6 @@ class BaseMethod:
         optimizer.update_params(epoch, total_epochs)
 
         if self.cuda_state:
-            loss_epoch = loss_epoch.cuda()
-            sup_loss_epoch = sup_loss_epoch.cuda()
-            unsup_loss_epoch = unsup_loss_epoch.cuda()
             outputs = outputs.cuda()
 
         if self.verbose_train:
@@ -187,9 +184,9 @@ class BaseMethod:
             loss.backward()
             optimizer.optim.step()
 
-            loss_epoch += loss.detach()
-            sup_loss_epoch += sup_loss.detach()
-            unsup_loss_epoch += unsup_loss.detach()
+            loss_epoch += loss.data.cpu().numpy()
+            sup_loss_epoch += sup_loss.data.cpu().numpy()
+            unsup_loss_epoch += unsup_loss.data.cpu().numpy()
             outputs[idxes] = output.data.clone()
 
             if batch_idx % LOG_INTERVAL == 0 and self.verbose_train:
