@@ -156,6 +156,8 @@ class BaseMethod:
 
     def _epoch(self, train_dataloader, preprocess, model, optimizer, epoch, total_epochs):
 
+        print(epoch)
+
         model.train()
 
         loss_epoch, sup_loss_epoch, unsup_loss_epoch, outputs = self._init_vars_epoch()
@@ -175,14 +177,12 @@ class BaseMethod:
                 data, target = data.cuda(), target.cuda()
 
             data = preprocess(data)
-            data_var = torch.autograd.Variable(data)
-            target_var = torch.autograd.Variable(target)
 
-            optimizer.optim.zero_grad()
-            output = model.forward(data_var)
-            loss, sup_loss, unsup_loss = self._get_loss(output, target_var, idxes, batch_idx)
+            optimizer.zero_grad()
+            output = model.forward(data)
+            loss, sup_loss, unsup_loss = self._get_loss(output, target, idxes, batch_idx)
             loss.backward()
-            optimizer.optim.step()
+            optimizer.step()
 
             loss_epoch += loss.data.cpu().numpy()
             sup_loss_epoch += sup_loss.data.cpu().numpy()

@@ -114,3 +114,7 @@ Diminution brutale de la loss au début : ALED
 Problème du jour : Régler la loss supervisée, ya rien qui va
 Mask de data CGvsNI => Mask les données au pif, possiblement mieux de masquer les 4 images dupliquées ensembles
 Right now : split des cg fait avec le stratify, donc si ya pas exactement le même nombre de CG pour chanque ça fait pas exactement la même répartition de chasue engine
+
+Loss supervisée avec juste 1000 labels et les transforms conseillées : pas assez d'infos pour apprendre
+
+Test lr lancé, check ça

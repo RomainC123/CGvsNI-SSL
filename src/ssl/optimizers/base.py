@@ -12,6 +12,14 @@ class BaseOptimizerContainer:
         # TO OVERLOAD
         pass
 
+    def zero_grad(self):
+
+        self.optim.zero_grad()
+
+    def step(self):
+
+        self.optim.step()
+
     def get_info(self):
 
         infos = f'Optimizer: {self.name}\n'
