@@ -38,17 +38,14 @@ def plotImage(X_init, X_processed):
 
 
 pbar = enumerate(train_dataloader)
-for batch_idx, (data, target) in pbar:
+for batch_idx, (data, target, id) in pbar:
 
     data = data.cuda()
     target = target.cuda()
 
     data_preprocessed = dataset.preprocess(data)
-    print(data_preprocessed)
     plotImage(data[0], data_preprocessed[0])
     plotImage(data[1], data_preprocessed[1])
     plotImage(data[2], data_preprocessed[2])
     plotImage(data[3], data_preprocessed[3])
     plotImage(data[4], data_preprocessed[4])
-
-    print(bleh)
