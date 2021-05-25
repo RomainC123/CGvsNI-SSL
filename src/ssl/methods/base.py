@@ -156,8 +156,6 @@ class BaseMethod:
 
     def _epoch(self, train_dataloader, preprocess, model, optimizer, epoch, total_epochs):
 
-        print(epoch)
-
         model.train()
 
         loss_epoch, sup_loss_epoch, unsup_loss_epoch, outputs = self._init_vars_epoch()

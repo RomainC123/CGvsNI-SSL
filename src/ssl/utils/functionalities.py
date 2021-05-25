@@ -13,6 +13,7 @@ from ..optimizers.adam import AdamContainer
 
 from ..methods.tempens import TemporalEnsembling
 from ..methods.tempens_new_loss import TemporalEnsemblingNewLoss
+from ..methods.only_sup import OnlySup
 
 
 DATASETS = {
@@ -36,5 +37,6 @@ OPTIMIZERS = {
 
 METHODS = {
     'TemporalEnsembling': TemporalEnsembling,
-    'TemporalEnsemblingNewLoss': TemporalEnsemblingNewLoss
+    'TemporalEnsemblingNewLoss': TemporalEnsemblingNewLoss,
+    'OnlySup': OnlySup
 }

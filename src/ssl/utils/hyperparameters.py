@@ -6,12 +6,13 @@ METHODS_DEFAULT = {
     'TemporalEnsemblingNewLoss': {
         'alpha': 0.6,
         'max_unsup_weight': 30.
-    }
+    },
+    'OnlySup': {}
 }
 
 OPTIMIZERS_DEFAULT = {
     'Adam': {
-        'max_lr': 0.0001,
+        'max_lr': 0.001,
         'beta1': 0.9,
         'beta2': 0.999
     }
@@ -46,16 +47,5 @@ SCHEDULES_DEFAULT = {
         'ramp_down_mult': RAMP_DOWN_MULT,
         'lower': 0.,
         'upper': 1.
-    }
-}
-
-# ------------------------------------------------------------------------------
-
-METHODS_SEARCH = {
-    'TemporalEnsembling': {
-        'alpha': [0.6],
-        'unsup_loss_ramp_up_epochs': [5],
-        'unsup_loss_ramp_up_mult': [2, 5],
-        'unsup_loss_max_weight': [20.]
     }
 }
