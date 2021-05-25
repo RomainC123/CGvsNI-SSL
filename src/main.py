@@ -134,7 +134,6 @@ def main():
         print('Training done\n')
 
         print('Testing...')
-        save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.test(dataset, model, model_path, args.verbose)
         print('Testing done')
 

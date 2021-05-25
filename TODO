@@ -1,33 +1,4 @@
-Functionalities to add back to main.py
-- Train on only supervised training set
-- Hyperparameters optimization
-
-Balanced sampler
-Add a testing on train set functionality at the end of train
-
-Redo the downloader and img_crop for CG images
-DO CGvsNI
-CGvsNI setup:
-  dataset.csv (dataframe with image names, here Artlantis/image1.png for example, and labels, 0 for natural image and then 1 to 4 for each render engine)
-  raw/
-    Artlantis/
-      All images
-    Corona/
-      All images
-    ...
-
-Tester LeakyReLU pour VGG (et ELU ?)
-Tester lr schedule start at 20% or 10% instead of 0%
-
-
-Patcher le setup de bettik pour le dl des fichiers
 Crop VRay et les images réelles si c'est pas déjà fait
-
-Fix the CGvsNI dataset process to match the real one (multiply the CG images, match the datasets numbers used in the original paper)
-
-Check if the datasets are really fixed just by fixing the numpy seed
-
-
 
 Comparer only sup et full loss
 Full sup, evolution en fonction du lr
@@ -36,3 +7,8 @@ En gros, voir l'utilité de la loss sup
 
 Mettre en évidence les hyperparamètres importants
 A faire mais genre dans longtemps
+
+Balanced sampler
+Add a testing on train set functionality at the end of train
+
+Redo the downloader and img_crop for CG images
