@@ -4,9 +4,6 @@ import matplotlib.pyplot as plt
 
 from ssl.utils.paths import TRAINED_MODELS_PATH
 
-percent_labels = [1, 10, 20, 30, 40, 50, 60, 70, 80]
-count = 0
-
 fig1 = plt.figure(figsize=(12, 24))
 ax11 = fig1.add_subplot(211)
 ax11.set_title('Metrics eval')
@@ -21,9 +18,11 @@ ax22.set_title('Sup loss')
 ax23 = fig2.add_subplot(313)
 ax23.set_title('Unsup loss')
 
-for model_name in sorted(os.listdir(TRAINED_MODELS_PATH)):
+save_path = os.path.join(TRAINED_MODELS_PATH, 'test_lr_CIFAR10_21-05-2021_13:51:22')
 
-    graphs_path = os.path.join(TRAINED_MODELS_PATH, model_name, 'graphs')
+for model_name in sorted(os.listdir(save_path)):
+
+    graphs_path = os.path.join(save_path, model_name, 'graphs')
 
     with open(os.path.join(graphs_path, 'metrics_eval.pkl'), 'rb') as f:
         metrics_eval = pickle.load(f)
@@ -37,16 +36,13 @@ for model_name in sorted(os.listdir(TRAINED_MODELS_PATH)):
         unsup_losses = pickle.load(f)
 
     for key in metrics_eval.keys():
-        ax11.plot(range(len(metrics_eval[key])), metrics_eval[key], label=key.capitalize() + ' eval ' + str(percent_labels[count]))
+        ax11.plot(range(len(metrics_eval[key])), metrics_eval[key], label=key.capitalize() + ' eval ' + model_name)
     for key in metrics_test.keys():
-        ax12.plot(range(len(metrics_test[key])), metrics_test[key], label=key.capitalize() + 'test ' + str(percent_labels[count]))
+        ax12.plot(range(len(metrics_test[key])), metrics_test[key], label=key.capitalize() + 'test ' + model_name)
 
-    ax21.plot(range(len(losses)), losses, label='Total loss' + str(percent_labels[count]))
-    ax22.plot(range(len(sup_losses)), sup_losses, label='Supervised loss' + str(percent_labels[count]))
-    ax23.plot(range(len(unsup_losses)), unsup_losses, label='Unsupervised loss' + str(percent_labels[count]))
-
-
-    count += 1
+    ax21.plot(range(len(losses)), losses, label='Total loss' + model_name)
+    ax22.plot(range(len(sup_losses)), sup_losses, label='Supervised loss' + model_name)
+    ax23.plot(range(len(unsup_losses)), unsup_losses, label='Unsupervised loss' + model_name)
 
 ax11.legend()
 ax12.legend()
