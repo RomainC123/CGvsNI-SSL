@@ -113,7 +113,7 @@ class BaseMethod:
         # TO OVERLOAD
         pass
 
-    def _update_vars(self, epoch, total_epochs):
+    def _update_vars(self, output, epoch, total_epochs):
         # TO OVERLOAD
         pass
 
@@ -186,6 +186,7 @@ class BaseMethod:
             sup_loss_epoch += sup_loss.data.cpu().numpy()
             unsup_loss_epoch += unsup_loss.data.cpu().numpy()
             outputs[idxes] = output.data.clone()
+            print(outputs)
 
             if batch_idx % LOG_INTERVAL == 0 and self.verbose_train:
                 pbar.set_description('Train Epoch: {}/{} (lr: {:.2E}) [{}/{} ({:.0f}%)]. Loss: {:.5f} '.format(epoch,
