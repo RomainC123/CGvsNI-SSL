@@ -103,31 +103,43 @@ def main():
 
     # Building all containers
     dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
-    model = MODELS[args.model](dataset.nb_classes, args.init_mode)
-    optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
-    method = METHODS[args.method](**METHODS_DEFAULT[args.method])
-
-    if cuda_state:
-        model.cuda()
-        method.cuda()
 
     if args.test_lr:
-        base_model_path = os.path.join(TRAINED_MODELS_PATH, 'test_lr_' + f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+
         print('Trying out a bunch of learning rates for only sup training...')
+
+        base_model_path = os.path.join(TRAINED_MODELS_PATH, 'test_lr_' + f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
         lr_to_test = [0.1, 0.03, 0.01, 0.003, 0.001, 0.0003, 0.0001, 0.00003, 0.00001]
+
         for lr in lr_to_test:
+
             print(f'Testing lr={lr}...')
+
             model_path = os.path.join(base_model_path, str(lr))
+            model = MODELS[args.model](dataset.nb_classes, args.init_mode)
             optimizer = OPTIMIZERS[args.optimizer](max_lr=lr, beta1=0.9, beta2=0.999)
             method = METHODS[args.method](alpha=0.6, max_unsup_weight=0.)
             if cuda_state:
+                model.cuda()
                 method.cuda()
+
             save_info(model_path, dataset, model, optimizer, method, args.verbose)
+
             method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
             method.test(dataset, model, model_path, args.verbose)
+
         print('Done!')
 
     if args.train_test:
+
+        model = MODELS[args.model](dataset.nb_classes, args.init_mode)
+        optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
+        method = METHODS[args.method](**METHODS_DEFAULT[args.method])
+
+        if cuda_state:
+            model.cuda()
+            method.cuda()
+
         print('\nStarting training...')
         save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
@@ -138,16 +150,35 @@ def main():
         print('Testing done')
 
     if args.train:
+
+        model = MODELS[args.model](dataset.nb_classes, args.init_mode)
+        optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
+        method = METHODS[args.method](**METHODS_DEFAULT[args.method])
+
+        if cuda_state:
+            model.cuda()
+            method.cuda()
+
         print('\nStarting training...')
         save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
         print('Training done')
 
     if args.test:
+
+        model = MODELS[args.model](dataset.nb_classes, args.init_mode)
+        optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
+        method = METHODS[args.method](**METHODS_DEFAULT[args.method])
+
+        if cuda_state:
+            model.cuda()
+            method.cuda()
+
         print('Testing...')
         save_info(model_path, dataset, model, optimizer, method, args.verbose)
         method.test(dataset, model, model_path, args.verbose)
         print('Testing done')
+
 
 if __name__ == '__main__':
     main()
