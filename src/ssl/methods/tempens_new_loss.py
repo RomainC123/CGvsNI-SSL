@@ -44,8 +44,8 @@ class TemporalEnsemblingNewLoss(BaseMethod):
             self.unsup_weight = self.unsup_weight.cuda()
 
     def _update_vars(self, output, epoch, total_epochs):
-        self.emsemble_prediction = self.alpha * self.ensemble_prediction + (1 - self.alpha) * F.softmax(output, dim=1)
-        self.y_ema = self.ensemble_prediction / (1 - self.alpha ** epoch)
+        self.ensemble_prediction.data = self.alpha * self.ensemble_prediction.data + (1 - self.alpha) * F.softmax(output.data, dim=1)
+        self.y_ema.data = self.ensemble_prediction.data / (1 - self.alpha ** epoch)
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
     def _get_loss(self, output, target, idxes, batch_idx):

@@ -118,7 +118,7 @@ def main():
             model_path = os.path.join(base_model_path, str(lr))
             model = MODELS[args.model](dataset.nb_classes, args.init_mode)
             optimizer = OPTIMIZERS[args.optimizer](max_lr=lr, beta1=0.9, beta2=0.999)
-            method = METHODS[args.method](alpha=0.6, max_unsup_weight=0.)
+            method = METHODS[args.method]()
             if cuda_state:
                 model.cuda()
                 method.cuda()
