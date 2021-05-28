@@ -8,4 +8,15 @@ Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/capl
   File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 207, in _epoch
     self._update_vars(outputs, epoch, total_epochs)
 TypeError: _update_vars() takes 3 positional arguments but 4 were given
-Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: 
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 184, in <module>
+    main()
+  File "./main.py", line 128, in main
+    method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 268, in train
+    
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 189, in _epoch
+    
+OSError: [Errno 116] Stale file handle
+Exception ignored in: <_io.TextIOWrapper name='<stdout>' mode='w' encoding='utf-8'>
+OSError: [Errno 116] Stale file handle
