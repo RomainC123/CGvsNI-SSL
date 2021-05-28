@@ -118,7 +118,7 @@ def main():
             model_path = os.path.join(base_model_path, str(lr))
             model = MODELS[args.model](dataset.nb_classes, args.init_mode)
             optimizer = OPTIMIZERS[args.optimizer](max_lr=lr, beta1=0.9, beta2=0.999)
-            method = METHODS[args.method]()
+            method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
             if cuda_state:
                 model.cuda()
                 method.cuda()
@@ -134,7 +134,7 @@ def main():
 
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
         optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
-        method = METHODS[args.method](**METHODS_DEFAULT[args.method])
+        method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
 
         if cuda_state:
             model.cuda()
@@ -153,7 +153,7 @@ def main():
 
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
         optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
-        method = METHODS[args.method](**METHODS_DEFAULT[args.method])
+        method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
 
         if cuda_state:
             model.cuda()
@@ -168,7 +168,7 @@ def main():
 
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
         optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
-        method = METHODS[args.method](**METHODS_DEFAULT[args.method])
+        method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
 
         if cuda_state:
             model.cuda()

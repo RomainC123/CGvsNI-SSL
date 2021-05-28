@@ -15,6 +15,8 @@ class TemporalEnsemblingNewLoss(BaseMethod):
         self.sup_loss = torch.nn.CrossEntropyLoss(reduction='sum', ignore_index=DATA_NO_LABEL)
         self.unsup_loss = torch.nn.MSELoss(reduction='mean')
 
+        self.percent_labeled = kwargs['percent_labeled']
+
         super(TemporalEnsemblingNewLoss, self).__init__(**kwargs)
 
     def cuda(self):
@@ -24,12 +26,12 @@ class TemporalEnsemblingNewLoss(BaseMethod):
 
     def _set_hyperparameters(self, **kwargs):
         self.alpha = kwargs['alpha']
-        self.max_unsup_weight = kwargs['max_unsup_weight']
+        self.max_unsup_weight = kwargs['max_unsup_weight'] * self.percent_labeled
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
 
     def _get_hyperparameters_info(self):
         infos = f'Alpha: {self.alpha}\n'
-        infos += 'Unsupervised loss max weight (uncorrected): {:.1f}\n'.format(self.max_unsup_weight)
+        infos += 'Unsupervised loss max weight: {:.1f}\n'.format(self.max_unsup_weight)
         infos += self.unsup_weight_schedule.get_info()
 
         return infos
