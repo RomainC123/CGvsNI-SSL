@@ -33,10 +33,6 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
 
         self._relabel_data()
 
-        print(self._df_train_masked['Label'])
-
-        print(belh)
-
     def _get_data(self):
 
         self.kept_datasets = []

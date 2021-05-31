@@ -26,6 +26,9 @@ nb_samples_labeled = 1000
 walltime = '6:00:00'
 folder = 'CIFAR10_test_lr'
 
+if os.path.exists(folder):
+    raise RuntimeError(f'Folder {folder} already exists!')
+
 if not os.path.exists(folder):
     os.makedirs(folder)
 
