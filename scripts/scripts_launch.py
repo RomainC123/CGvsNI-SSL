@@ -26,7 +26,7 @@ nb_samples_labeled = 1000
 walltime = '6:00:00'
 folder = 'CIFAR10_test_lr'
 
-if not os.path.exists(folder):
+if not os.path.exists(foldcher):
     os.makedirs(folder)
 
 if not os.path.exists(os.path.join(folder, 'scripts_logs')):
