@@ -7,8 +7,8 @@ def make_script(folder, name, walltime, nb_samples_labeled, max_lr):
 #OAR -n {name}\n\
 #OAR -t gpu\n\
 #OAR -l /nodes=1/gpudevice=1,walltime={walltime}\n\
-#OAR --stdout scripts_logs/{name}.out\n\
-#OAR --stderr scripts_logs/{name}.err\n\
+#OAR --stdout {folder}/scripts_logs/{name}.out\n\
+#OAR --stderr {folder}/scripts_logs/{name}.err\n\
 #OAR --project cg4n6\n\
 \n\
 source /applis/environments/conda.sh\n\
