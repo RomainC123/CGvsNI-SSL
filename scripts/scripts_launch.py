@@ -9,7 +9,7 @@ def make_script(folder, name, walltime, nb_samples_labeled, max_lr):
     #OAR -l /nodes=1/gpudevice=1,walltime={walltime}\n\
     #OAR --stdout scripts_logs/{name}.out\n\
     #OAR --stderr scripts_logs/{name}.err\n\
-    #OAR --project pr-cg4n6\n\
+    #OAR --project cg4n6\n\
     \n\
     source /applis/environments/conda.sh\n\
     conda activate CGDetection\n\
