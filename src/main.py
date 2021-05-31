@@ -42,6 +42,8 @@ def get_args():
 
     # Training parameters
     parser.add_argument('--seed', type=int, default=0, help='seed used to generate the dataset')
+    parser.add_argument('--folder', type=str, default=None, help='subfolder in which to save the model (default: None)')
+    parser.add_argument('--name', type=str, default=None, help='name of the saved model')
     parser.add_argument('--data', type=str, help='data to use')
     parser.add_argument('--datasets_to_use', type=str, help='datasets to use for training')
     parser.add_argument('--label_mode', type=str, help='either biclass or multiclass')
@@ -54,6 +56,7 @@ def get_args():
     parser.add_argument('--model', type=str, help='model to use')
     parser.add_argument('--init_mode', type=str, default='normal', help='init mode to use')
     parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
+    parser.add_argument('--max_lr', type=float, default=0.001, help='max learning rate to use, if applicable')
     parser.add_argument('--method', type=str, help='method to use')
     parser.add_argument('--epochs', type=int, default=DEFAULT_EPOCHS, help='number of epochs to train (default: 300)')
 
@@ -96,45 +99,24 @@ def main():
     # Setting random seed
     np.random.seed(args.seed)
 
-    if args.day != None and args.hour != None:
-        model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}_{args.day}_{args.hour}')
+    if args.folder != None:
+        main_folder_path = os.path.join(TRAINED_MODELS_PATH, args.folder)
     else:
-        model_path = os.path.join(TRAINED_MODELS_PATH, f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+        main_folder_path = TRAINED_MODELS_PATH
+
+    if args.name != None:
+        model_path = os.path.join(main_folder_path, f'{args.name}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+    else:
+        model_path = os.path.join(main_folder_path, f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
 
     # Building all containers
     dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
 
-    if args.test_lr:
-
-        print('Trying out a bunch of learning rates for only sup training...')
-
-        base_model_path = os.path.join(TRAINED_MODELS_PATH, 'test_lr_' + f'{args.data}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
-        lr_to_test = [0.1, 0.03, 0.01, 0.003, 0.001, 0.0003, 0.0001, 0.00003, 0.00001]
-
-        for lr in lr_to_test:
-
-            print(f'Testing lr={lr}...')
-
-            model_path = os.path.join(base_model_path, str(lr))
-            model = MODELS[args.model](dataset.nb_classes, args.init_mode)
-            optimizer = OPTIMIZERS[args.optimizer](max_lr=lr, beta1=0.9, beta2=0.999)
-            method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
-            if cuda_state:
-                model.cuda()
-                method.cuda()
-
-            save_info(model_path, dataset, model, optimizer, method, args.verbose)
-
-            method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
-            method.test(dataset, model, model_path, args.verbose)
-
-        print('Done!')
-
     if args.train_test:
 
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
-        optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
-        method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
+        optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer])
+        method = METHODS[args.method](percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
 
         if cuda_state:
             model.cuda()
@@ -152,8 +134,8 @@ def main():
     if args.train:
 
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
-        optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
-        method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
+        optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer])
+        method = METHODS[args.method](percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
 
         if cuda_state:
             model.cuda()
@@ -167,8 +149,8 @@ def main():
     if args.test:
 
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
-        optimizer = OPTIMIZERS[args.optimizer](**OPTIMIZERS_DEFAULT[args.optimizer])
-        method = METHODS[args.method](**METHODS_DEFAULT[args.method], percent_labeled=dataset.percent_labeled)
+        optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer], **OPTIMIZERS_DEFAULT[args.optimizer])
+        method = METHODS[args.method](percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
 
         if cuda_state:
             model.cuda()
