@@ -17,7 +17,7 @@ from ..utils.transforms import IMAGE_TRANSFORMS_TRAIN, IMAGE_TRANSFORMS_TEST
 
 class MNISTDatasetContainer(ImageDatasetContainer):
 
-    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled, **kwargs):
+    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled, cuda_state, **kwargs):
 
         super(MNISTDatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled, **kwargs)
 
