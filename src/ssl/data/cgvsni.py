@@ -33,6 +33,10 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
 
         self._relabel_data()
 
+        print(self._df_train_masked['Label'])
+
+        print(belh)
+
     def _get_data(self):
 
         self.kept_datasets = []
@@ -73,15 +77,14 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
 
         df_ni_train, rest_df_ni = train_test_split(df_ni, train_size=int(nb_ni_train))
         df_cg_train_no_mult, rest_df_cg = train_test_split(df_cg, train_size=int(nb_cg_train), stratify=df_cg['Label'])
-        df_cg_train = pd.concat([df_cg_train_no_mult] * CG_IMG_MULT, ignore_index=True)
 
         df_ni_val, _ = train_test_split(df_ni_train, train_size=int(nb_ni_val))
-        df_cg_val, _ = train_test_split(df_cg_train, train_size=int(nb_cg_val), stratify=df_cg_train['Label'])
+        df_cg_val, _ = train_test_split(df_cg_train_no_mult, train_size=int(nb_cg_val), stratify=df_cg_train_no_mult['Label'])
 
         df_ni_test, _ = train_test_split(rest_df_ni, train_size=int(nb_ni_test))
         df_cg_test, _ = train_test_split(rest_df_cg, train_size=int(nb_cg_test), stratify=rest_df_cg['Label'])
 
-        df_train = pd.concat([df_ni_train, df_cg_train])
+        df_train = pd.concat([df_ni_train, df_cg_train_no_mult])
         df_valuation = pd.concat([df_ni_val, df_cg_val])
         df_test = pd.concat([df_ni_test, df_cg_test])
 
@@ -97,13 +100,22 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
         Creates self._df_train_masked (frame with all train images and masked and unmasked labels) and self._df_train_labeled (only rows that stayed labeled)
         """
 
+        nb_labels = int(self.nb_samples_labeled * (1 + CG_IMG_MULT) / (2 * CG_IMG_MULT))
+
         if self.nb_samples_labeled != -1 and self.nb_samples_labeled != len(self._df_train_full):
-            df_masked, df_labeled = train_test_split(self._df_train_full, test_size=self.nb_samples_labeled, shuffle=True, stratify=self._df_train_full['Label'])
+            df_masked, df_labeled = train_test_split(self._df_train_full, test_size=nb_labels, shuffle=True, stratify=self._df_train_full['Label'])
             self._df_train_labeled = df_labeled.reset_index(drop=True)
         else:
             df_masked = pd.DataFrame()
+
         self._df_train_masked = self._df_train_full.copy()
+        cg_idx = self._df_train_masked.loc[self._df_train_masked['Label'] != 0].index
+
         self._df_train_masked.loc[df_masked.index, 'Label'] = DATA_NO_LABEL
+        df_train_cg_masked = self._df_train_masked.iloc[cg_idx]
+        self._df_train_masked.drop(cg_idx, inplace=True)
+        self._df_train_masked = pd.concat([self._df_train_masked] + [df_train_cg_masked] * CG_IMG_MULT, ignore_index=True)
+        self._df_train_masked = self._df_train_masked.reset_index(drop=True)
 
     def _get_transforms(self):
 

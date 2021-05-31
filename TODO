@@ -12,3 +12,9 @@ Balanced sampler
 Add a testing on train set functionality at the end of train
 
 Redo the downloader and img_crop for CG images
+
+
+Lancer CGvsNI supervisé avant toute chose
+Variation lr
+Variation nb labels
+Variation début loss unsup
