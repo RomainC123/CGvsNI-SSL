@@ -26,7 +26,7 @@ nb_samples_labeled = 1000
 walltime = '6:00:00'
 folder = 'CIFAR10_test_lr'
 
-if not os.path.exists(foldcher):
+if not os.path.exists(folder):
     os.makedirs(folder)
 
 if not os.path.exists(os.path.join(folder, 'scripts_logs')):
@@ -36,5 +36,5 @@ for lr in lr_to_test:
     make_script(folder, folder + '_' + str(lr), walltime, nb_samples_labeled, lr)
 
 for script in os.listdir(folder):
-    os.system(f'chmod +x {script}')
-    os.system(f'oarsub -S ./{script}')
+    os.system(f'chmod +x {os.path.join(folder, script)}')
+    os.system(f'oarsub -S ./{os.path.join(folder, script)}')
