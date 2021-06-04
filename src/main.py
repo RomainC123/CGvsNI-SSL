@@ -56,7 +56,7 @@ def get_args():
     parser.add_argument('--model', type=str, help='model to use')
     parser.add_argument('--init_mode', type=str, default='normal', help='init mode to use')
     parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer to use')
-    parser.add_argument('--max_lr', type=float, default=0.001, help='max learning rate to use, if applicable')
+    parser.add_argument('--max_lr', type=float, default=0.0003, help='max learning rate to use, if applicable')
     parser.add_argument('--method', type=str, help='method to use')
     parser.add_argument('--epochs', type=int, default=DEFAULT_EPOCHS, help='number of epochs to train (default: 300)')
 
