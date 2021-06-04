@@ -21,10 +21,10 @@ python ./main.py --train-test --folder {folder} --name {name} --data CIFAR10 --n
         f.write(cmd)
 
 
-lr_to_test = 0.0003
+lr = 0.0003
 nb_samples_labeled = [100, 300, 1000, 3000, 10000, 30000]
 walltime = '6:00:00'
-folder = 'CIFAR10_test_lr'
+folder = 'CIFAR10_test_nb_labels'
 
 if os.path.exists(folder):
     raise RuntimeError(f'Folder {folder} already exists!')
@@ -36,7 +36,7 @@ if not os.path.exists(os.path.join(folder, 'scripts_logs')):
     os.makedirs(os.path.join(folder, 'scripts_logs'))
 
 for nb_samples in nb_samples_labeled:
-    make_script(folder, str(lr), walltime, nb_samples_labeled, lr)
+    make_script(folder, str(nb_samples_labeled), walltime, nb_samples_labeled, lr)
 
 for script in os.listdir(folder):
     os.system(f'chmod +x {os.path.join(folder, script)}')
