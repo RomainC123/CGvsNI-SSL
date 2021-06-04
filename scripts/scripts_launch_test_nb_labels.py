@@ -36,7 +36,7 @@ if not os.path.exists(os.path.join(folder, 'scripts_logs')):
     os.makedirs(os.path.join(folder, 'scripts_logs'))
 
 for nb_samples in nb_samples_labeled:
-    make_script(folder, str(nb_samples_labeled), walltime, nb_samples_labeled, lr)
+    make_script(folder, str(nb_samples), walltime, nb_samples, lr)
 
 for script in os.listdir(folder):
     os.system(f'chmod +x {os.path.join(folder, script)}')
