@@ -15,7 +15,7 @@ source /applis/environments/conda.sh\n\
 conda activate CGDetection\n\
 \n\
 cd ~/code/CGvsNI-SSL/src\n\
-python ./main.py --train-test --folder {folder} --name {name} --data CIFAR10 --nb_samples_test 10000 --nb_samples_labeled {nb_samples_labeled} --img_mode RGB --model SimpleNet --max_lr {max_lr} --method TemporalEnsemblingNewLoss --epochs 300 --no-verbose"
+python ./main.py --train-test --folder {folder} --name {name} --data CIFAR10 --nb_samples_test 10000 --nb_samples_labeled {nb_samples_labeled} --img_mode RGB --model SimpleNet --max_lr {max_lr} --method OnlySup --epochs 300 --no-verbose"
 
     with open(os.path.join(folder, f'{name}.sh'), 'w+') as f:
         f.write(cmd)
