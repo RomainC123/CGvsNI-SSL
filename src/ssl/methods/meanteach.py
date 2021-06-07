@@ -36,7 +36,7 @@ class MeanTeacher(BaseMethod):
 
     def _init_vars(self):
 
-        self.teacher_model =
+        self.teacher_model = None
         self.unsup_weight = torch.autograd.Variable(torch.FloatTensor([0.]), requires_grad=False)
         if self.cuda_state:
             self.y_ema = self.y_ema.cuda()
