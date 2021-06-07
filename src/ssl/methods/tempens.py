@@ -17,7 +17,7 @@ class TemporalEnsembling(BaseMethod):
 
         self.percent_labeled = kwargs['percent_labeled']
 
-        super(TemporalEnsemblingNewLoss, self).__init__(**kwargs)
+        super(TemporalEnsembling, self).__init__(**kwargs)
 
     def cuda(self):
         self.cuda_state = True

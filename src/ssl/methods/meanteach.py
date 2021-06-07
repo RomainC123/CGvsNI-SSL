@@ -50,7 +50,7 @@ class MeanTeacher(BaseMethod):
     def _get_loss(self, output, target, idxes, batch_idx):
 
         with torch.no_grad():
-
+            pass
         sup_loss = self.sup_loss(output, target) / self.batch_size
         unsup_loss = self.unsup_weight * self.unsup_loss(F.softmax(output, dim=1), y_ema_batch)
 
