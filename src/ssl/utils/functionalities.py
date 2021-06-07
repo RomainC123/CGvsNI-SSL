@@ -12,7 +12,7 @@ from ..models.ENet import ENetContainer
 from ..optimizers.adam import AdamContainer
 
 from ..methods.tempens import TemporalEnsembling
-from ..methods.tempens_new_loss import TemporalEnsemblingNewLoss
+from ..methods.meanteach import MeanTeacher
 from ..methods.only_sup import OnlySup
 
 
@@ -37,6 +37,6 @@ OPTIMIZERS = {
 
 METHODS = {
     'TemporalEnsembling': TemporalEnsembling,
-    'TemporalEnsemblingNewLoss': TemporalEnsemblingNewLoss,
+    'MeanTeacher': MeanTeacher,
     'OnlySup': OnlySup
 }

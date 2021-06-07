@@ -18,9 +18,11 @@ ax22.set_title('Sup loss')
 ax23 = fig2.add_subplot(313)
 ax23.set_title('Unsup loss')
 
-save_path = os.path.join(TRAINED_MODELS_PATH, 'CIFAR10_test_lr')
+save_path = os.path.join(TRAINED_MODELS_PATH, 'CIFAR10_test_nb_labels')
 
 for model_name in sorted(os.listdir(save_path)):
+
+    param = model_name.split('_')[0]
 
     graphs_path = os.path.join(save_path, model_name, 'graphs')
 
@@ -36,13 +38,13 @@ for model_name in sorted(os.listdir(save_path)):
         unsup_losses = pickle.load(f)
 
     for key in metrics_eval.keys():
-        ax11.plot(range(len(metrics_eval[key])), metrics_eval[key], label=key.capitalize() + ' eval ' + model_name)
+        ax11.plot(range(len(metrics_eval[key])), metrics_eval[key], label=key.capitalize() + ' eval ' + param)
     for key in metrics_test.keys():
-        ax12.plot(range(len(metrics_test[key])), metrics_test[key], label=key.capitalize() + 'test ' + model_name)
+        ax12.plot(range(len(metrics_test[key])), metrics_test[key], label=key.capitalize() + ' test ' + param)
 
-    ax21.plot(range(len(losses)), losses, label='Total loss' + model_name)
-    ax22.plot(range(len(sup_losses)), sup_losses, label='Supervised loss' + model_name)
-    ax23.plot(range(len(unsup_losses)), unsup_losses, label='Unsupervised loss' + model_name)
+    ax21.plot(range(len(losses)), losses, label='Total loss' + param)
+    ax22.plot(range(len(sup_losses)), sup_losses, label='Supervised loss' + param)
+    ax23.plot(range(len(unsup_losses)), unsup_losses, label='Unsupervised loss' + param)
 
 ax11.legend()
 ax12.legend()
