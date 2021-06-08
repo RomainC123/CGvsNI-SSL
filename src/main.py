@@ -14,7 +14,10 @@ from tqdm import tqdm
 
 from ssl.utils.constants import BATCH_SIZE, DEFAULT_EPOCHS
 from ssl.utils.paths import TRAINED_MODELS_PATH
-from ssl.utils.functionalities import DATASETS, MODELS, OPTIMIZERS, METHODS
+from ssl.utils.datasets import DATASETS
+from ssl.utils.models import MODELS
+from ssl.utils.optimizers import OPTIMIZERS
+from ssl.utils.methods import METHODS
 from ssl.utils.hyperparameters import METHODS_DEFAULT, OPTIMIZERS_DEFAULT
 from ssl.utils.tools import save_info
 
@@ -113,10 +116,9 @@ def main():
     dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
 
     if args.train_test:
-
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
         optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer])
-        method = METHODS[args.method](percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
+        method = METHODS[args.method](model=model, percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
 
         if cuda_state:
             model.cuda()

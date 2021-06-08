@@ -4,11 +4,14 @@
 
 import os
 import numpy as np
+import theano as th
+import theano.tensor as T
 import pandas as pd
 import torch
 import torchvision.transforms as transforms
 
 from PIL import Image
+from scipy import linalg
 
 from .image import ImageDatasetContainer
 from ..utils.paths import DATASETS_PATH
@@ -48,19 +51,25 @@ class CIFAR10DatasetContainer(ImageDatasetContainer):
                     img = img.convert('L')
                 elif self.img_mode == 'RGB':
                     img = img.convert('RGB')
-            list_imgs.append(totensor(img))
+            list_imgs.append(np.asarray(img))
 
-        X = torch.stack(list_imgs)
-        X_flat = torch.flatten(X, start_dim=1)
-        self.means = torch.mean(X_flat, axis=0)
-        X_center = X_flat - self.means
-        cov = np.cov(X_center, rowvar=False)
-        U, S, V = np.linalg.svd(cov)
-        self.W = torch.Tensor(U.dot(np.diag(1.0 / np.sqrt(S + self.epsilon))).dot(U.T))
+        x = np.array(list_imgs)
+        regularization = self.epsilon
+
+        s = x.shape
+        x = x.copy().reshape((s[0], np.prod(s[1:])))
+        m = np.mean(x, axis=0)
+        x = x - m
+        sigma = np.dot(x.T, x) / x.shape[0]
+        U, S, V = linalg.svd(sigma)
+        tmp = np.dot(U, np.diag(1. / np.sqrt(S + regularization)))
+        tmp2 = np.dot(U, np.diag(np.sqrt(S + regularization)))
+        self.W = torch.Tensor(np.dot(tmp, U.T))
+        self.means = torch.Tensor(m)
 
         if self.cuda_state:
-            self.means = self.means.cuda()
             self.W = self.W.cuda()
+            self.means = self.means.cuda()
 
     def _get_transforms(self):
 

@@ -3,7 +3,7 @@ METHODS_DEFAULT = {
         'alpha': 0.6,
         'max_unsup_weight': 30.
     },
-    'TemporalEnsemblingNewLoss': {
+    'MeanTeacher': {
         'alpha': 0.6,
         'max_unsup_weight': 30.
     },

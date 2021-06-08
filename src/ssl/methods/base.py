@@ -19,6 +19,7 @@ class BaseMethod:
     def __init__(self, **kwargs):
 
         self.cuda_state = False
+        self.percent_labeled = kwargs['percent_labeled']
 
         self._set_hyperparameters(**kwargs)
 
@@ -178,7 +179,7 @@ class BaseMethod:
 
             optimizer.zero_grad()
             output = model.forward(data)
-            loss, sup_loss, unsup_loss = self._get_loss(output, target, idxes, batch_idx)
+            loss, sup_loss, unsup_loss = self._get_loss(data, output, target, idxes, batch_idx)
             loss.backward()
             optimizer.step()
 
@@ -204,7 +205,7 @@ class BaseMethod:
                                                                                                                self.nb_samples_train,
                                                                                                                100.,
                                                                                                                (loss_epoch / self.nb_batches).item()))
-        self._update_vars(outputs, epoch, total_epochs)
+        self._update_vars(epoch, total_epochs, model, outputs)
         del outputs
 
         return loss_epoch, sup_loss_epoch, unsup_loss_epoch

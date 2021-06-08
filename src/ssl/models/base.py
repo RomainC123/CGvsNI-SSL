@@ -17,6 +17,7 @@ class BaseModelContainer:
 
     def __init__(self, nb_classes, init_mode):
 
+        self.nb_classes = nb_classes
         self.init_mode = init_mode
         if init_mode != 'pretrained':
             init_weights(self.model, self.init_mode)
@@ -52,8 +53,14 @@ class BaseModelContainer:
     def eval(self):
         self.model.eval()
 
+    def parameters(self):
+        return self.model.parameters()
+
     def forward(self, x):
         return self.model.forward(x)
+
+    def get_params(self):
+        return self.name, self.nb_classes, self.init_mode
 
     def get_info(self):
 
