@@ -23,7 +23,7 @@ python ./main.py --train-test --folder {folder} --name {name} --data CIFAR10 --n
 
 lr = 0.0003
 nb_samples_labeled = [100, 300, 1000, 3000, 10000, 30000]
-walltime = '12:00:00'
+walltime = '18:00:00'
 folder = 'CIFAR10_test_nb_labels'
 
 if os.path.exists(folder):
