@@ -35,12 +35,10 @@ class MeanTeacher(BaseMethod):
         return infos
 
     def _init_vars(self):
-
         self.teacher_model = None
         self.unsup_weight = torch.autograd.Variable(torch.FloatTensor([0.]), requires_grad=False)
         if self.cuda_state:
-            self.y_ema = self.y_ema.cuda()
-            self.ensemble_prediction = self.ensemble_prediction.cuda()
+            self.teacher_model = self.teacher_model.cuda()
             self.unsup_weight = self.unsup_weight.cuda()
 
     def _update_vars(self, output, epoch, total_epochs):
