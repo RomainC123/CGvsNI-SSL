@@ -11,4 +11,4 @@ source /applis/environments/conda.sh
 conda activate CGDetection
 
 cd ~/code/CGvsNI-SSL/src
-python ./main.py --train-test --data CIFAR10 --nb_samples_total 60000 --nb_samples_test 10000 --nb_samples_labeled 1000 --img_mode RGB --model SimpleNet --method MeanTeacher --max_lr 0.0002 --epochs 300
+python ./main.py --train-test --data CIFAR10 --nb_samples_total 60000 --nb_samples_test 10000 --nb_samples_labeled 1000 --img_mode RGB --model SimpleNet --method MeanTeacher --max_lr 0.0002 --epochs 300 --no-verbose
