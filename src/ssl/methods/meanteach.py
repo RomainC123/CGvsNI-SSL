@@ -48,7 +48,7 @@ class MeanTeacher(BaseMethod):
         if self.cuda_state:
             self.unsup_weight = self.unsup_weight.cuda()
 
-    def _update_vars(self, epoch, total_epochs, model, outputs):
+    def _update_vars(self, epoch, total_epochs, model, output):
         self._update_teacher(model, epoch)
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 

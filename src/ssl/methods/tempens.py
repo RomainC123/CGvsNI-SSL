@@ -43,7 +43,7 @@ class TemporalEnsembling(BaseMethod):
             self.ensemble_prediction = self.ensemble_prediction.cuda()
             self.unsup_weight = self.unsup_weight.cuda()
 
-    def _update_vars(self, output, epoch, total_epochs):
+    def _update_vars(self, epoch, total_epochs, model, output):
         self.ensemble_prediction.data = self.alpha * self.ensemble_prediction.data + (1 - self.alpha) * F.softmax(output.data, dim=1)
         self.y_ema.data = self.ensemble_prediction.data / (1 - self.alpha ** epoch)
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)

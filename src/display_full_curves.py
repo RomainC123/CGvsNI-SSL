@@ -18,7 +18,7 @@ ax22.set_title('Sup loss')
 ax23 = fig2.add_subplot(313)
 ax23.set_title('Unsup loss')
 
-save_path = os.path.join(TRAINED_MODELS_PATH, 'CIFAR10_test_nb_labels')
+save_path = os.path.join(TRAINED_MODELS_PATH, 'CIFAR10_test_lr')
 
 for model_name in sorted(os.listdir(save_path)):
 
