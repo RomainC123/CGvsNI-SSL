@@ -17,3 +17,4 @@ Traceback (most recent call last):
   File "/home/caplierr/code/CGvsNI-SSL/src/ssl/utils/tools.py", line 48, in get_latest_log
     raise RuntimeError('No logs were found')
 RuntimeError: No logs were found
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: 
