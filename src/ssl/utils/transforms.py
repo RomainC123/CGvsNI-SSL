@@ -13,10 +13,10 @@ class TransformTwice:
 
 IMAGE_TRANSFORMS_TRAIN = {
     'MNIST': {
-        'L': [transforms.ToTensor(),
-              transforms.Normalize((0.5), (0.5))],
-        'RGB': [transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+        'L': transforms.Compose([transforms.ToTensor(),
+                                 transforms.Normalize((0.5), (0.5))]),
+        'RGB': transforms.Compose([transforms.ToTensor(),
+                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     },
     'CIFAR10': {
         'L': transforms.Compose([transforms.RandomCrop(32, padding=2, padding_mode='reflect'),
@@ -25,6 +25,16 @@ IMAGE_TRANSFORMS_TRAIN = {
         'RGB': transforms.Compose([transforms.RandomCrop(32, padding=2, padding_mode='reflect'),
                                    transforms.RandomHorizontalFlip(0.5),
                                    transforms.ToTensor()])
+    },
+    'SVHN': {
+        'L': transforms.Compose([transforms.RandomCrop(32, padding=2, padding_mode='reflect'),
+                                 transforms.RandomHorizontalFlip(0.5),
+                                 transforms.ToTensor(),
+                                 transforms.Normalize((0.5), (0.5))]),
+        'RGB': transforms.Compose([transforms.RandomCrop(32, padding=2, padding_mode='reflect'),
+                                   transforms.RandomHorizontalFlip(0.5)
+                                   transforms.ToTensor(),
+                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     },
     'CGvsNI': {
         'L': transforms.Compose([transforms.RandomCrop(233),
@@ -40,14 +50,20 @@ IMAGE_TRANSFORMS_TRAIN = {
 
 IMAGE_TRANSFORMS_TEST = {
     'MNIST': {
-        'L': [transforms.ToTensor(),
-              transforms.Normalize((0.5), (0.5))],
-        'RGB': [transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+        'L': transforms.Compose([transforms.ToTensor(),
+                                 transforms.Normalize((0.5), (0.5))]),
+        'RGB': transforms.Compose([transforms.ToTensor(),
+                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     },
     'CIFAR10': {
         'L': transforms.Compose([transforms.ToTensor()]),
         'RGB': transforms.Compose([transforms.ToTensor()])
+    },
+    'SVHN': {
+        'L': transforms.Compose([transforms.ToTensor(),
+                                 transforms.Normalize((0.5), (0.5))]),
+        'RGB': transforms.Compose([transforms.ToTensor(),
+                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     },
     'CGvsNI': {
         'L': transforms.Compose([transforms.RandomCrop(233),

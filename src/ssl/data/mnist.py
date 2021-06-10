@@ -27,4 +27,4 @@ class MNISTDatasetContainer(ImageDatasetContainer):
 
     def _get_transforms(self):
 
-        return transforms.Compose(IMAGE_TRANSFORMS_TRAIN[self.data][self.img_mode]), transforms.Compose(IMAGE_TRANSFORMS_TEST[self.data][self.img_mode])
+        return IMAGE_TRANSFORMS_TRAIN[self.data][self.img_mode], IMAGE_TRANSFORMS_TEST[self.data][self.img_mode]
