@@ -58,7 +58,6 @@ class MeanTeacher(BaseMethod):
             teacher_param.data.mul_(alpha).add_(1 - alpha, param.data)
 
     def _get_loss(self, input, output, target, idxes, batch_idx):
-
         self.teacher_model.train()
         with torch.no_grad():
             output_teacher = self.teacher_model.forward(input)
