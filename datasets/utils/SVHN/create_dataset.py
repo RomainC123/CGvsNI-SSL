@@ -1,10 +1,12 @@
 import os
 import pathlib
 import pickle
+from scipy.io import loadmat  # this is the SciPy module that loads mat-files
 import pandas as pd
 
 from PIL import Image
-from tensorflow.keras.datasets import cifar10
+import matplotlib.pyplot as plt
+
 
 from tqdm import tqdm
 
@@ -13,24 +15,21 @@ warnings.filterwarnings('ignore')
 
 ROOT_PATH = pathlib.Path(__file__).resolve().parents[3].absolute()
 
-RAW_PATH = os.path.join(ROOT_PATH, 'datasets', 'CIFAR10', 'raw')
+RAW_PATH = os.path.join(ROOT_PATH, 'datasets', 'SVHN', 'raw')
 if not os.path.exists(RAW_PATH):
     os.makedirs(RAW_PATH)
 
-FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'CIFAR10')
+FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'SVHN')
 if not os.path.exists(FRAME_PATH):
     os.makedirs(FRAME_PATH)
 
-print('Downloading CIFAR...')
+data_train = loadmat(os.path.join(FRAME_PATH, 'train_32x32.mat'))
+data_test = loadmat(os.path.join(FRAME_PATH, 'test_32x32.mat'))
 
-try:
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-except:
-    import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-
-print(X_train.shape)
+X_train = data_train['X']
+y_train = data_train['y']
+X_test = data_test['X']
+y_test = data_test['y']
 
 list_names = []
 list_labels = []
@@ -41,17 +40,17 @@ nb_imgs_train = len(X_train)
 nb_imgs_test = len(X_test)
 
 for i in tqdm(range(nb_imgs_train)):
-    im = Image.fromarray(X_train[i])
+    im = Image.fromarray(X_train[:,:,:,i])
     im = im.convert("RGB")
-    im.save(os.path.join(RAW_PATH, f'cifar10_{i}.jpeg'))
-    list_names.append(f'cifar10_{i}.jpeg')
+    im.save(os.path.join(RAW_PATH, f'svhn_{i}.jpeg'))
+    list_names.append(f'svhn_{i}.jpeg')
     list_labels.append(int(y_train[i][0]))
 
 for i in tqdm(range(nb_imgs_test)):
-    im = Image.fromarray(X_test[i])
+    im = Image.fromarray(X_test[:,:,:,i])
     im = im.convert("RGB")
-    im.save(os.path.join(RAW_PATH, f'cifar10_{i + nb_imgs_train}.jpeg'))
-    list_names.append(f'cifar10_{i + nb_imgs_train}.jpeg')
+    im.save(os.path.join(RAW_PATH, f'svhn_{i + nb_imgs_train}.jpeg'))
+    list_names.append(f'svhn_{i + nb_imgs_train}.jpeg')
     list_labels.append(int(y_test[i][0]))
 
 print('Creating dataframe...')

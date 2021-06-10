@@ -132,9 +132,7 @@ dmypy.json
 *.ipynb
 
 # images
-*/MNIST/raw
-*/CIFAR10/raw
-*/CGvsNI/raw
+raw/
 
 #CGvsNI checkpoints
 trained_models/CGvsNI*/logs/*.pth
