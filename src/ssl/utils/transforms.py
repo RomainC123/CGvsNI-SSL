@@ -32,7 +32,7 @@ IMAGE_TRANSFORMS_TRAIN = {
                                  transforms.ToTensor(),
                                  transforms.Normalize((0.5), (0.5))]),
         'RGB': transforms.Compose([transforms.RandomCrop(32, padding=2, padding_mode='reflect'),
-                                   transforms.RandomHorizontalFlip(0.5)
+                                   transforms.RandomHorizontalFlip(0.5),
                                    transforms.ToTensor(),
                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     },

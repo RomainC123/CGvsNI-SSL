@@ -1,51 +1,24 @@
 import os
-import argparse
-import numpy as np
-import torch
-import torch.backends.cudnn as cudnn
-
-from distutils.dir_util import copy_tree
-from datetime import datetime
-from tqdm import tqdm
+import pathlib
+import pandas as pd
 from PIL import Image
 import matplotlib.pyplot as plt
 
-from ssl.utils.constants import BATCH_SIZE, DEFAULT_EPOCHS
-from ssl.utils.paths import TRAINED_MODELS_PATH
-from ssl.utils.functionalities import DATASETS, MODELS, OPTIMIZERS, METHODS
-from ssl.utils.hyperparameters import METHODS_DEFAULT, OPTIMIZERS_DEFAULT
-from ssl.utils.paths import DATASETS_PATH
+ROOT_PATH = pathlib.Path(__file__).resolve().parents[1].absolute()
 
-data = 'CIFAR10'
-nb_samples_total = 60000
-nb_samples_test = 10000
-nb_samples_labeled = 1000
-img_mode = 'RGB'
+RAW_PATH = os.path.join(ROOT_PATH, 'datasets', 'SVHN', 'raw')
+if not os.path.exists(RAW_PATH):
+    os.makedirs(RAW_PATH)
 
-np.random.seed(0)
+FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'SVHN')
+if not os.path.exists(FRAME_PATH):
+    os.makedirs(FRAME_PATH)
 
-dataset = DATASETS[data](data, nb_samples_total, nb_samples_test, nb_samples_labeled, True, img_mode=img_mode, epsilon=1e-1)
-train_dataloader, _, _ = dataset.get_dataloaders(True)
+df_imgs = pd.read_csv(os.path.join(FRAME_PATH, 'dataset.csv'))
+print(df_imgs.loc[df_imgs['Label'] == 10][:2])
 
-
-def plotImage(X_init, X_processed):
-    plt.figure(figsize=(4, 8))
-    plt.subplot(211)
-    plt.imshow(X_init.cpu().permute(1, 2, 0))
-    plt.subplot(212)
-    plt.imshow(X_processed.cpu().permute(1, 2, 0))
+for img in df_imgs.loc[df_imgs['Label'] == 10][:2].values:
+    print(img)
+    im = Image.open(os.path.join(RAW_PATH, img[0]))
+    plt.imshow(im)
     plt.show()
-
-
-pbar = enumerate(train_dataloader)
-for batch_idx, (data, target, id) in pbar:
-
-    data = data.cuda()
-    target = target.cuda()
-
-    data_preprocessed = dataset.preprocess(data)
-    plotImage(data[0], data_preprocessed[0])
-    plotImage(data[1], data_preprocessed[1])
-    plotImage(data[2], data_preprocessed[2])
-    plotImage(data[3], data_preprocessed[3])
-    plotImage(data[4], data_preprocessed[4])

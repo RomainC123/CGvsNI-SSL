@@ -36,27 +36,37 @@ list_labels = []
 
 print('Creating images...')
 
-nb_imgs_train = len(X_train)
-nb_imgs_test = len(X_test)
+nb_imgs_train = X_train.shape[3]
+nb_imgs_test = X_test.shape[3]
 
 for i in tqdm(range(nb_imgs_train)):
     im = Image.fromarray(X_train[:,:,:,i])
     im = im.convert("RGB")
     im.save(os.path.join(RAW_PATH, f'svhn_{i}.jpeg'))
     list_names.append(f'svhn_{i}.jpeg')
-    list_labels.append(int(y_train[i][0]))
+    label = int(y_train[i])
+    if label == 10:
+        list_labels.append(0)
+    else:
+        list_labels.append(label)
 
 for i in tqdm(range(nb_imgs_test)):
     im = Image.fromarray(X_test[:,:,:,i])
     im = im.convert("RGB")
     im.save(os.path.join(RAW_PATH, f'svhn_{i + nb_imgs_train}.jpeg'))
     list_names.append(f'svhn_{i + nb_imgs_train}.jpeg')
-    list_labels.append(int(y_test[i][0]))
+    label = int(y_train[i])
+    if label == 10:
+        list_labels.append(0)
+    else:
+        list_labels.append(label)
 
 print('Creating dataframe...')
 df_imgs = pd.DataFrame(columns=['Name', 'Label'])
 df_imgs['Name'] = list_names
 df_imgs['Label'] = list_labels
+
+print(df_imgs['Label'].value_counts())
 
 with open(os.path.join(FRAME_PATH, 'dataset.csv'), 'w+') as f:
     f.write(df_imgs.to_csv(index=None))

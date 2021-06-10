@@ -1,5 +1,5 @@
 from ..data.cifar10 import CIFAR10DatasetContainer
-from ..data.svhn import svhnDatasetContainer
+from ..data.svhn import SVHNDatasetContainer
 from ..data.mnist import MNISTDatasetContainer
 from ..data.cgvsni import CGvsNIDatasetContainer
 

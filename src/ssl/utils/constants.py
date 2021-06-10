@@ -9,6 +9,7 @@ CGVSNI_DATASETS_IDS = {
 
 VAL_NUMBER = {
     'CIFAR10': 5000,
+    'SVHN': 5000,
     'MNIST': 5000,
     'CGvsNI': 200
 }
@@ -21,6 +22,7 @@ TEST_RUNS = 3
 
 BATCH_SIZE = {
     'CIFAR10': 100,
+    'SVHN': 100,
     'MNIST': 100,
     'CGvsNI': 32
 }
