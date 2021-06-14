@@ -26,8 +26,8 @@ class MeanTeacher(BaseMethod):
         self.unsup_loss = self.unsup_loss.cuda()
 
     def _init_teacher(self, model):
-        params = model.get_params()
-        self.teacher_model = MODELS[params[0]](params[1], params[2])
+        data, nb_classes, init_mode = model.get_params()
+        self.teacher_model = MODELS[data](nb_classes, init_mode)
         for param in self.teacher_model.parameters():
             param.detach_()
 
