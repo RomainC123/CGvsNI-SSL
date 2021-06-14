@@ -53,7 +53,7 @@ class MeanTeacher(BaseMethod):
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
     def _update_teacher(self, model, epoch):
-        alpha = min(1 - 1 / (epoch + 1), self.ema_teacher)
+        alpha = min(1 - 1 / epoch, self.ema_teacher)
         for teacher_param, param in zip(self.teacher_model.parameters(), model.parameters()):
             teacher_param.data.mul_(alpha).add_(1 - alpha, param.data)
 
