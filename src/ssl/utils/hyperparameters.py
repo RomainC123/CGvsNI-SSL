@@ -4,7 +4,7 @@ METHODS_DEFAULT = {
         'max_unsup_weight': 30.
     },
     'MeanTeacher': {
-        'alpha': 0.6,
+        'ema_teacher': 0.999,
         'max_unsup_weight': 30.
     },
     'OnlySup': {}

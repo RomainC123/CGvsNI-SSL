@@ -20,3 +20,6 @@ Lancer CGvsNI supervisé avant toute chose
 Variation début loss unsup
 Problème loss non supervisée pour le début des courbes
 Varier (augmenter) le batch size par hasard
+
+
+Add TwoStreamBatchSampler to SVHN

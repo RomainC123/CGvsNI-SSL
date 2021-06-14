@@ -32,12 +32,12 @@ class MeanTeacher(BaseMethod):
             param.detach_()
 
     def _set_hyperparameters(self, **kwargs):
-        self.alpha = kwargs['alpha']
+        self.ema_teacher = kwargs['ema_teacher']
         self.max_unsup_weight = kwargs['max_unsup_weight'] * self.percent_labeled
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
 
     def _get_hyperparameters_info(self):
-        infos = f'Alpha teacher: {self.alpha}\n'
+        infos = f'Ema teacher: {self.ema_teacher}\n'
         infos += 'Unsupervised loss max weight: {:.1f}\n'.format(self.max_unsup_weight)
         infos += self.unsup_weight_schedule.get_info()
 
@@ -53,7 +53,7 @@ class MeanTeacher(BaseMethod):
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
     def _update_teacher(self, model, epoch):
-        alpha = min(1 - 1 / (epoch + 1), self.alpha)
+        alpha = min(1 - 1 / (epoch + 1), self.ema_teacher)
         for teacher_param, param in zip(self.teacher_model.parameters(), model.parameters()):
             teacher_param.data.mul_(alpha).add_(1 - alpha, param.data)
 
