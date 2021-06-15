@@ -191,7 +191,6 @@ class BaseMethod:
             loss.backward()
             optimizer.step()
 
-            print((epoch - 1) * self.nb_batches + epoch_step)
             self._update_vars_epoch(model, (epoch - 1) * self.batch_size + epoch_step)
 
             loss_epoch += loss.data.cpu().numpy()
