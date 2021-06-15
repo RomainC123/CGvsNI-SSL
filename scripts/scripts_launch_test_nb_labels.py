@@ -1,5 +1,6 @@
 import os
 
+
 def make_script(folder, name, walltime, nb_samples_labeled, max_lr):
 
     cmd = f"#!/bin/bash\n\
@@ -21,23 +22,26 @@ python ./main.py --train-test --folder {folder} --name {name} --data CIFAR10 --n
         f.write(cmd)
 
 
-lr = 0.0003
+lr = 0.0002
 nb_samples_labeled = [100, 300, 1000, 3000, 10000, 30000]
 walltime = '18:00:00'
-folder = 'CIFAR10_test_nb_labels'
+data = 'CIFAR10'
+folder = 'test_nb_labels'
 
-if os.path.exists(folder):
-    raise RuntimeError(f'Folder {folder} already exists!')
+path = os.path.join(data, folder)
 
-if not os.path.exists(folder):
-    os.makedirs(folder)
+if os.path.exists(path):
+    raise RuntimeError(f'Folder {folder} in {data} already exists!')
 
-if not os.path.exists(os.path.join(folder, 'scripts_logs')):
-    os.makedirs(os.path.join(folder, 'scripts_logs'))
+if not os.path.exists(path):
+    os.makedirs(path)
+
+if not os.path.exists(os.path.join(path, 'scripts_logs')):
+    os.makedirs(os.path.join(path, 'scripts_logs'))
 
 for nb_samples in nb_samples_labeled:
-    make_script(folder, str(nb_samples), walltime, nb_samples, lr)
+    make_script(path, str(nb_samples), walltime, nb_samples, lr)
 
-for script in os.listdir(folder):
-    os.system(f'chmod +x {os.path.join(folder, script)}')
-    os.system(f'oarsub -S ./{os.path.join(folder, script)}')
+for script in os.listdir(path):
+    os.system(f'chmod +x {os.path.join(path, script)}')
+    os.system(f'oarsub -S ./{os.path.join(path, script)}')
