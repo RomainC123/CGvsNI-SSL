@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#OAR -n CGvsNI-Artlantis-tempens
+#OAR -n CGvsNI-Artlantis-onlysup
 #OAR -t gpu
 #OAR -l /nodes=1/gpudevice=1,walltime=12:00:00
-#OAR --stdout scripts_logs/CGvsNI-Artlantis-tempens.out
-#OAR --stderr scripts_logs/CGvsNI-Artlantis-tempens.err
+#OAR --stdout scripts_logs/CGvsNI-Artlantis-onlysup.out
+#OAR --stderr scripts_logs/CGvsNI-Artlantis-onlysup.err
 #OAR --project cg4n6
 
 source /applis/environments/conda.sh
