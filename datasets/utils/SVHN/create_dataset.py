@@ -24,10 +24,10 @@ FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'SVHN')
 if not os.path.exists(FRAME_PATH):
     os.makedirs(FRAME_PATH)
 
-with requests.get('https://ufldl.stanford.edu/housenumbers/train_32x32.mat', allow_redirects=True) as r:
+with requests.get('http://ufldl.stanford.edu/housenumbers/train_32x32.mat', allow_redirects=True) as r:
     open('train_32x32.mat', 'wb').write(r.content)
 
-with requests.get('https://ufldl.stanford.edu/housenumbers/train_32x32.mat', allow_redirects=True) as r:
+with requests.get('http://ufldl.stanford.edu/housenumbers/train_32x32.mat', allow_redirects=True) as r:
     open('test_32x32.mat', 'wb').write(r.content)
 
 data_train = loadmat('train_32x32.mat')
