@@ -25,5 +25,4 @@ Varier (augmenter) le batch size par hasard
 Add TwoStreamBatchSampler to SVHN
 Finetune un modele MNIST sur CIFAR10 (avec le modèle CNN)
 Tester avec le modèel MNIST
-Vérifier images valeurs initales SVHN (0-1 ou 0-255)
 Raytune pour hyperparamètres optimisation
