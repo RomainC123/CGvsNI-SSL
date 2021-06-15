@@ -118,6 +118,10 @@ class BaseMethod:
         # TO OVERLOAD
         pass
 
+    def _update_vars_epoch(self, model, epoch):
+        # TO OVERLOAD
+        pass
+
     def _init_vars_epoch(self):
         loss_epoch = 0.
         sup_loss_epoch = 0.
@@ -170,7 +174,11 @@ class BaseMethod:
         else:
             pbar = enumerate(train_dataloader)
 
+        epoch_step = 0
+
         for batch_idx, (data, target, idxes) in pbar:
+
+            epoch_step += 1
 
             if self.cuda_state:
                 data, target = data.cuda(), target.cuda()
@@ -182,6 +190,9 @@ class BaseMethod:
             loss, sup_loss, unsup_loss = self._get_loss(data, output, target, idxes, batch_idx)
             loss.backward()
             optimizer.step()
+
+            print((epoch - 1) * self.nb_batches + epoch_step)
+            self._update_vars_epoch(model, (epoch - 1) * self.batch_size + epoch_step)
 
             loss_epoch += loss.data.cpu().numpy()
             sup_loss_epoch += sup_loss.data.cpu().numpy()

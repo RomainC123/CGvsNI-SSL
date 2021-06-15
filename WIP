@@ -118,3 +118,7 @@ Pourquoi SimpleNet marche et pas StandardNet ???
 Problèmes de la fin :
 Grad sur y_ema dans le calcul de la loss (donc mise à jour des poids non voulue)
 Oubli de la partie de normalisation du poids de la loss non sup (donc trop de force de celle-ci dans l'entraînement, ie mauvaises perfs)
+
+
+
+Test de CIFAR10 vs SVHN avec Tempens vs MeanTeach
