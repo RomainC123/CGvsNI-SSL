@@ -1,6 +1,7 @@
 import os
 import pathlib
 import pickle
+import requests
 from scipy.io import loadmat  # this is the SciPy module that loads mat-files
 import pandas as pd
 
@@ -23,8 +24,14 @@ FRAME_PATH = os.path.join(ROOT_PATH, 'datasets', 'SVHN')
 if not os.path.exists(FRAME_PATH):
     os.makedirs(FRAME_PATH)
 
-data_train = loadmat(os.path.join(FRAME_PATH, 'train_32x32.mat'))
-data_test = loadmat(os.path.join(FRAME_PATH, 'test_32x32.mat'))
+with requests.get('ufldl.stanford.edu/housenumbers/train.tar.gz', allow_redirects=True) as r:
+    open('train_32x32.mat', 'wb').write(r.content)
+
+with requests.get('ufldl.stanford.edu/housenumbers/test.tar.gz', allow_redirects=True) as r:
+    open('test_32x32.mat', 'wb').write(r.content)
+
+data_train = loadmat('train_32x32.mat')
+data_test = loadmat('test_32x32.mat')
 
 X_train = data_train['X']
 y_train = data_train['y']
@@ -70,3 +77,6 @@ print(df_imgs['Label'].value_counts())
 
 with open(os.path.join(FRAME_PATH, 'dataset.csv'), 'w+') as f:
     f.write(df_imgs.to_csv(index=None))
+
+os.remove('train_32x32.mat')
+os.remove('test_32x32.mat')

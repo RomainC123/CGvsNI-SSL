@@ -123,3 +123,6 @@ Oubli de la partie de normalisation du poids de la loss non sup (donc trop de fo
 
 Test de CIFAR10 vs SVHN avec Tempens vs MeanTeach, avec SimpleNet
 Test aussi de MNIST avec les updates de MeanTeach et avec la meilleure normalisation
+
+Ajout de better norm sur MNIST/SVHN
+Amélioration de MeanTeach (update tous les steps, et meilleurs hyperparams)
