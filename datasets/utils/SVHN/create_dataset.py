@@ -27,7 +27,7 @@ if not os.path.exists(FRAME_PATH):
 with requests.get('http://ufldl.stanford.edu/housenumbers/train_32x32.mat', allow_redirects=True) as r:
     open('train_32x32.mat', 'wb').write(r.content)
 
-with requests.get('http://ufldl.stanford.edu/housenumbers/train_32x32.mat', allow_redirects=True) as r:
+with requests.get('http://ufldl.stanford.edu/housenumbers/test_32x32.mat', allow_redirects=True) as r:
     open('test_32x32.mat', 'wb').write(r.content)
 
 data_train = loadmat('train_32x32.mat')
