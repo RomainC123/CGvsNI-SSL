@@ -126,3 +126,6 @@ Test aussi de MNIST avec les updates de MeanTeach et avec la meilleure normalisa
 
 Ajout de better norm sur MNIST/SVHN
 Amélioration de MeanTeach (update tous les steps, et meilleurs hyperparams)
+
+Ajout de meilleure normalisation : amélioration nette des performances sur MNIST et SVHN
+Toujours un problème sur CIFAR10 et SVHN (diminution trop lente au début de l'entraînement)
