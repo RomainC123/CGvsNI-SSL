@@ -114,7 +114,7 @@ class BaseMethod:
         # TO OVERLOAD
         pass
 
-    def _update_vars(self, output, epoch, total_epochs):
+    def _update_vars(self, epoch, total_epochs, model, output):
         # TO OVERLOAD
         pass
 
