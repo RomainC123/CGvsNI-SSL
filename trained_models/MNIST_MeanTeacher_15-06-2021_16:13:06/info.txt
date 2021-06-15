@@ -1,0 +1,51 @@
+Data: MNIST
+Number of samples: 60000
+Number of classes: 10
+Number of training samples: 50000
+Number of labeled samples: 1000
+Percent of labeled samples: 2.00%
+Number of testing samples: 10000
+Percent of testing samples: 16.67%
+------------------------------------
+Model: CNN
+CNN(
+  (gn): GaussianNoise()
+  (act): ReLU()
+  (drop): Dropout(p=0.5, inplace=False)
+  (conv1): Conv2d(1, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv2): Conv2d(16, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (mp): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+  (fc): Linear(in_features=1568, out_features=10, bias=True)
+)
+Init mode: Normal
+Number of parameters: 20538
+------------------------------------
+Optimizer: Adam
+Max learning rate: 0.0002
+Betas: (0.9, 0.999)
+Learning rate schedule:
+Ramp up epochs: 80
+Ramp up mult: 5
+Ramp down epochs: 50
+Ramp down mult: 12.5
+Lower bound: 0.0
+Upper bound: 1.0
+Beta 1 schedule:
+Ramp down epochs: 50
+Ramp down mult: 12.5
+Lower bound: 0.55
+Upper bound: 1.0
+------------------------------------
+Method: Mean Teacher
+Ema teacher: 0.999
+Unsupervised loss max weight: 0.6
+Ramp up epochs: 80
+Ramp up mult: 5
+Lower bound: 0.0
+Upper bound: 1.0
+------------------------------------
+Batch size: 100
+Number of batches: 500
+Starting epoch: 0
+Total number of epochs: 300
+Training time: 7:00:30
