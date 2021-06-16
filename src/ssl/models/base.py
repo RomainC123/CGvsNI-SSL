@@ -19,10 +19,10 @@ class BaseModelContainer:
 
         self.nb_classes = nb_classes
         self.init_mode = init_mode
-        if init_mode != 'pretrained':
-            init_weights(self.model, self.init_mode)
-        else:
-            self.load()
+        # if init_mode != 'pretrained':
+        #     init_weights(self.model, self.init_mode)
+        # else:
+        #     self.load()
 
     def _get_nb_parameters(self):
 

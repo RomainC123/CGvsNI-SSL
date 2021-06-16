@@ -186,7 +186,7 @@ class BaseMethod:
             data = preprocess(data)
 
             optimizer.zero_grad()
-            output = model.forward(data)
+            output = model.forward(data, init_mode=init_mode)
             loss, sup_loss, unsup_loss = self._get_loss(data, output, target, idxes, batch_idx)
             loss.backward()
             optimizer.step()

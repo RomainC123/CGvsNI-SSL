@@ -132,3 +132,10 @@ Toujours un problème sur CIFAR10 et SVHN (diminution trop lente au début de l'
 
 
 CGvsNI only sup full labels started
+SVHN TwoStreamBatchSampler lancé, pour comparer vs full random
+    Pas de différence notable
+
+
+Test sur l'intialisation des modèles
+Stop utiliser le code sauf pour ENet
+Test de tous les entraînements sans initialisation
