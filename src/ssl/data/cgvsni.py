@@ -90,10 +90,6 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
         self._df_valuation = df_valuation.reset_index(drop=True)
         self._df_test = df_test.reset_index(drop=True)
 
-        print(len(self._df_train_full))
-        print(len(self._df_valuation))
-        print(len(self._df_test))
-
     def _mask_data(self):
         """
         Creates self._df_train_masked (frame with all train images and masked and unmasked labels) and self._df_train_labeled (only rows that stayed labeled)
