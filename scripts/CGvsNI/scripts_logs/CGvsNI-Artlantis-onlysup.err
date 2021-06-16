@@ -16,3 +16,22 @@ Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/capl
   File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/sklearn/model_selection/_split.py", line 1817, in _validate_shuffle_split
     raise ValueError('train_size={0} should be either positive and smaller'
 ValueError: train_size=360 should be either positive and smaller than the number of samples 360 or a float in the (0, 1) range
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 168, in <module>
+    main()
+  File "./main.py", line 116, in main
+    dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/cgvsni.py", line 32, in __init__
+    super(CGvsNIDatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled, **kwargs)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/image.py", line 81, in __init__
+    super(ImageDatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/base.py", line 74, in __init__
+    self._split_data()
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/cgvsni.py", line 81, in _split_data
+    df_cg_test, _ = train_test_split(rest_df_cg, train_size=int(nb_cg_test), stratify=rest_df_cg['Label'])
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/sklearn/model_selection/_split.py", line 2175, in train_test_split
+    n_train, n_test = _validate_shuffle_split(n_samples, test_size, train_size,
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/site-packages/sklearn/model_selection/_split.py", line 1817, in _validate_shuffle_split
+    raise ValueError('train_size={0} should be either positive and smaller'
+ValueError: train_size=360 should be either positive and smaller than the number of samples 360 or a float in the (0, 1) range
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: 
