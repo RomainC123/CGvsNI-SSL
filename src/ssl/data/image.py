@@ -13,6 +13,7 @@ from torch.utils.data import Dataset, DataLoader
 
 from .base import BaseDatasetContainer, BaseDataset
 from ..utils.paths import DATASETS_PATH
+from ..utils.constants import BATCH_SIZE
 
 ################################################################################
 #   Image dataset class                                                        #
@@ -100,5 +101,8 @@ class ImageDatasetContainer(BaseDatasetContainer):
                                           self._df_test,
                                           img_mode=self.img_mode,
                                           transform=transforms_test)
+
+        self.batch_size = BATCH_SIZE[self.data]
+        self._set_samplers()
 
         return super(ImageDatasetContainer, self).get_dataloaders(cuda_state)

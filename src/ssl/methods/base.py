@@ -260,7 +260,7 @@ class BaseMethod:
         self.nb_samples_train = dataset.nb_samples_train
         self.nb_classes = dataset.nb_classes
         self.percent_labeled = dataset.percent_labeled
-        self.batch_size = dataloader_train.batch_size
+        self.batch_size = dataset.batch_size
         self.nb_batches = len(dataloader_train)
 
         self._init_paths(trained_model_path)

@@ -10,10 +10,13 @@ import torchvision.transforms as transforms
 
 from PIL import Image
 from scipy import linalg
+from torch.utils.data.sampler import RandomSampler
 
 from .image import ImageDatasetContainer
 from ..utils.paths import DATASETS_PATH
+from ..utils.constants import PERCENT_LABELS_BATCH
 from ..utils.transforms import IMAGE_TRANSFORMS_TRAIN, IMAGE_TRANSFORMS_TEST
+from ..utils.tools import TwoStreamBatchSampler
 
 ################################################################################
 #   CIFAR10 dataset container class                                            #
@@ -65,3 +68,10 @@ class SVHNDatasetContainer(ImageDatasetContainer):
     def preprocess(self, input):
 
         return (input - self.means[:, None, None]) / self.stds[:, None, None]
+
+    def _set_samplers(self):
+
+        unmasked_idx = self._df_train_masked.loc[self._df_train_masked['Label'] != -1].index
+        masked_idx = self._df_train_masked.loc[self._df_train_masked['Label'] == -1].index
+
+        self._batch_sampler_train = TwoStreamBatchSampler(masked_idx, unmasked_idx, self.batch_size, int(self.batch_size * PERCENT_LABELS_BATCH))

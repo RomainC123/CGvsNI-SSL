@@ -1,4 +1,5 @@
 DATA_NO_LABEL = -1  # Label of the unlabeled data
+PERCENT_LABELS_BATCH = 0.05
 CG_IMG_MULT = 4 # Number of duplicates of CG imgs in CGvsNI datasets
 CGVSNI_DATASETS_IDS = {
     'Artlantis': 1,
@@ -27,5 +28,5 @@ BATCH_SIZE = {
     'CGvsNI': 32
 }
 
-DATALOADER_PARAMS_CUDA = {'shuffle': True, 'num_workers': 8, 'pin_memory': True}
-DATALOADER_PARAMS_NO_CUDA = {'shuffle': True}
+DATALOADER_PARAMS_CUDA = {'num_workers': 8, 'pin_memory': True}
+DATALOADER_PARAMS_NO_CUDA = {}

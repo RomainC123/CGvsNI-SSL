@@ -129,3 +129,6 @@ Amélioration de MeanTeach (update tous les steps, et meilleurs hyperparams)
 
 Ajout de meilleure normalisation : amélioration nette des performances sur MNIST et SVHN
 Toujours un problème sur CIFAR10 et SVHN (diminution trop lente au début de l'entraînement)
+
+
+CGvsNI only sup full labels started

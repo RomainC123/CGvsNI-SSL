@@ -130,11 +130,11 @@ class BaseDatasetContainer:
         # TO OVERLOAD
 
         if cuda_state:
-            dataloader_train = DataLoader(self._dataset_train, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_CUDA)
+            dataloader_train = DataLoader(self._dataset_train, batch_sampler=self._batch_sampler_train, **DATALOADER_PARAMS_CUDA)
             dataloader_valuation = DataLoader(self._dataset_valuation, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_CUDA)
             dataloader_test = DataLoader(self._dataset_test, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_CUDA)
         else:
-            dataloader_train = DataLoader(self._dataset_train, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_NO_CUDA)
+            dataloader_train = DataLoader(self._dataset_train, batch_sampler=self._batch_sampler_train, **DATALOADER_PARAMS_NO_CUDA)
             dataloader_valuation = DataLoader(self._dataset_valuation, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_NO_CUDA)
             dataloader_test = DataLoader(self._dataset_test, batch_size=BATCH_SIZE[self.data], **DATALOADER_PARAMS_NO_CUDA)
 

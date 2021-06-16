@@ -10,6 +10,7 @@ import torchvision.transforms as transforms
 
 from PIL import Image
 from scipy import linalg
+from torch.utils.data.sampler import RandomSampler, BatchSampler
 
 from .image import ImageDatasetContainer
 from ..utils.paths import DATASETS_PATH
@@ -77,3 +78,8 @@ class CIFAR10DatasetContainer(ImageDatasetContainer):
         input_zca_max = torch.max(input_zca, dim=1, keepdim=True)[0]
 
         return ((input_zca - input_zca_min) / (input_zca_max - input_zca_min)).reshape(-1, 3, 32, 32)
+
+    def _set_samplers(self):
+
+        sampler_train = RandomSampler(self._dataset_train)
+        self._batch_sampler_train = BatchSampler(sampler_train, self.batch_size, drop_last=True)

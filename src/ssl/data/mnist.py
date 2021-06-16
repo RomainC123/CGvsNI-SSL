@@ -6,7 +6,9 @@ import os
 import pandas as pd
 import torch
 import torchvision.transforms as transforms
+
 from PIL import Image
+from torch.utils.data.sampler import RandomSampler, BatchSampler
 
 from .image import ImageDatasetContainer
 from ..utils.paths import DATASETS_PATH
@@ -62,3 +64,8 @@ class MNISTDatasetContainer(ImageDatasetContainer):
     def preprocess(self, input):
 
         return (input - self.means[:, None, None]) / self.stds[:, None, None]
+
+    def _set_samplers(self):
+
+        sampler_train = RandomSampler(self._dataset_train)
+        self._batch_sampler_train = BatchSampler(sampler_train, self.batch_size, drop_last=True)

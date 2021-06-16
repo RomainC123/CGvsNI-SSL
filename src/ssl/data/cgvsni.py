@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import torch
 
 from PIL import Image
-from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
+from torch.utils.data.sampler import RandomSampler, BatchSampler
 
 from .image import ImageDataset, ImageDatasetContainer
 from ..utils.constants import CGVSNI_DATASETS_IDS, CG_IMG_MULT, VAL_NUMBER, DATA_NO_LABEL
@@ -125,3 +125,8 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
     def _get_transforms(self):
 
         return IMAGE_TRANSFORMS_TRAIN[self.data][self.img_mode], IMAGE_TRANSFORMS_TEST[self.data][self.img_mode]
+
+    def _set_samplers(self):
+
+        sampler_train = RandomSampler(self._dataset_train)
+        self._batch_sampler_train = BatchSampler(sampler_train, self.batch_size, drop_last=True)
