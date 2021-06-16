@@ -84,12 +84,15 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
         df_valuation = pd.concat([df_ni_val, df_cg_val])
         df_test = pd.concat([df_ni_test, df_cg_test])
 
-        self.nb_samples_total = len(df_train) + len(df_test)
         self.nb_samples_test = len(df_test)
 
         self._df_train_full = df_train.reset_index(drop=True)
         self._df_valuation = df_valuation.reset_index(drop=True)
         self._df_test = df_test.reset_index(drop=True)
+
+        print(len(self._df_train_full))
+        print(len(self._df_valuation))
+        print(len(self._df_test))
 
     def _mask_data(self):
         """
@@ -105,6 +108,10 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
             df_masked = pd.DataFrame()
 
         self._df_train_masked = self._df_train_full.copy()
+        df_ni_full = self._df_train_full.loc[self._df_train_full['Label'] == 0]
+        df_cg_full_no_mult = self._df_train_full.loc[self._df_train_full['Label'] != 0]
+        self._df_train_full = pd.concat([df_ni_full] + [df_cg_full_no_mult] * CG_IMG_MULT, ignore_index=True)
+
         cg_idx = self._df_train_masked.loc[self._df_train_masked['Label'] != 0].index
 
         self._df_train_masked.loc[df_masked.index, 'Label'] = DATA_NO_LABEL
@@ -112,6 +119,8 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
         self._df_train_masked.drop(cg_idx, inplace=True)
         self._df_train_masked = pd.concat([self._df_train_masked] + [df_train_cg_masked] * CG_IMG_MULT, ignore_index=True)
         self._df_train_masked = self._df_train_masked.reset_index(drop=True)
+
+        self.nb_samples_total = len(self._df_train_full) + len(self._df_test)
 
     def _get_transforms(self):
 
