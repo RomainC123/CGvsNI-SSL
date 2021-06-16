@@ -108,3 +108,4 @@ Batch size: 32
 Number of batches: 316
 Starting epoch: 0
 Total number of epochs: 300
+Training time: 7:50:48

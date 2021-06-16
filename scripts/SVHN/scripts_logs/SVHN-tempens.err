@@ -12,4 +12,14 @@ Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/capl
   File "/home/caplierr/code/CGvsNI-SSL/src/ssl/data/svhn.py", line 49, in _init_preprocess
     with open(img_path, 'rb') as f:
 FileNotFoundError: [Errno 2] No such file or directory: '/home/caplierr/code/CGvsNI-SSL/datasets/SVHN/raw/svhn_86126.jpeg'
-Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: 
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: ## OAR [2021-06-16 21:16:05] Job 17110080 KILLED ##
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 168, in <module>
+    main()
+  File "./main.py", line 129, in main
+    method.train(dataset, model, optimizer, 0, args.epochs, model_path, args.verbose)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 278, in train
+    losses, sup_losses, unsup_losses = self._epoch(dataloader_train, dataset.preprocess, model, optimizer, epoch, total_epochs)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 189, in _epoch
+    output = model.forward(data, init_mode=init_mode)
+NameError: name 'init_mode' is not defined
