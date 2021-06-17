@@ -139,3 +139,11 @@ SVHN TwoStreamBatchSampler lancé, pour comparer vs full random
 Test sur l'intialisation des modèles
 Stop utiliser le code sauf pour ENet
 Test de tous les entraînements sans initialisation
+
+Tout sans init:
+    16-06-2021 vers 23:45
+    CGvsNI full sup
+    CGvsNI tempens
+    CIFAR10 meanteach vs tempens
+    MNIST meanteach vs tempens
+    SVHN meanteach vs tempens
