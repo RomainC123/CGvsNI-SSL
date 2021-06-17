@@ -142,8 +142,8 @@ Test de tous les entraînements sans initialisation
 
 Tout sans init:
     16-06-2021 vers 23:45
-    CGvsNI full sup
-    CGvsNI tempens
-    CIFAR10 meanteach vs tempens
-    MNIST meanteach vs tempens
-    SVHN meanteach vs tempens
+    CGvsNI full sup : 99.7% ??
+    CGvsNI tempens : 94.2%
+    CIFAR10 meanteach vs tempens : No diff
+    MNIST meanteach vs tempens : No diff
+    SVHN meanteach vs tempens : No diff
