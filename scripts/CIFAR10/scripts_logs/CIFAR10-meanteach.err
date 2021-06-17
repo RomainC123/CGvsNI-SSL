@@ -13,3 +13,4 @@ Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/capl
   File "/home/caplierr/code/CGvsNI-SSL/src/ssl/methods/base.py", line 189, in _epoch
     output = model.forward(data, init_mode=init_mode)
 NameError: name 'init_mode' is not defined
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: 
