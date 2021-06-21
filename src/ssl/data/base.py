@@ -106,7 +106,7 @@ class BaseDatasetContainer:
         else:
             self.nb_samples_total = len(df_data)
         df_train, df_test = train_test_split(df_data, test_size=self.nb_samples_test, shuffle=True, stratify=df_data['Label'])
-        _, df_valuation = train_test_split(df_train, test_size=VAL_NUMBER[self.data], shuffle=True, stratify=df_train['Label'])
+        df_valuation = df_train.sample(n=int(VAL_NUMBER[self.data]))
 
         self._df_train_full = df_train.reset_index(drop=True)
         self._df_valuation = df_valuation.reset_index(drop=True)
