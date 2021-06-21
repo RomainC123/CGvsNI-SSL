@@ -300,7 +300,7 @@ class BaseMethod:
 
         self._save_train_duration(timer)
 
-    def test(self, dataset, model, trained_model_path, verbose):
+    def test(self, dataset, model, trained_model_path, verbose, name=None):
 
         _, _, dataloader_test = dataset.get_dataloaders(self.cuda_state)
         model.load(trained_model_path)
@@ -328,7 +328,12 @@ class BaseMethod:
 
         if verbose:
             print(full_classification_report)
-        with open(os.path.join(trained_model_path, 'results.txt'), 'a+') as f:
+
+        if name != None:
+            save_name = name
+        else:
+            save_name = 'results.txt'
+        with open(os.path.join(trained_model_path, save_name), 'a+') as f:
             full_classification_report = f'Number of test runs: {TEST_RUNS}\n' + full_classification_report + '\n'
             f.write(full_classification_report)
             f.write(get_metrics_report(dict_metrics_scores))

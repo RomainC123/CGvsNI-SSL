@@ -5,7 +5,7 @@ CGVSNI_DATASETS_IDS = {
     'Artlantis': 1,
     'Autodesk': 2,
     'Corona': 3,
-    'VRay': 4
+    #'VRay': 4
 }
 
 VAL_NUMBER = {
