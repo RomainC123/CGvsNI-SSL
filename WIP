@@ -144,6 +144,7 @@ Tout sans init:
     16-06-2021 vers 23:45
     CGvsNI full sup : 99.7% ??
     CGvsNI tempens : 94.2%
+    CGvsNI meanteach : 89.5%
     CIFAR10 meanteach vs tempens : No diff
     MNIST meanteach vs tempens : No diff
     SVHN meanteach vs tempens : No diff

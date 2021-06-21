@@ -1,7 +1,6 @@
 import os
 import torch
 
-from ..utils.networks import init_weights
 from ..utils.tools import get_latest_log
 
 ################################################################################
@@ -19,10 +18,8 @@ class BaseModelContainer:
 
         self.nb_classes = nb_classes
         self.init_mode = init_mode
-        # if init_mode != 'pretrained':
-        #     init_weights(self.model, self.init_mode)
-        # else:
-        #     self.load()
+        if init_mode == 'pretrained':
+            self.load()
 
     def _get_nb_parameters(self):
 

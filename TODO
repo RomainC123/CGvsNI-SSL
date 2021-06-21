@@ -26,3 +26,7 @@ Add TwoStreamBatchSampler to SVHN
 Finetune un modele MNIST sur CIFAR10 (avec le modèle CNN)
 Tester avec le modèel MNIST
 Raytune pour hyperparamètres optimisation
+
+CGvsNI :
+  Refaire le dataset splitter pour ne plusa voir d'anomalies et parfaitement contrôler le résultat
+  Implémenter la démarche totale (train sur un dataset 1 CG + NI puis test sur plusieurs datasets)
