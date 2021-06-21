@@ -24,12 +24,12 @@ from ..utils.transforms import IMAGE_TRANSFORMS_TRAIN, IMAGE_TRANSFORMS_TEST
 
 class CGvsNIDatasetContainer(ImageDatasetContainer):
 
-    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled, cuda_state, **kwargs):
+    def __init__(self, data, nb_samples_train, nb_samples_test, nb_samples_labeled, cuda_state, **kwargs):
 
         self.datasets_to_use = kwargs['datasets_to_use']
         self.label_mode = kwargs['label_mode']
 
-        super(CGvsNIDatasetContainer, self).__init__(data, nb_samples_total, nb_samples_test, nb_samples_labeled, **kwargs)
+        super(CGvsNIDatasetContainer, self).__init__(data, nb_samples_train, nb_samples_test, nb_samples_labeled, **kwargs)
 
         self._relabel_data()
 
@@ -61,7 +61,9 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
 
         df_data = self._get_data()
 
-        nb_ni_train = (self.nb_samples_total - self.nb_samples_test) / 2
+        self.nb_samples_total = self.nb_samples_train + self.nb_samples_test
+
+        nb_ni_train = self.nb_samples_train / 2
         nb_cg_train = nb_ni_train / CG_IMG_MULT
         assert nb_ni_train.is_integer()
         assert nb_cg_train.is_integer()

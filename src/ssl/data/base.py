@@ -64,17 +64,16 @@ class BaseDatasetContainer:
         In make_dataloaders, the dataset attributes need to be created
     """
 
-    def __init__(self, data, nb_samples_total, nb_samples_test, nb_samples_labeled):
+    def __init__(self, data, nb_samples_train, nb_samples_test, nb_samples_labeled):
 
         self.data = data
-        self.nb_samples_total = nb_samples_total
+        self.nb_samples_train = nb_samples_train
         self.nb_samples_test = nb_samples_test
         self.nb_samples_labeled = nb_samples_labeled
 
         self._split_data()
         self._mask_data()
 
-        self.nb_samples_train = len(self._df_train_full)
         self.percent_test = self.nb_samples_test / self.nb_samples_total
         self.percent_labeled = self.nb_samples_labeled / self.nb_samples_train
 
@@ -101,7 +100,9 @@ class BaseDatasetContainer:
 
         df_data = self._get_data()
 
-        if self.nb_samples_total != -1 and self.nb_samples_total != len(df_data):
+        self.nb_samples_total = self.nb_samples_train + self.nb_samples_test
+
+        if self.nb_samples_total != len(df_data):
             df_data, _ = train_test_split(df_data, train_size=self.nb_samples_total, shuffle=True, stratify=df_data['Label'])
         else:
             self.nb_samples_total = len(df_data)

@@ -6,11 +6,9 @@ import os
 import argparse
 import numpy as np
 import torch
-import torch.backends.cudnn as cudnn
 
 from distutils.dir_util import copy_tree
 from datetime import datetime
-from tqdm import tqdm
 
 from ssl.utils.constants import BATCH_SIZE, DEFAULT_EPOCHS
 from ssl.utils.paths import TRAINED_MODELS_PATH
@@ -50,7 +48,7 @@ def get_args():
     parser.add_argument('--data', type=str, help='data to use')
     parser.add_argument('--datasets_to_use', type=str, help='datasets to use for training')
     parser.add_argument('--label_mode', type=str, help='either biclass or multiclass')
-    parser.add_argument('--nb_samples_total', type=int, default=-1, help='number of testing samples')
+    parser.add_argument('--nb_samples_train', type=int, default=50000, help='number of training samples')
     parser.add_argument('--nb_samples_test', type=int, default=10000, help='number of testing samples')
     parser.add_argument('--nb_samples_labeled', type=int, default=1000, help='number of labeled samples in the training set')
     parser.add_argument('--day', type=str, help='day of the trained model to load')
@@ -93,11 +91,6 @@ def main():
 
     # Cuda variable
     cuda_state = not args.no_cuda and torch.cuda.is_available()
-    if cuda_state:
-        cudnn.benchmark = True
-        kwargs_hardware = {'batch_size': BATCH_SIZE, 'shuffle': False, 'num_workers': 8, 'pin_memory': True}
-    else:
-        kwargs_hardware = {'batch_size': BATCH_SIZE, 'shuffle': False}
 
     # Setting random seed
     np.random.seed(args.seed)
@@ -113,7 +106,7 @@ def main():
         model_path = os.path.join(main_folder_path, f'{args.data}_{args.method}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
 
     # Building all containers
-    dataset = DATASETS[args.data](args.data, args.nb_samples_total, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
+    dataset = DATASETS[args.data](args.data, args.nb_samples_train, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
 
     if args.train_test:
         model = MODELS[args.model](dataset.nb_classes, args.init_mode)
