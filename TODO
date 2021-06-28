@@ -34,3 +34,5 @@ CGvsNI :
 
 Lancer des tests MNIST avec encore moins de labels
 Toujours comparer juste les labels supervisées vs full training SSL
+
+Redo scripts to diminish number of testing samples to accommodate for the fact that there are only 434 VRay images
