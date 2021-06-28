@@ -148,3 +148,6 @@ Tout sans init:
     CIFAR10 meanteach vs tempens : No diff
     MNIST meanteach vs tempens : No diff
     SVHN meanteach vs tempens : No diff
+
+
+Test CGvsNI
