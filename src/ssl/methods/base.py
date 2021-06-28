@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import torch
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 from datetime import datetime
 import torch.nn.functional as F
@@ -109,6 +110,29 @@ class BaseMethod:
             pickle.dump(self.sup_losses, f)
         with open(os.path.join(self._graphs_path, 'unsup_loss.pkl'), 'wb') as f:
             pickle.dump(self.unsup_losses, f)
+
+    def _save_graphs_png(self, epochs):
+
+        fig = plt.figure(figsize=(14, 12))
+        ax1 = fig.add_subplot(211)
+        ax1.set_title('Metrics')
+        for key in self.metrics_eval.keys():
+            ax1.plot(range(epochs), self.metrics_eval[key], label=key.capitalize() + ' eval')
+        for key in self.metrics_test.keys():
+            ax1.plot(range(epochs), self.metrics_test[key], label=key.capitalize() + ' test')
+        ax1.legend()
+
+        ax2 = fig.add_subplot(212)
+        ax2.set_title('Loss')
+        ax2.plot(range(epochs), self.losses, label='Total loss')
+        ax2.plot(range(epochs), self.sup_losses, label='Supervised loss')
+        ax2.plot(range(epochs), self.unsup_losses, label='Unsupervised loss')
+        ax2.legend()
+
+        if not os.path.exists(os.path.join(self.main_path, 'results')):
+            os.makedirs(os.path.join(self.main_path, 'results'))
+
+        plt.savefig(os.path.join(self.main_path, 'results', 'graph.png'))
 
     def _init_vars(self):
         # TO OVERLOAD
@@ -299,6 +323,7 @@ class BaseMethod:
         timer = datetime.now() - start_time
 
         self._save_train_duration(timer)
+        self._save_graphs_png(total_epochs)
 
     def test(self, dataset, model, trained_model_path, verbose, name=None):
 
@@ -333,7 +358,10 @@ class BaseMethod:
             save_name = name
         else:
             save_name = 'results.txt'
-        with open(os.path.join(trained_model_path, save_name), 'a+') as f:
+
+        if not os.path.exists(os.path.join(trained_model_path, 'results')):
+            os.makedirs(os.path.join(trained_model_path, 'results'))
+        with open(os.path.join(trained_model_path, 'results', save_name), 'a+') as f:
             full_classification_report = f'Number of test runs: {TEST_RUNS}\n' + full_classification_report + '\n'
             f.write(full_classification_report)
             f.write(get_metrics_report(dict_metrics_scores))

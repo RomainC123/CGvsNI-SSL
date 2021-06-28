@@ -133,14 +133,14 @@ def show_graphs(model_path):
 
     epochs = len(losses)
 
-    fig = plt.figure(figsize=(12, 24))
+    fig = plt.figure(figsize=(14, 12))
 
     ax1 = fig.add_subplot(211)
     ax1.set_title('Metrics')
     for key in metrics_eval.keys():
         ax1.plot(range(epochs), metrics_eval[key], label=key.capitalize() + ' eval')
     for key in metrics_test.keys():
-        ax1.plot(range(epochs), metrics_test[key], label=key.capitalize() + 'test')
+        ax1.plot(range(epochs), metrics_test[key], label=key.capitalize() + ' test')
     ax1.legend()
 
     ax2 = fig.add_subplot(212)

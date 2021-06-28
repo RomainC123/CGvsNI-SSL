@@ -151,3 +151,19 @@ Tout sans init:
 
 
 Test CGvsNI
+
+
+MNIST 50 labels:
+  OnlySup: 81.4%
+  Tempens: 92.9%
+  MeanTeach: 95.8%
+
+MNIST 10 labels:
+  OnlySup: 50.2%
+  Tempens: 55.1%
+  MeanTeach: 57.2%
+
+MNIST 20 labels:
+  OnlySup: 60.1%
+  Tempens: 71.0%
+  MeanTeach: 68.9%
