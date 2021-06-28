@@ -272,8 +272,10 @@ class BaseMethod:
     def _get_metrics(self, real_labels, pred_labels):
         metrics = {}
         for key in METRICS.keys():
-            metrics[key] = METRICS[key](real_labels, pred_labels)
-
+            try:
+                metrics[key] = METRICS[key](real_labels, pred_labels)
+            except:
+                metrics[key] = 0.
         return metrics
 
     def train(self, dataset, model, optimizer, start_epoch, total_epochs, trained_model_path, verbose):
