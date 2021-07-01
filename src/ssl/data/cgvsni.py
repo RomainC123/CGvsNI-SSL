@@ -49,7 +49,6 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
     def _relabel_data(self):
 
         if self.label_mode == 'Biclass':
-            self._df_train_labeled['Label'] = self._df_train_labeled['Label'].apply(lambda x: 1 if x > 0 else 0)
             self._df_train_masked['Label'] = self._df_train_masked['Label'].apply(lambda x: x if x == -1 else 1 if x > 0 else 0)
             self._df_valuation['Label'] = self._df_valuation['Label'].apply(lambda x: 1 if x > 0 else 0)
             self._df_test['Label'] = self._df_test['Label'].apply(lambda x: 1 if x > 0 else 0)
@@ -81,14 +80,26 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
         df_ni = df_data.loc[df_data['Label'] == 0]
         df_cg = df_data.loc[df_data['Label'].isin(self.kept_datasets)]
 
-        df_ni_train, rest_df_ni = train_test_split(df_ni, train_size=int(nb_ni_train))
-        df_cg_train_no_mult, rest_df_cg = train_test_split(df_cg, train_size=int(nb_cg_train), stratify=df_cg['Label'])
+        df_ni_test, rest_df_ni = train_test_split(df_ni, train_size=int(nb_ni_test))
+        df_cg_test, rest_df_cg = train_test_split(df_cg, train_size=int(nb_cg_test), stratify=df_cg['Label'])
 
+        try:
+            df_cg_train_no_mult = rest_df_cg.sample(n=int(nb_cg_train))
+        except:
+            df_cg_train_no_mult = rest_df_cg
+            nb_cg_train = len(df_cg_train_no_mult)
+
+        try:
+            df_cg_val = df_cg_train_no_mult.sample(n=int(nb_cg_val))
+        except:
+            df_cg_val = df_cg_train_no_mult
+            nb_cg_val = len(df_cg_val)
+
+        nb_ni_train = nb_cg_train * CG_IMG_MULT
+        nb_ni_val = nb_cg_val
+
+        df_ni_train = rest_df_ni.sample(n=int(nb_ni_train))
         df_ni_val = df_ni_train.sample(n=int(nb_ni_val))
-        df_cg_val = df_cg_train_no_mult.sample(n=int(nb_cg_val))
-
-        df_ni_test = rest_df_ni.sample(n=int(nb_ni_test))
-        df_cg_test = rest_df_cg.sample(n=int(nb_cg_test))
 
         df_train = pd.concat([df_ni_train, df_cg_train_no_mult])
         df_valuation = pd.concat([df_ni_val, df_cg_val])
@@ -100,15 +111,17 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
 
     def _mask_data(self):
         """
-        Creates self._df_train_masked (frame with all train images and masked and unmasked labels) and self._df_train_labeled (only rows that stayed labeled)
+        Creates self._df_train_masked (frame with all train images and masked and unmasked labels)
         """
 
         nb_labels = self.nb_samples_labeled * (1 + CG_IMG_MULT) / (2 * CG_IMG_MULT)
         assert nb_labels.is_integer()
 
         if self.nb_samples_labeled != -1 and self.nb_samples_labeled != len(self._df_train_full):
-            df_masked, df_labeled = train_test_split(self._df_train_full, test_size=int(nb_labels), shuffle=True, stratify=self._df_train_full['Label'])
-            self._df_train_labeled = df_labeled.reset_index(drop=True)
+            try:
+                df_masked, = train_test_split(self._df_train_full, test_size=int(nb_labels), shuffle=True, stratify=self._df_train_full['Label'])
+            except:
+                df_masked = pd.DataFrame()
         else:
             df_masked = pd.DataFrame()
 
