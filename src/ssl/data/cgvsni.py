@@ -88,7 +88,7 @@ class CGvsNIDatasetContainer(ImageDatasetContainer):
         df_cg_val = df_cg_train_no_mult.sample(n=int(nb_cg_val))
 
         df_ni_test = rest_df_ni.sample(n=int(nb_ni_test))
-        df_cg_test = rest_df_ni.sample(n=int(nb_cg_test))
+        df_cg_test = rest_df_cg.sample(n=int(nb_cg_test))
 
         df_train = pd.concat([df_ni_train, df_cg_train_no_mult])
         df_valuation = pd.concat([df_ni_val, df_cg_val])
