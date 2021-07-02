@@ -27,7 +27,7 @@ class MeanTeacher(BaseMethod):
 
     def _init_teacher(self, model):
         data, nb_classes, init_mode = model.get_params()
-        self.teacher_model = MODELS[data](nb_classes, init_mode)
+        self.teacher_model = MODELS[data](nb_classes, init_mode, None)
         for param in self.teacher_model.parameters():
             param.detach_()
 
