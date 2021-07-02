@@ -94,7 +94,7 @@ def main():
         model_path = os.path.join(main_folder_path, f'{args.data}_{args.method}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
 
     dataset_train = DATASETS[args.data](args.data, args.nb_samples_train, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
-    model = MODELS['ENet'](dataset_train.nb_classes, args.init_mode)
+    model = MODELS['ENet'](dataset_train.nb_classes, args.init_mode, model_path)
     optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer])
     method = METHODS[args.method](model=model, percent_labeled=dataset_train.percent_labeled, **METHODS_DEFAULT[args.method])
 
