@@ -48,7 +48,9 @@ class TemporalEnsembling(BaseMethod):
         self.y_ema.data = self.ensemble_prediction.data / (1 - self.alpha ** epoch)
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
-    def _get_loss(self, input, output, target, idxes, batch_idx):
+    def _get_loss(self, model, data, target, idxes, batch_idx):
+
+        output = model.forward(data)
         y_ema_batch = torch.autograd.Variable(self.y_ema[idxes], requires_grad=False)
         sup_loss = self.sup_loss(output, target) / self.batch_size
         unsup_loss = self.unsup_weight * self.unsup_loss(F.softmax(output, dim=1), y_ema_batch)

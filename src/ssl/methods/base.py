@@ -154,7 +154,7 @@ class BaseMethod:
 
         return loss_epoch, sup_loss_epoch, unsup_loss_epoch, outputs
 
-    def _get_loss(self, output, target, idxes, batch_idx):
+    def _get_loss(self, model, data, target, idxes, batch_idx):
         # TO OVERLOAD
         pass
 
@@ -210,8 +210,7 @@ class BaseMethod:
             data = preprocess(data)
 
             optimizer.zero_grad()
-            output = model.forward(data)
-            loss, sup_loss, unsup_loss = self._get_loss(data, output, target, idxes, batch_idx)
+            loss, sup_loss, unsup_loss = self._get_loss(model, data, target, idxes, batch_idx)
             loss.backward()
             optimizer.step()
 

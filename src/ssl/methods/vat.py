@@ -2,42 +2,32 @@ import torch
 import torch.nn.functional as F
 
 from .base import BaseMethod
-from ..utils.models import MODELS
 from ..utils.constants import DATA_NO_LABEL
 from ..utils.schedules import UNSUP_WEIGHT_SCHEDULE
+from ..utils.vat import VATLoss
 
 
-class MeanTeacher(BaseMethod):
+class VAT(BaseMethod):
 
     def __init__(self, **kwargs):
 
-        self.name = 'Mean Teacher'
-        self._init_teacher(kwargs['model'])
+        self.name = 'Virtual Adversarial Training'
 
         self.sup_loss = torch.nn.CrossEntropyLoss(reduction='sum', ignore_index=DATA_NO_LABEL)
-        self.unsup_loss = torch.nn.MSELoss(reduction='mean')
+        self.vat_loss = VATLoss(xi=10.0, eps=1.0, ip=1)
 
-        super(MeanTeacher, self).__init__(**kwargs)
+        super(VAT, self).__init__(**kwargs)
 
     def cuda(self):
         self.cuda_state = True
-        self.teacher_model.cuda()
         self.sup_loss = self.sup_loss.cuda()
-        self.unsup_loss = self.unsup_loss.cuda()
-
-    def _init_teacher(self, model):
-        data, nb_classes, init_mode = model.get_params()
-        self.teacher_model = MODELS[data](nb_classes, init_mode, None)
-        for param in self.teacher_model.parameters():
-            param.detach_()
+        self.vat_loss = self.vat_loss.cuda()
 
     def _set_hyperparameters(self, **kwargs):
-        self.ema_teacher = kwargs['ema_teacher']
         self.max_unsup_weight = kwargs['max_unsup_weight'] * self.percent_labeled
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
 
     def _get_hyperparameters_info(self):
-        infos = f'Ema teacher: {self.ema_teacher}\n'
         infos += 'Unsupervised loss max weight: {:.1f}\n'.format(self.max_unsup_weight)
         infos += self.unsup_weight_schedule.get_info()
 
@@ -51,22 +41,10 @@ class MeanTeacher(BaseMethod):
     def _update_vars(self, epoch, total_epochs, model, output):
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
-    def _update_vars_epoch(self, model, step):
-        self._update_teacher(model, step)
-
-    def _update_teacher(self, model, step):
-        alpha = min(1 - 1 / step, self.ema_teacher)
-        for teacher_param, param in zip(self.teacher_model.parameters(), model.parameters()):
-            teacher_param.data.mul_(alpha).add_(1 - alpha, param.data)
-
     def _get_loss(self, model, data, target, idxes, batch_idx):
-
-        with torch.no_grad():
-            output_teacher = self.teacher_model.forward(data)
-            output_teacher.detach_()
-
+        
+        vat_loss = self.unsup_weight * self.vat_loss(model, data)
         output = model.forward(data)
         sup_loss = self.sup_loss(output, target) / self.batch_size
-        unsup_loss = self.unsup_weight * self.unsup_loss(F.softmax(output, dim=1), F.softmax(output_teacher, dim=1))
 
         return sup_loss + unsup_loss, sup_loss, unsup_loss
