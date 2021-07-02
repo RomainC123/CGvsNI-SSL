@@ -217,9 +217,9 @@ class SimpleNet(nn.Module):
 
 class SimpleNetContainer(BaseModelContainer):
 
-    def __init__(self, nb_classes, init_mode):
+    def __init__(self, nb_classes, init_mode, model_path):
 
         self.name = 'SimpleNet'
         self.model = SimpleNet(nb_classes)
 
-        super(SimpleNetContainer, self).__init__(nb_classes, init_mode)
+        super(SimpleNetContainer, self).__init__(nb_classes, init_mode, model_path)

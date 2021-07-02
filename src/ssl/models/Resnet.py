@@ -111,9 +111,9 @@ def ResNet18(nb_classes):
 
 class Resnet18Container(BaseModelContainer):
 
-    def __init__(self, nb_classes, init_mode):
+    def __init__(self, nb_classes, init_mode, model_path):
 
         self.name = 'Resnet18'
         self.model = ResNet18(nb_classes)
 
-        super(Resnet18Container, self).__init__(nb_classes, init_mode)
+        super(Resnet18Container, self).__init__(nb_classes, init_mode, model_path)

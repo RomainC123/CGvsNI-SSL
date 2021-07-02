@@ -150,9 +150,9 @@ class ENet(nn.Module):
 
 class ENetContainer(BaseModelContainer):
 
-    def __init__(self, nb_classes, init_mode):
+    def __init__(self, nb_classes, init_mode, model_path):
 
         self.name = 'ENet'
         self.model = ENet(nb_classes)
 
-        super(ENetContainer, self).__init__(nb_classes, init_mode)
+        super(ENetContainer, self).__init__(nb_classes, init_mode, model_path)

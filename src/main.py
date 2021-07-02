@@ -102,13 +102,16 @@ def main():
 
     if args.name != None:
         model_path = os.path.join(main_folder_path, f'{args.name}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+    elif args.day != None and args.hour != None:
+        model_path = os.path.join(main_folder_path, f'{args.data}_{args.method}_{args.day}_{args.hour}')
     else:
         model_path = os.path.join(main_folder_path, f'{args.data}_{args.method}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
 
     dataset = DATASETS[args.data](args.data, args.nb_samples_train, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
 
     if args.train_test:
-        model = MODELS[args.model](dataset.nb_classes, args.init_mode)
+
+        model = MODELS[args.model](dataset.nb_classes, args.init_mode, model_path)
         optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer])
         method = METHODS[args.method](model=model, percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
 
@@ -127,7 +130,7 @@ def main():
 
     if args.train:
 
-        model = MODELS[args.model](dataset.nb_classes, args.init_mode)
+        model = MODELS[args.model](dataset.nb_classes, args.init_mode, model_path)
         optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer])
         method = METHODS[args.method](percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
 
@@ -142,7 +145,7 @@ def main():
 
     if args.test:
 
-        model = MODELS[args.model](dataset.nb_classes, args.init_mode)
+        model = MODELS[args.model](dataset.nb_classes, args.init_mode, model_path)
         optimizer = OPTIMIZERS[args.optimizer](max_lr=args.max_lr, **OPTIMIZERS_DEFAULT[args.optimizer], **OPTIMIZERS_DEFAULT[args.optimizer])
         method = METHODS[args.method](percent_labeled=dataset.percent_labeled, **METHODS_DEFAULT[args.method])
 

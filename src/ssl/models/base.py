@@ -14,13 +14,13 @@ class BaseModelContainer:
     Given the model name, creates a wrapper with get_info, save and load functions
     """
 
-    def __init__(self, nb_classes, init_mode):
+    def __init__(self, nb_classes, init_mode, model_path):
 
         self.nb_classes = nb_classes
         self.init_mode = init_mode
-        if init_mode == 'pretrained':
-            self.load()
-
+        if os.path.exists(model_path):
+            self.load(model_path)
+            
     def _get_nb_parameters(self):
 
         nb_params = 0

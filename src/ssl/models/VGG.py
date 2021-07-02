@@ -50,9 +50,9 @@ class VGG(nn.Module):
 
 class VGGContainer(BaseModelContainer):
 
-    def __init__(self, nb_classes, init_mode):
+    def __init__(self, nb_classes, init_mode, model_path):
 
         self.name = 'VGG11'
         self.model = VGG(nb_classes, self.name)
 
-        super(VGGContainer, self).__init__(nb_classes, init_mode)
+        super(VGGContainer, self).__init__(nb_classes, init_mode, model_path)

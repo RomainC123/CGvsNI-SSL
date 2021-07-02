@@ -53,9 +53,9 @@ class GaussianNoise(nn.Module):
 
 class CNNContainer(BaseModelContainer):
 
-    def __init__(self, nb_classes, init_mode):
+    def __init__(self, nb_classes, init_mode, model_path):
 
         self.name = 'CNN'
         self.model = CNN(nb_classes)
 
-        super(CNNContainer, self).__init__(nb_classes, init_mode)
+        super(CNNContainer, self).__init__(nb_classes, init_mode, model_path)
