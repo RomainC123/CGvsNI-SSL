@@ -2,7 +2,7 @@
 
 #OAR -n CGvsNI-testArtlantis-tempens
 #OAR -t gpu
-#OAR -l /nodes=1/gpudevice=1,walltime=12:00:00
+#OAR -l /nodes=1/gpudevice=1,walltime=16:00:00
 #OAR --stdout scripts_logs/CGvsNI-testArtlantis-tempens.out
 #OAR --stderr scripts_logs/CGvsNI-testArtlantis-tempens.err
 #OAR --project cg4n6

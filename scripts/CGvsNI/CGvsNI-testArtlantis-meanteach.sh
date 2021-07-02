@@ -2,7 +2,7 @@
 
 #OAR -n CGvsNI-testArtlantis-meanteach
 #OAR -t gpu
-#OAR -l /nodes=1/gpudevice=1,walltime=12:00:00
+#OAR -l /nodes=1/gpudevice=1,walltime=16:00:00
 #OAR --stdout scripts_logs/CGvsNI-testArtlantis-meanteach.out
 #OAR --stderr scripts_logs/CGvsNI-testArtlantis-meanteach.err
 #OAR --project cg4n6
