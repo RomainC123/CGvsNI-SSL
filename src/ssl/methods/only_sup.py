@@ -28,4 +28,4 @@ class OnlySup(BaseMethod):
         sup_loss = self.sup_loss(output, target) / self.batch_size
         unsup_loss = torch.tensor(0.)
 
-        return sup_loss + unsup_loss, sup_loss, unsup_loss
+        return sup_loss + unsup_loss, sup_loss, unsup_loss, output

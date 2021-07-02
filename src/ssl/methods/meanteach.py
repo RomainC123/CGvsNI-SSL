@@ -69,4 +69,4 @@ class MeanTeacher(BaseMethod):
         sup_loss = self.sup_loss(output, target) / self.batch_size
         unsup_loss = self.unsup_weight * self.unsup_loss(F.softmax(output, dim=1), F.softmax(output_teacher, dim=1))
 
-        return sup_loss + unsup_loss, sup_loss, unsup_loss
+        return sup_loss + unsup_loss, sup_loss, unsup_loss, output

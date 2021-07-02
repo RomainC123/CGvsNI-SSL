@@ -55,4 +55,4 @@ class TemporalEnsembling(BaseMethod):
         sup_loss = self.sup_loss(output, target) / self.batch_size
         unsup_loss = self.unsup_weight * self.unsup_loss(F.softmax(output, dim=1), y_ema_batch)
 
-        return sup_loss + unsup_loss, sup_loss, unsup_loss
+        return sup_loss + unsup_loss, sup_loss, unsup_loss, output
