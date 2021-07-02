@@ -210,7 +210,7 @@ class BaseMethod:
             data = preprocess(data)
 
             optimizer.zero_grad()
-            loss, sup_loss, unsup_loss = self._get_loss(model, data, target, idxes, batch_idx)
+            loss, sup_loss, unsup_loss, output = self._get_loss(model, data, target, idxes, batch_idx)
             loss.backward()
             optimizer.step()
 

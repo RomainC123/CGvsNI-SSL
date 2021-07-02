@@ -28,7 +28,7 @@ class VAT(BaseMethod):
         self.unsup_weight_schedule = UNSUP_WEIGHT_SCHEDULE
 
     def _get_hyperparameters_info(self):
-        infos += 'Unsupervised loss max weight: {:.1f}\n'.format(self.max_unsup_weight)
+        infos = 'Unsupervised loss max weight: {:.1f}\n'.format(self.max_unsup_weight)
         infos += self.unsup_weight_schedule.get_info()
 
         return infos
@@ -42,9 +42,9 @@ class VAT(BaseMethod):
         self.unsup_weight = self.max_unsup_weight * UNSUP_WEIGHT_SCHEDULE(epoch, total_epochs)
 
     def _get_loss(self, model, data, target, idxes, batch_idx):
-        
+
         vat_loss = self.unsup_weight * self.vat_loss(model, data)
         output = model.forward(data)
         sup_loss = self.sup_loss(output, target) / self.batch_size
 
-        return sup_loss + unsup_loss, sup_loss, unsup_loss
+        return sup_loss + vat_loss, sup_loss, vat_loss, output

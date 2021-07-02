@@ -59,6 +59,12 @@ class BaseModelContainer:
     def forward(self, x):
         return self.model.forward(x)
 
+    def apply(self, funct):
+        self.model.apply(funct)
+
+    def zero_grad(self):
+        self.model.zero_grad()
+
     def get_params(self):
         return self.name, self.nb_classes, self.init_mode
 
