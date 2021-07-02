@@ -19,8 +19,10 @@ class BaseModelContainer:
         self.nb_classes = nb_classes
         self.init_mode = init_mode
         if os.path.exists(model_path):
-            self.load(model_path)
-            
+            self.start_epoch = self.load(model_path)
+        else:
+            self.start_epoch = 0
+
     def _get_nb_parameters(self):
 
         nb_params = 0
@@ -33,9 +35,10 @@ class BaseModelContainer:
         self.model.cuda()
 
     def load(self, pretrained_path):
-        latest_log, _ = get_latest_log(pretrained_path)
+        latest_log, epoch = get_latest_log(pretrained_path)
         checkpoint = torch.load(os.path.join(pretrained_path, 'logs', latest_log))
         self.model.load_state_dict(checkpoint['state_dict'])
+        return epoch
 
     def save(self, path, epoch):
         if not os.path.exists(path):
