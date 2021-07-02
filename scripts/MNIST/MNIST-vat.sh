@@ -11,4 +11,8 @@ source /applis/environments/conda.sh
 conda activate CGDetection
 
 cd ~/code/CGvsNI-SSL/src
+<<<<<<< HEAD
 python ./main.py --train-test --data MNIST --nb_samples_train 50000 --nb_samples_test 10000 --nb_samples_labeled 50 --img_mode L --model CNN --method VAT --max_lr 0.0002 --epochs 300 --no-verbose
+=======
+python ./main.py --train-test --data MNIST --nb_samples_train 50000 --nb_samples_test 50 --nb_samples_labeled 1000 --img_mode L --model CNN --method VAT --max_lr 0.0002 --epochs 300 --no-verbose
+>>>>>>> ca63f5b9d5a901351eb68d3ed3b676d6d1c498b2
