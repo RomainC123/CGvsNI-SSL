@@ -7,7 +7,10 @@ METHODS_DEFAULT = {
         'ema_teacher': 0.999,
         'max_unsup_weight': 30.
     },
-    'OnlySup': {}
+    'OnlySup': {},
+    'VAT': {
+        'max_unsup_weight': 30.
+    }
 }
 
 OPTIMIZERS_DEFAULT = {
