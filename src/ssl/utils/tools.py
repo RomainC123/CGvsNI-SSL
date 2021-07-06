@@ -243,22 +243,24 @@ def hter(y_true, y_pred):
     if len(set(y_true)) > 2:
         raise ValueError('Too many classes for HTER')
 
-    count_false_accepts = 0
-    count_false_rejects = 0
-    count_accepts = 0
-    count_rejects = 0
+    count_false_positives = 0
+    count_false_negatives = 0
+    count_true_positives = 0
+    count_true_negatives = 0
 
     for i in range(len(y_true)):
-        if y_pred[i] == 0:
-            count_rejects += 1
+        if y_true[i] == 0:
             if y_true[i] != y_pred[i]:
-                count_false_rejects += 1
-        elif y_pred[i] == 1:
-            count_accepts += 1
+                count_false_positives += 1
+            else:
+                count_true_negatives += 1
+        else:
             if y_true[i] != y_pred[i]:
-                count_false_accepts += 1
+                count_false_negatives += 1
+            else:
+                count_true_positives += 1
 
-    far = 0.5 * (count_false_accepts / count_accepts + count_false_rejects / count_rejects)
+    far = 0.5 * (count_false_positives / (count_true_negatives + count_false_positives) + count_false_negatives / (count_true_positives + count_false_negatives))
 
     return far
 

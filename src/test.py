@@ -20,6 +20,3 @@ if not os.path.exists(FRAME_PATH):
 print(hter([0, 1, 1, 0, 0], [0, 1, 1, 0, 0]))
 print(hter([0, 1, 1, 0, 0, 0], [0, 1, 1, 0, 0, 1]))
 print(hter([0, 1, 1, 0, 0, 1], [0, 1, 1, 0, 0, 0]))
-
-df = pd.DataFrame([0, 1, 1, 1, 2, 3, 4])
-print(df.sample(n=18, replace=True))
