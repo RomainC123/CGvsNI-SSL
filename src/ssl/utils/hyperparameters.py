@@ -8,6 +8,7 @@ METHODS_DEFAULT = {
         'max_unsup_weight': 30.
     },
     'OnlySup': {},
+    'FullSup': {},    
     'VAT': {
         'max_unsup_weight': 30.
     }

@@ -90,8 +90,14 @@ def main():
 
     if args.name != None:
         model_path = os.path.join(main_folder_path, f'{args.name}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+    elif args.datasets_to_use != None:
+        model_path = os.path.join(main_folder_path, f'{args.data}_{args.datasets_to_use}_{args.method}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
     else:
         model_path = os.path.join(main_folder_path, f'{args.data}_{args.method}' + '_{date:%d-%m-%Y_%H:%M:%S}'.format(date=datetime.now()))
+
+    # Sheitan mais ça marche donc menfou
+    if args.method == 'FullSup':
+        args.nb_samples_labeled = args.nb_samples_train
 
     dataset_train = DATASETS[args.data](args.data, args.nb_samples_train, args.nb_samples_test, args.nb_samples_labeled, cuda_state, img_mode=args.img_mode, datasets_to_use=args.datasets_to_use, label_mode=args.label_mode, epsilon=1e-1)
     model = MODELS['ENet'](dataset_train.nb_classes, args.init_mode, model_path)

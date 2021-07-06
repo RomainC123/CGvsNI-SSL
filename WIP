@@ -170,6 +170,12 @@ MNIST 20 labels:
 
 CGvsNI full test (HTER):
 
+  FullSup:
+    Artlantis: 0.2%
+    Autodesk: 21.7%
+    Corona: 20.1%
+    VRay: 11.0%
+
   OnlySup:
     Artlantis: 0.8%
     Autodesk: 20.7%
@@ -181,3 +187,56 @@ CGvsNI full test (HTER):
     Autodesk: 21.6%
     Corona: 19.9%
     VRay: 4.9%
+
+
+CGvsNI Autodesk:
+
+  FullSup:
+    Artlantis: 12.6%
+    Autodesk: 0.6%
+    Corona: 7.5%
+    VRay: 11.7%
+
+  OnlySup:
+    Artlantis: 11.6%
+    Autodesk: 0.9%
+    Corona: 7.8%
+    VRay: 12.9%
+
+  Meanteach:
+    Artlantis:
+    Autodesk:
+    Corona:
+    VRay:
+
+  Tempens:
+    Artlantis:
+    Autodesk:
+    Corona:
+    VRay:
+
+CGvsNI Artlantis_Autodesk Biclass:
+
+  FullSup: FUCK
+    Artlantis:
+    Autodesk:
+    Corona:
+    VRay:
+
+  OnlySup:
+    Artlantis: 1.4%
+    Autodesk: 1.5%
+    Corona: 8.1%
+    VRay: 12.1%
+
+  Meanteach:
+    Artlantis:
+    Autodesk:
+    Corona:
+    VRay:
+
+  Tempens:
+    Artlantis:
+    Autodesk:
+    Corona:
+    VRay:
