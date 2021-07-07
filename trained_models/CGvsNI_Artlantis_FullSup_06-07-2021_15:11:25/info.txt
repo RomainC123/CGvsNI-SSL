@@ -1,0 +1,111 @@
+Data: CGvsNI
+Number of samples: 10800
+Number of classes: 2
+Number of training samples: 10080
+Number of labeled samples: 10080
+Percent of labeled samples: 100.00%
+Number of testing samples: 720
+Percent of testing samples: 6.67%
+------------------------------------
+Model: ENet
+ENet(
+  (convFilter0): Conv2d(3, 30, kernel_size=(5, 5), stride=(1, 1), bias=False)
+  (branch0): Sequential(
+    (0): HybridNetBlock(
+      (model): Sequential(
+        (0): Conv2d(30, 64, kernel_size=(3, 3), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+    (1): HybridNetBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+    (2): HybridNetBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+  )
+  (convFilter1_r): Conv2d(1, 30, kernel_size=(5, 5), stride=(1, 1), bias=False)
+  (convFilter1_g): Conv2d(1, 30, kernel_size=(5, 5), stride=(1, 1), bias=False)
+  (convFilter1_b): Conv2d(1, 30, kernel_size=(5, 5), stride=(1, 1), bias=False)
+  (branch1): Sequential(
+    (0): HybridNetBlock(
+      (model): Sequential(
+        (0): Conv2d(90, 64, kernel_size=(3, 3), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+    (1): HybridNetBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+    (2): HybridNetBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+  )
+  (block1): NcgNetBlock(
+    (model): Sequential(
+      (0): Conv2d(128, 64, kernel_size=(7, 7), stride=(2, 2), bias=False)
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+  )
+  (block2): NcgNetBlock(
+    (model): Sequential(
+      (0): Conv2d(64, 48, kernel_size=(5, 5), stride=(1, 1), bias=False)
+      (1): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+  )
+  (block3): NcgNetBlock(
+    (model): Sequential(
+      (0): Conv2d(48, 64, kernel_size=(3, 3), stride=(1, 1), bias=False)
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+  )
+  (fc1): Linear(in_features=6400, out_features=4096, bias=True)
+  (fc2): Linear(in_features=4096, out_features=4096, bias=True)
+  (fc3): Linear(in_features=4096, out_features=2, bias=True)
+)
+Init mode: Nope
+Number of parameters: 43736054
+------------------------------------
+Optimizer: Adam
+Max learning rate: 0.0002
+Betas: (0.9, 0.999)
+Learning rate schedule:
+Ramp up epochs: 80
+Ramp up mult: 5
+Ramp down epochs: 50
+Ramp down mult: 12.5
+Lower bound: 0.0
+Upper bound: 1.0
+Beta 1 schedule:
+Ramp down epochs: 50
+Ramp down mult: 12.5
+Lower bound: 0.55
+Upper bound: 1.0
+------------------------------------
+Method: Fully supervised
+
+------------------------------------
+Batch size: 32
+Number of batches: 315
+Starting epoch: 0
+Total number of epochs: 300
+Training time: 10:01:16
