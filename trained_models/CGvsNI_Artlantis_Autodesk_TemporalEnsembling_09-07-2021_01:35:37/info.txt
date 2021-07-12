@@ -101,11 +101,16 @@ Ramp down mult: 12.5
 Lower bound: 0.55
 Upper bound: 1.0
 ------------------------------------
-Method: Only supervised
-
+Method: Temporal Ensembling
+Alpha: 0.6
+Unsupervised loss max weight: 3.0
+Ramp up epochs: 80
+Ramp up mult: 5
+Lower bound: 0.0
+Upper bound: 1.0
 ------------------------------------
 Batch size: 32
 Number of batches: 315
 Starting epoch: 0
 Total number of epochs: 300
-Training time: 9:56:04
+Training time: 10:32:12
