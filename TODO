@@ -1,33 +1,6 @@
-Crop VRay et les images réelles si c'est pas déjà fait
-
-Comparer only sup et full loss
-Full sup, evolution en fonction du lr
-Voir en fonction du début de l'influence de la loss unsup l'accuracy du modèle
-En gros, voir l'utilité de la loss sup
-
-Mettre en évidence les hyperparamètres importants
-A faire mais genre dans longtemps
-
-Balanced sampler
-Add a testing on train set functionality at the end of train
-
-Redo the downloader and img_crop for CG images
-
-
-Lancer CGvsNI supervisé avant toute chose
-
-
-Variation début loss unsup
-Problème loss non supervisée pour le début des courbes
-Varier (augmenter) le batch size par hasard
-
-
-Add TwoStreamBatchSampler to SVHN
-Finetune un modele MNIST sur CIFAR10 (avec le modèle CNN)
-Tester avec le modèel MNIST
 Raytune pour hyperparamètres optimisation
 
-Tester sur autodesk
-Tester sur Artlantis + autodesk
 RAPPOOOOOOOOOOOOOOOOORT
 Améliorer VAT (trouver le problème puis mixer avec Mean Teacher)
+
+Add curve for each testing datasets to the graph display of training (when running CGvsNI)
