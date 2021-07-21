@@ -1,0 +1,9 @@
+Number of test runs: 3
+              precision  recall  f1-score  support
+0                 0.569   1.000     0.726      360
+1                 1.000   0.244     0.391      360
+macro avg         0.785   0.622     0.558      720
+weighted avg      0.785   0.622     0.558      720
+accuracy          0.622
+Accuracy: 0.622
+Hter: 0.378
