@@ -1,0 +1,10 @@
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 14, in <module>
+    from ssl.utils.paths import TRAINED_MODELS_PATH
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/utils/paths.py", line 16, in <module>
+    os.makedirs(SAVED_MODELS_PATH)
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/os.py", line 223, in makedirs
+    mkdir(name, mode)
+FileExistsError: [Errno 17] File exists: '/home/caplierr/code/CGvsNI-SSL/saved_models'
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: ## OAR [2021-07-21 15:51:55] Job 17540251 KILLED ##
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: 

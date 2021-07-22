@@ -1,0 +1,12 @@
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: Traceback (most recent call last):
+  File "./main.py", line 169, in <module>
+    main()
+  File "./main.py", line 129, in main
+    save_info(model_path, dataset, model, optimizer, method, args.verbose)
+  File "/home/caplierr/code/CGvsNI-SSL/src/ssl/utils/tools.py", line 27, in save_info
+    os.makedirs(model_path)
+  File "/home/caplierr/.conda/envs/CGDetection/lib/python3.8/os.py", line 223, in makedirs
+    mkdir(name, mode)
+FileExistsError: [Errno 17] File exists: '/home/caplierr/code/CGvsNI-SSL/trained_models/MNIST_MeanTeacher_21-07-2021_15:13:54'
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: ## OAR [2021-07-21 15:51:55] Job 17540298 KILLED ##
+Enter passphrase for /home/caplierr/.ssh/github: Enter passphrase for /home/caplierr/.ssh/github: ## OAR [2021-07-22 06:53:27] Job 17540402 KILLED ##
